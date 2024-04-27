@@ -130,6 +130,48 @@
 							],
 							// 'visible' => \Yii::$app->user->can('verMenuCorreo'),
 						],
+						
+						[
+							'label' => 'Entradas',
+							'iconClass' => 'fa fa-fw fa-share',
+							'items' => [
+								[
+									'label' => 'Agregar Entrada',
+									'iconClass' => 'fa fa-fw fa-plus',
+									'url' => ['entradas/create'],
+									// 'visible' => \Yii::$app->user->can('verMenuCrearCorreo'),
+								],
+								[
+									'label' => 'Listar Entradas',
+									'iconClass' => 'fa fa-fw fa-list',
+									'url' => ['entradas/index'],
+									// 'visible' => \Yii::$app->user->can('verMenuListarCorreos'),
+								],
+							],
+
+						],
+
+						[
+							'label' => 'Salidas ',
+							'iconClass' => 'fa fa-fw fa-reply',
+							'items' => [
+								[
+									'label' => 'Agregar Salidas',
+									'iconClass' => 'fa fa-fw fa-plus',
+									'url' => ['entradas/create'],
+									// 'visible' => \Yii::$app->user->can('verMenuCrearCorreo'),
+								],
+								[
+									'label' => 'Listar Salidas',
+									'iconClass' => 'fa fa-fw fa-list',
+									'url' => ['entradas/index'],
+									// 'visible' => \Yii::$app->user->can('verMenuListarCorreos'),
+								],
+							],
+
+						],
+
+
 						// [
 							// 'label' => 'Dev',
 							// 'iconClass' => 'fa fa-fw fa-bug',
