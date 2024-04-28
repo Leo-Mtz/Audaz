@@ -8,7 +8,7 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <!-- Sidebar Menu -->
+        <!-- Sidebar Menu --> 
         <nav class="mt-2">
 
             <?php
