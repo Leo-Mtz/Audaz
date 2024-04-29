@@ -44,7 +44,7 @@ class Entradas extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_entradas' => 'Id Entradas',
+            'id_entradas' => 'Num de Entrada',
             'fecha' => 'Fecha',
             'id_empleado' => 'Id Empleado',
             'id_evento' => 'Id Evento',
