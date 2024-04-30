@@ -158,13 +158,13 @@
 								[
 									'label' => 'Agregar Salidas',
 									'iconClass' => 'fa fa-fw fa-plus',
-									'url' => ['entradas/create'],
+									'url' => ['salidas/create'],
 									// 'visible' => \Yii::$app->user->can('verMenuCrearCorreo'),
 								],
 								[
 									'label' => 'Listar Salidas',
 									'iconClass' => 'fa fa-fw fa-list',
-									'url' => ['entradas/index'],
+									'url' => ['salidas/index'],
 									// 'visible' => \Yii::$app->user->can('verMenuListarCorreos'),
 								],
 							],

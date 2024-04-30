@@ -16,11 +16,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id_entradas], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id_entradas], [
+        <?= Html::a('Actualizar', ['update', 'id' => $model->id_entradas], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Eliminar', ['delete', 'id' => $model->id_entradas], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
+                'confirm' => '¿Eliminar la entrada?',
                 'method' => 'post',
             ],
         ]) ?>
@@ -29,11 +29,35 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id_entradas',
+          //  'id_entradas',
             'fecha',
-            'id_empleado',
-            'id_evento',
-            'id_producto',
+            
+            
+            [
+                'attribute'=>'id_empleado',
+                'value'=>function($model,$index,$dataColumn)
+                {
+                    return $model->empleados->id_empleado;
+                },
+            ],
+            [
+                'attribute'=>'id_evento',
+                'value'=>function($model,$index,$dataColumn)
+                {
+                    return $model->eventos->id_evento;
+                }
+    
+            ],
+            [
+                'attribute' => 'id_producto',
+                'value' =>function($model,$index,$dataColumn)
+    
+                {
+                    return $model->productos->id_producto;
+                },
+    
+            ],
+            
             'cantidad_entradas',
         ],
     ]) ?>

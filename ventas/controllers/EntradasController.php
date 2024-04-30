@@ -5,9 +5,13 @@ namespace app\controllers;
 use Yii;
 use app\models\Entradas;
 use app\models\EntradasSearch;
+use app\models\CatEventos;
+use app\models\CatProductos;
+use app\models\CatEmpleados;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * EntradasController implements the CRUD actions for Entradas model.
@@ -70,8 +74,17 @@ class EntradasController extends Controller
             return $this->redirect(['view', 'id' => $model->id_entradas]);
         }
 
+        $empleados= ArrayHelper::map(CatEmpleados::find()->all(),'id_empleado','nombre');//'paterno','materno');
+        $eventos= ArrayHelper::map(CatEventos::find()->all(),'id_evento','evento');
+        $productos=ArrayHelper::map(CatProductos::find()->all(),'id_producto','id_sabor','id_presentacion');
+
+        
         return $this->render('create', [
-            'model' => $model,
+            
+        'model' => $model,
+        'empleados' => $empleados,
+        'eventos' => $eventos,
+        'productos'=> $productos,
         ]);
     }
 
@@ -90,8 +103,16 @@ class EntradasController extends Controller
             return $this->redirect(['view', 'id' => $model->id_entradas]);
         }
 
+        $empleados= ArrayHelper::map(CatEmpleados::find()->all(),'id_empleado');
+        $eventos= ArrayHelper::map(CatEventos::find()->all(),'id_evento','evento');
+        $productos=ArrayHelper::map(CatProductos::find()->all(),'id_producto');
+
+
         return $this->render('update', [
-            'model' => $model,
+            'model' => $model,     
+          'empleados' => $empleados,
+          'eventos' => $eventos,
+         'productos'=> $productos,
         ]);
     }
 

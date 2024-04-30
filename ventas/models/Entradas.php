@@ -52,4 +52,17 @@ class Entradas extends \yii\db\ActiveRecord
             'cantidad_entradas' => 'Cantidad Entradas',
         ];
     }
+
+    public function getEventos()
+    {
+        return $this->hasOne(CatEventos::className(),['id_evento'=>'id_eventos']);
+    }
+
+    public function getEmpleados(){
+        return $this->hasOne(CatEmpleados::className(),['id_empleado'=>'id_empleado']);
+    }
+
+    public function getProductos(){
+        return $this->hasOne(CatProductos::className(),['id_producto'=>'id_producto']);
+    }
 }
