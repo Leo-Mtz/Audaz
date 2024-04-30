@@ -2,12 +2,16 @@
 
 namespace app\controllers;
 
+
 use Yii;
-use app\models\Salidas;
-use app\models\SalidasSearch;
+use app\models\CatProductos;
+use app\models\CatSabores;
+use app\models\CatPresentaciones;
+use app\models\CatProductosSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * SalidasController implements the CRUD actions for Salidas model.
