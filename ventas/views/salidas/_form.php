@@ -18,14 +18,18 @@ use yii\widgets\ActiveForm;
 		</div>
 	</div>
 
-    <?= $form->field($model, 'id_empleado')->textInput() ?>
+    <div class= "col-md col-lg">
+        <?= $form->field($model, 'id_empleado')->dropdownList($empleados,['prompt' => 'Seleccionar empleado']) ?>
+    </div>
 
-    <?= $form->field($model, 'fecha')->textInput() ?>
+    <div class="col-md col-lg">
+        <?= $form->field($model, 'id_evento')->dropdownList($eventos,['prompt' => 'Seleccionar empleado']) ?>
+    </div>
 
-    <?= $form->field($model, 'id_evento')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'id_producto')->textInput() ?>
-
+    <div class="col-md col-lg">
+         <?= $form->field($model, 'id_producto')->dropdownList($productos,['prompt' => 'Seleccionar empleado']) ?>
+    </div>
+    
     <?= $form->field($model, 'cantidad_vendida')->textInput() ?>
 
     <?= $form->field($model, 'cantidad_degustacion')->textInput() ?>

@@ -109,7 +109,7 @@ class EntradasController extends Controller
 
 
         return $this->render('update', [
-            'model' => $model,     
+          'model' => $model,     
           'empleados' => $empleados,
           'eventos' => $eventos,
          'productos'=> $productos,

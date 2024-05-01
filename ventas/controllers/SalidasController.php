@@ -4,10 +4,11 @@ namespace app\controllers;
 
 
 use Yii;
+use app\models\Salidas;
+use app\models\SalidasSearch;
+use app\models\CatEventos;
 use app\models\CatProductos;
-use app\models\CatSabores;
-use app\models\CatPresentaciones;
-use app\models\CatProductosSearch;
+use app\models\CatEmpleados;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -74,8 +75,16 @@ class SalidasController extends Controller
             return $this->redirect(['view', 'id' => $model->id_salidas]);
         }
 
+        
+        $empleados= ArrayHelper::map(CatEmpleados::find()->all(),'id_empleado','nombre');//'paterno','materno');
+        $eventos= ArrayHelper::map(CatEventos::find()->all(),'id_evento','evento');
+        $productos=ArrayHelper::map(CatProductos::find()->all(),'id_producto','id_sabor','id_presentacion');
+
         return $this->render('create', [
-            'model' => $model,
+           'model' => $model, 
+          'empleados' => $empleados,
+          'eventos' => $eventos,
+         'productos'=> $productos,
         ]);
     }
 
@@ -94,8 +103,16 @@ class SalidasController extends Controller
             return $this->redirect(['view', 'id' => $model->id_salidas]);
         }
 
+        
+        $empleados= ArrayHelper::map(CatEmpleados::find()->all(),'id_empleado','nombre');//'paterno','materno');
+        $eventos= ArrayHelper::map(CatEventos::find()->all(),'id_evento','evento');
+        $productos=ArrayHelper::map(CatProductos::find()->all(),'id_producto','id_sabor','id_presentacion');
+
         return $this->render('update', [
             'model' => $model,
+            'empleados' => $empleados,
+            'eventos' => $eventos,
+           'productos'=> $productos,
         ]);
     }
 
