@@ -112,8 +112,12 @@ class SalidasController extends Controller
         });
 
         $eventos= ArrayHelper::map(CatEventos::find()->all(),'id_evento','evento');
-        $productos=ArrayHelper::map(CatProductos::find()->all(),'id_producto','id_sabor','id_presentacion');
  
+        
+    $productos = ArrayHelper::map(CatProductos::find()->all(), 'id_producto', function($model, $defaultValue) {
+        return $model['id_sabor'] . ' - ' . $model['id_presentacion'];
+    });
+    
         return $this->render('update', [
             'model' => $model,
             'empleados' => $empleados,

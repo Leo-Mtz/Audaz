@@ -77,8 +77,10 @@ class EntradasController extends Controller
         return $model['nombre'].' '.$model['paterno'].' '.$model['materno'];
     });
     $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
-    $productos = ArrayHelper::map(CatProductos::find()->all(), 'id_producto', 'id_sabor');
 
+    $productos = ArrayHelper::map(CatProductos::find()->all(), 'id_producto', function($model, $defaultValue) {
+        return $model['id_sabor'] . ' - ' . $model['id_presentacion'];
+    });
     return $this->render('create', [
         'model' => $model,
         'empleados' => $empleados,
@@ -107,7 +109,10 @@ public function actionUpdate($id)
         return $model['nombre'].' '.$model['paterno'].' '.$model['materno'];
     });
     $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
-    $productos = ArrayHelper::map(CatProductos::find()->all(), 'id_producto', '');
+
+    $productos = ArrayHelper::map(CatProductos::find()->all(), 'id_producto', function($model, $defaultValue) {
+        return $model['sabor'] . ' - ' . $model['presentacion'];
+    });
 
     return $this->render('update', [
         'model' => $model,
