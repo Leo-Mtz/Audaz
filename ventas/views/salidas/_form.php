@@ -14,10 +14,11 @@ use yii\widgets\ActiveForm;
 
     
     <div class="row">
+
     <div class="col-md col-lg">		
 			<?= $form->field($model, 'fecha')->widget(yii\jui\DatePicker::className(),['clientOptions' => ['showAnim'=>'fold','changeMonth'=> true,'changeYear'=> true],'options' => ['class' => 'form-control'],'language' => 'es-MX','dateFormat' => 'yyyy-MM-dd',]) ?>
 		</div>
-	</div>
+	 
 
     <div class= "col-md col-lg">
         <?= $form->field($model, 'id_empleado')->dropdownList($empleados,['prompt' => 'Seleccionar empleado']) ?>
@@ -31,19 +32,19 @@ use yii\widgets\ActiveForm;
          <?= $form->field($model, 'id_producto')->dropdownList($productos,['prompt' => 'Seleccionar empleado']) ?>
     </div>
     
-    <div>
+    <div class="col-md col-lg">
     <?= $form->field($model, 'cantidad_vendida')->textInput() ?>
 </div>
 
-<div>
+<div class="col-md col-lg">
     <?= $form->field($model, 'cantidad_degustacion')->textInput() ?>
 </div>
 
-<div>
+<div class="col-md col-lg">
     <?= $form->field($model, 'cantidad_cortesia')->textInput() ?>
 </div>
 
-<div>
+<div class="col-md col-lg">
     <?= $form->field($model, 'cantidad_total')->textInput() ?>
 </div>
 
