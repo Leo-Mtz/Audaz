@@ -31,14 +31,23 @@ use yii\widgets\ActiveForm;
          <?= $form->field($model, 'id_producto')->dropdownList($productos,['prompt' => 'Seleccionar empleado']) ?>
     </div>
     
+    <div>
     <?= $form->field($model, 'cantidad_vendida')->textInput() ?>
+</div>
 
+<div>
     <?= $form->field($model, 'cantidad_degustacion')->textInput() ?>
+</div>
 
+<div>
     <?= $form->field($model, 'cantidad_cortesia')->textInput() ?>
+</div>
 
+<div>
     <?= $form->field($model, 'cantidad_total')->textInput() ?>
+</div>
 
+</div>
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
