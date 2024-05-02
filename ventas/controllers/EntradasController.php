@@ -69,8 +69,12 @@ class EntradasController extends Controller
     public function actionCreate()
 {
     $model = new Entradas();
-    if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        return $this->redirect(['view', 'id' => $model->id_entradas]);
+  
+    if ($model->load(Yii::$app->request->post() && $model->validate())) {
+        var_dump($model->errors); // función que muestra el contenido de la variable proporcionada.
+        if ($model->save()) {
+            return $this->redirect(['view', 'id' => $model->id_entrada]);
+        }
     }
 
     $empleados = ArrayHelper::map(CatEmpleados::find()->all(), 'id_empleado', function($model, $defaultValue) {

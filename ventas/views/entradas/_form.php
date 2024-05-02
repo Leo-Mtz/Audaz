@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\jui\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Entradas */
@@ -22,11 +23,11 @@ use yii\widgets\ActiveForm;
 </div>
 
     <div class="col-md col-lg">
-        <?= $form->field($model, 'id_evento')->dropdownList($eventos,['prompt' => 'Seleccionar empleado']) ?>
+        <?= $form->field($model, 'id_evento')->dropdownList($eventos,['prompt' => 'Seleccionar evento']) ?>
     </div>
 
     <div class="col-md col-lg">
-         <?= $form->field($model, 'id_producto')->dropdownList($productos,['prompt' => 'Seleccionar empleado']) ?>
+         <?= $form->field($model, 'id_producto')->dropdownList($productos,['prompt' => 'Seleccionar producto']) ?>
     </div>
 
     <div class="col-md col-lg">
