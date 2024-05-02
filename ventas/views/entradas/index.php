@@ -64,12 +64,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'delete' => function ($url, $model) {
                     $url = Url::to(['entradas/delete','id'=>$model->id_entradas]);
-                    return Html::a('<span class="fa fa-times"></span>', $url, [
-                        'title' => 'Borrar',
-                        'data-confirm' => Yii::t('yii', '¿Seguro que desea eliminar esta entrada?'),
-                        'data-method' => 'post'
-                    ]);
-                }
+                    return Html::a('<span class="fa fa-times"></span>', $url, ['title' => 'Borrar','style' => 'margin-right:10px']);
+                },
             ],
         ],
     ],

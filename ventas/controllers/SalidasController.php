@@ -75,8 +75,11 @@ class SalidasController extends Controller
             return $this->redirect(['view', 'id' => $model->id_salidas]);
         }
 
-        
-        $empleados= ArrayHelper::map(CatEmpleados::find()->all(),'id_empleado','nombre');//'paterno','materno');
+       
+        $empleados= ArrayHelper::map(CatEmpleados::find()->all(),'id_empleado', function($model, $defaultValue) {
+            return $model['nombre'].' '.$model['paterno'].' '.$model['materno'];
+        });
+
         $eventos= ArrayHelper::map(CatEventos::find()->all(),'id_evento','evento');
         $productos=ArrayHelper::map(CatProductos::find()->all(),'id_producto','id_sabor','id_presentacion');
 
@@ -104,10 +107,13 @@ class SalidasController extends Controller
         }
 
         
-        $empleados= ArrayHelper::map(CatEmpleados::find()->all(),'id_empleado','nombre');//'paterno','materno');
+        $empleados= ArrayHelper::map(CatEmpleados::find()->all(),'id_empleado', function($model, $defaultValue) {
+            return $model['nombre'].' '.$model['paterno'].' '.$model['materno'];
+        });
+
         $eventos= ArrayHelper::map(CatEventos::find()->all(),'id_evento','evento');
         $productos=ArrayHelper::map(CatProductos::find()->all(),'id_producto','id_sabor','id_presentacion');
-
+ 
         return $this->render('update', [
             'model' => $model,
             'empleados' => $empleados,
