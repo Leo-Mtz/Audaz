@@ -81,7 +81,11 @@ class SalidasController extends Controller
         });
 
         $eventos= ArrayHelper::map(CatEventos::find()->all(),'id_evento','evento');
-        $productos=ArrayHelper::map(CatProductos::find()->all(),'id_producto','id_sabor','id_presentacion');
+
+        
+    $productos = ArrayHelper::map(CatProductos::find()->all(), 'id_producto', function($model, $defaultValue) {
+        return $model['id_sabor'] . ' - ' . $model['id_presentacion'];
+    });
 
         return $this->render('create', [
            'model' => $model, 
@@ -109,17 +113,17 @@ class SalidasController extends Controller
             }
         }
 
-        
+           
         $empleados= ArrayHelper::map(CatEmpleados::find()->all(),'id_empleado', function($model, $defaultValue) {
             return $model['nombre'].' '.$model['paterno'].' '.$model['materno'];
         });
 
         $eventos= ArrayHelper::map(CatEventos::find()->all(),'id_evento','evento');
- 
+
         
-    $productos = ArrayHelper::map(CatProductos::find()->all(), 'id_producto', function($model, $defaultValue) {
-        return $model['id_sabor'] . ' - ' . $model['id_presentacion'];
-    });
+        $productos = ArrayHelper::map(CatProductos::find()->all(), 'id_producto', function($model, $defaultValue) {
+            return $model['id_sabor'] . ' - ' . $model['id_presentacion'];
+        });
     
         return $this->render('update', [
             'model' => $model,

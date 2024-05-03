@@ -33,12 +33,12 @@ class Salidas extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_salidas', 'id_empleado', 'fecha', 'id_evento', 'id_producto', 'cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total'], 'required'],
-            [['id_salidas', 'id_empleado', 'id_producto'], 'integer'],
+            [[ 'id_empleado', 'fecha', 'id_evento', 'id_producto', 'cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total'], 'required'],
+            [['id_empleado', 'id_producto'], 'integer'],
             [['fecha'], 'safe'],
             [['cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total'], 'number'],
             [['id_evento'], 'string', 'max' => 45],
-            [['id_salidas'], 'unique'],
+          
         ];
     }
 
