@@ -53,10 +53,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
     
             ],
-            //'cantidad_vendida',
-            //'cantidad_degustacion',
-            //'cantidad_cortesia',
-            //'cantidad_total',
+            'cantidad_vendida',
+            'cantidad_degustacion',
+            'cantidad_cortesia',
+            'cantidad_total',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

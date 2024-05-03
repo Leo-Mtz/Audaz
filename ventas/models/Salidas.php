@@ -63,7 +63,7 @@ class Salidas extends \yii\db\ActiveRecord
     
     public function getEventos()
     {
-        return $this->hasOne(CatEventos::className(),['id_evento'=>'id_eventos']);
+        return $this->hasOne(CatEventos::className(),['id_evento'=>'id_evento']);
     }
 
     public function getEmpleados(){
