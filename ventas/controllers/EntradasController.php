@@ -72,7 +72,7 @@ class EntradasController extends Controller
   
     if ($model->load(Yii::$app->request->post())) { // Load POST data
         if ($model->save()) { // Save model
-            return $this->redirect(['view', 'id' => $model->id_entrada]); // Redirect to view if saved successfully
+            return $this->redirect(['view', 'id' => $model->id_entradas]); // Redirect to view if saved successfully
         } else {
             var_dump($model->errors); // Debug errors if save fails
         }
@@ -106,8 +106,12 @@ public function actionUpdate($id)
 {
     $model = $this->findModel($id);
 
-    if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        return $this->redirect(['view', 'id' => $model->id_entradas]);
+    if ($model->load(Yii::$app->request->post())) { // Load POST data
+        if ($model->save()) { // Save model
+            return $this->redirect(['view', 'id' => $model->id_entradas]); // Redirect to view if saved successfully
+        } else {
+            var_dump($model->errors); // Debug errors if save fails
+        }
     }
 
     $empleados = ArrayHelper::map(CatEmpleados::find()->all(), 'id_empleado', function($model, $defaultValue) {
@@ -116,7 +120,7 @@ public function actionUpdate($id)
     $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
 
     $productos = ArrayHelper::map(CatProductos::find()->all(), 'id_producto', function($model, $defaultValue) {
-        return $model['sabor'] . ' - ' . $model['presentacion'];
+        return $model['id_sabor'] . ' - ' . $model['id_presentacion'];
     });
 
     return $this->render('update', [

@@ -29,13 +29,15 @@ class Entradas extends \yii\db\ActiveRecord
      */
     public function rules()
     {
+    
         return [
-            [['id_entradas', 'fecha', 'id_empleado', 'id_evento', 'id_producto'], 'required'],
-            [['id_entradas', 'id_empleado', 'id_evento', 'id_producto'], 'integer'],
+            [['fecha', 'id_empleado', 'id_evento', 'id_producto'], 'required'],
+            [['id_empleado', 'id_evento', 'id_producto'], 'integer'],
             [['fecha'], 'safe'],
             [['cantidad_entradas'], 'number'],
-            [['id_entradas'], 'unique'],
+          
         ];
+    
     }
 
     /**
@@ -44,7 +46,7 @@ class Entradas extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_entradas' => 'Num de Entrada',
+            'id_entradas' => 'Entrada',
             'fecha' => 'Fecha',
             'id_empleado' => 'Id Empleado',
             'id_evento' => 'Id Evento',
@@ -55,7 +57,7 @@ class Entradas extends \yii\db\ActiveRecord
 
     public function getEventos()
     {
-        return $this->hasOne(CatEventos::className(),['id_evento'=>'id_eventos']);
+        return $this->hasOne(CatEventos::className(),['id_evento'=>'id_evento']);
     }
 
     public function getEmpleados(){

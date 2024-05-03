@@ -27,24 +27,29 @@ $this->params['breadcrumbs'][] = $this->title;
         ['class' => 'yii\grid\SerialColumn'],
         //'id_entradas',
         'fecha',
+        
         [
             'attribute'=>'id_empleado',
-            'value'=>function($model) {
-                return $model->empleados->id_empleado;
+            'value' => function($model, $index, $dataColumn) {
+                return $model->empleados ? $model->empleados->id_empleado : null;
+
             },
         ],
+        
         [
             'attribute'=>'id_evento',
-            'value'=>function($model) {
-                return $model->eventos->id_evento;
-            }
-        ],
-        [
-            'attribute' => 'id_producto',
-            'value' => function($model) {
-                return $model->productos->id_producto;
+            'value' => function($model, $index, $dataColumn) {
+                return $model->eventos ? $model->eventos->id_evento : null;
             },
         ],
+        [
+            'attribute'=>'id_producto',
+            'value' => function($model, $index, $dataColumn) {
+                return $model->productos ? $model->productos->id_producto: null;
+            },
+        ],
+
+
         'cantidad_entradas',
 
         [

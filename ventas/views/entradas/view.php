@@ -35,26 +35,18 @@ $this->params['breadcrumbs'][] = $this->title;
             
             [
                 'attribute'=>'id_empleado',
-                'value'=>function($model,$index,$dataColumn)
-                {
-                    return $model->empleados->id_empleado;
-                },
+                'value'=>$model->empleados->id_empleado,
+               
             ],
             [
                 'attribute'=>'id_evento',
-                'value'=>function($model,$index,$dataColumn)
-                {
-                    return $model->eventos->id_evento;
-                }
+                'value'=>$model->eventos->id_evento,
+                
     
             ],
             [
                 'attribute' => 'id_producto',
-                'value' =>function($model,$index,$dataColumn)
-    
-                {
-                    return $model->productos->id_producto;
-                },
+                'value'=>$model->productos->id_producto,
     
             ],
             

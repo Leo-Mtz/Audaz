@@ -101,9 +101,12 @@ class SalidasController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id_salidas]);
+        if ($model->load(Yii::$app->request->post())) { // Load POST data
+            if ($model->save()) { // Save model
+                return $this->redirect(['view', 'id' => $model->id_salidas]); // Redirect to view if saved successfully
+            } else {
+                var_dump($model->errors); // Debug errors if save fails
+            }
         }
 
         
