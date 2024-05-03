@@ -70,10 +70,11 @@ class EntradasController extends Controller
 {
     $model = new Entradas();
   
-    if ($model->load(Yii::$app->request->post() && $model->validate())) {
-        var_dump($model->errors); // función que muestra el contenido de la variable proporcionada.
-        if ($model->save()) {
-            return $this->redirect(['view', 'id' => $model->id_entrada]);
+    if ($model->load(Yii::$app->request->post())) { // Load POST data
+        if ($model->save()) { // Save model
+            return $this->redirect(['view', 'id' => $model->id_entrada]); // Redirect to view if saved successfully
+        } else {
+            var_dump($model->errors); // Debug errors if save fails
         }
     }
 

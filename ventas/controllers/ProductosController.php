@@ -69,10 +69,13 @@ class ProductosController extends Controller
     {
         $model = new CatProductos();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id_producto]);
+        if ($model->load(Yii::$app->request->post())) { // Load POST data
+            if ($model->save()) { // Save model
+                return $this->redirect(['view', 'id' => $model->id_producto]); // Redirect to view if saved successfully
+            } else {
+                var_dump($model->errors); // Debug errors if save fails
+            }
         }
-		
 		$sabores = ArrayHelper::map(CatSabores::find()->all(),'id_sabor','sabor');
 		$presentaciones = ArrayHelper::map(CatPresentaciones::find()->all(),'id_presentacion','presentacion');
 
