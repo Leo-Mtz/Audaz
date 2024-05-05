@@ -13,7 +13,7 @@ use yii\jui\DatePicker;
 
     <?php $form = ActiveForm::begin(); ?>
 
-   <div class="row">
+  
     <div class="col-md col-lg">		
 			<?= $form->field($model, 'fecha')->widget(yii\jui\DatePicker::className(),['clientOptions' => ['showAnim'=>'fold','changeMonth'=> true,'changeYear'=> true],'options' => ['class' => 'form-control'],'language' => 'es-MX','dateFormat' => 'yyyy-MM-dd',]) ?>
 		</div>
@@ -34,7 +34,7 @@ use yii\jui\DatePicker;
         <?= $form->field($model, 'cantidad_entradas')->textInput() ?>
     </div>
 
-</div>
+
 
     <div class="form-group">
         <?= Html::submitButton('Guardar', ['class' => 'btn btn-success']) ?>
