@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-
+  
 /* @var $this yii\web\View */
 /* @var $model app\models\Entradas */
 
@@ -20,6 +20,8 @@ $this->params['breadcrumbs'][] = 'Update';
         'empleados' => $empleados,
         'eventos' => $eventos,
         'productos'=> $productos,
+      //  'sabores'=>$sabor,
+      //  'presentaciones'=>$presentacion,
     ]) ?>
 
 </div>

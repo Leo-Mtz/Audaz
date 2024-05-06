@@ -18,6 +18,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'empleados' => $empleados,
         'eventos' => $eventos,
         'productos'=> $productos,
+      //  'sabores'=>$sabor,
+     //   'presentaciones'=>$presentacion,
         
     ]) ?>
 

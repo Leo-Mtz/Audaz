@@ -79,6 +79,7 @@ class ProductosController extends Controller
 		$sabores = ArrayHelper::map(CatSabores::find()->all(),'id_sabor','sabor');
 		$presentaciones = ArrayHelper::map(CatPresentaciones::find()->all(),'id_presentacion','presentacion');
 
+
         return $this->render('create', [
             'model' => $model,
             'sabores' => $sabores,
@@ -101,13 +102,22 @@ class ProductosController extends Controller
             return $this->redirect(['view', 'id' => $model->id_producto]);
         }
 		
-		$sabores = ArrayHelper::map(CatSabores::find()->all(),'id_sabor','sabor');
-		$presentaciones = ArrayHelper::map(CatPresentaciones::find()->all(),'id_presentacion','presentacion');
+		 // Obtener los sabores y presentaciones
+        $sabores = ArrayHelper::map(CatSabores::find()->all(),'id_sabor','sabor');
+        $presentaciones = ArrayHelper::map(CatPresentaciones::find()->all(),'id_presentacion','presentacion');
 
-        return $this->render('update', [
+        // Crear la lista de productos con sabor y presentación
+        $productosLista = [];
+        $productos = CatProductos::find()->all();
+        foreach ($productos as $producto) {
+            $productosLista[$producto->id_producto] = $producto->sabor->sabor . ' - ' . $producto->presentacion->presentacion;
+        }
+
+        return $this->render('create', [
             'model' => $model,
-			'sabores' => $sabores,
+            'sabores' => $sabores,
             'presentaciones' => $presentaciones,
+            'productos' => $productosLista,
         ]);
     }
 
