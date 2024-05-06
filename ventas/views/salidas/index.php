@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 
+use yii\helpers\Url;
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\SalidasSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -57,14 +59,38 @@ $this->params['breadcrumbs'][] = $this->title;
             'cantidad_degustacion',
             'cantidad_cortesia',
             'cantidad_total',
+          
 
             [
-                'class' => 'yii\grid\ActionColumn'
-
-                
+                'class' => 'yii\grid\ActionColumn',
+                'header' => 'Acciones',
+                'headerOptions' => ['style' => 'color:#007bff'],
+                'contentOptions' => ['style' => 'width:12%;'],
+                'template' => '{view} {update} {delete}',
+                'buttons' => [
+                    'view' => function ($url, $model) {
+                        $url = Url::to(['salidas/view','id'=>$model->id_salidas]);
+                        return Html::a('<span class="fa fa-search"></span>', $url, ['title' => 'Ver','style' => 'margin-right:10px']);
+                    },
+                    'update' => function ($url, $model) {
+                        $url = Url::to(['salidas/update','id'=>$model->id_salidas]);
+                        return Html::a('<span class="fa fa-edit"></span>', $url, ['title' => 'Actualizar','style' => 'margin-right:10px']);
+                    },
+                    'delete' => function ($url, $model) {
+                        $url = Url::to(['salidas/delete','id'=>$model->id_salidas]);
+                        return Html::a('<span class="fa fa-times"></span>', $url, [
+                            'title' => 'Borrar',
+                            'style' => 'margin-right:10px',
+                            'data' => [
+                                'confirm' => '¿Estás seguro que quieres eliminar esta entrada?',
+                                'method' => 'post', // Cambiar método a POST
+                            ],
+                        ]);
+                    },
+                ],
             ],
         ],
     ]); ?>
+     
 
 
-</div>
