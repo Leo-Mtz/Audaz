@@ -58,7 +58,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'cantidad_cortesia',
             'cantidad_total',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn'
+
+                
+            ],
         ],
     ]); ?>
 

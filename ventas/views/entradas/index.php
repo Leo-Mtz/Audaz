@@ -69,7 +69,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'delete' => function ($url, $model) {
                     $url = Url::to(['entradas/delete','id'=>$model->id_entradas]);
-                    return Html::a('<span class="fa fa-times"></span>', $url, ['title' => 'Borrar','style' => 'margin-right:10px']);
+                    return Html::a('<span class="fa fa-times"></span>', $url, [
+                        'title' => 'Borrar',
+                        'style' => 'margin-right:10px',
+                        'data' => [
+                            'confirm' => '¿Estás seguro que quieres eliminar esta entrada?',
+                            'method' => 'post', // Cambiar método a POST
+                        ],
+                    ]);
                 },
             ],
         ],
