@@ -50,7 +50,7 @@ class Entradas extends \yii\db\ActiveRecord
             'fecha' => 'Fecha',
             'id_empleado' => 'Id Empleado',
             'id_evento' => 'Id Evento',
-            'id_producto' => 'Id Producto',
+            'id_producto' => 'Producto',
             'cantidad_entradas' => 'Cantidad Entradas',
         ];
     }
@@ -64,7 +64,21 @@ class Entradas extends \yii\db\ActiveRecord
         return $this->hasOne(CatEmpleados::className(),['id_empleado'=>'id_empleado']);
     }
 
+    
     public function getProductos(){
         return $this->hasOne(CatProductos::className(),['id_producto'=>'id_producto']);
+    }
+
+    
+    public function getSabores(){
+        
+        return $this->hasOne(CatSabores::className(), ['id_sabor' => 'id_sabor']);
+
+    }
+
+    
+	public function getPresentaciones()
+    {
+        return $this->hasOne(CatPresentaciones::className(), ['id_presentacion' => 'id_presentacion']);
     }
 }

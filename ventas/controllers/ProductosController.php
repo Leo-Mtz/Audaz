@@ -106,18 +106,11 @@ class ProductosController extends Controller
         $sabores = ArrayHelper::map(CatSabores::find()->all(),'id_sabor','sabor');
         $presentaciones = ArrayHelper::map(CatPresentaciones::find()->all(),'id_presentacion','presentacion');
 
-        // Crear la lista de productos con sabor y presentación
-        $productosLista = [];
-        $productos = CatProductos::find()->all();
-        foreach ($productos as $producto) {
-            $productosLista[$producto->id_producto] = $producto->sabor->sabor . ' - ' . $producto->presentacion->presentacion;
-        }
 
         return $this->render('create', [
             'model' => $model,
             'sabores' => $sabores,
             'presentaciones' => $presentaciones,
-            'productos' => $productosLista,
         ]);
     }
 
