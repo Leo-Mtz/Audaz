@@ -28,9 +28,7 @@ use yii\jui\DatePicker;
 
     <div class="col-md col-lg">
     
-    <?= $form->field($model, 'id_producto')->dropdownList(
-    $productos,
-    ['prompt' => 'Seleccionar producto']
+    <?= $form->field($model, 'id_producto')->dropdownList($productosDropdown,['prompt' => 'Seleccionar producto']
 ) ?>
     </div>
 
