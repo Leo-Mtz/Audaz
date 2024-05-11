@@ -94,7 +94,7 @@ class SalidasController extends Controller
            'model' => $model, 
           'empleados' => $empleados,
           'eventos' => $eventos,
-         'productos'=> $productosDropdown,
+         'productos'=> $productosDropdown ,
         ]);
     }
 

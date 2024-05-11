@@ -15,10 +15,11 @@ $this->params['breadcrumbs'][] = 'Update';
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
-        'model' => $model,
-        'empleados' => $empleados,
-        'eventos' => $eventos,
-        'productos'=> $productos,
+            
+            'model' => $model,
+            'empleados' => $empleados,
+            'eventos' => $eventos,
+            'productos'=> $productosDropdown,
     ]) ?>
 
 </div>
