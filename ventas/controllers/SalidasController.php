@@ -94,7 +94,7 @@ class SalidasController extends Controller
            'model' => $model, 
           'empleados' => $empleados,
           'eventos' => $eventos,
-         'productos'=> $productosDropdown ,
+         'productosDropdown'=> $productosDropdown,
         ]);
     }
 
@@ -129,10 +129,11 @@ class SalidasController extends Controller
         });
     
         return $this->render('update', [
-            'model' => $model,
-            'empleados' => $empleados,
-            'eventos' => $eventos,
-           'productos'=> $productos,
+            
+           'model' => $model, 
+           'empleados' => $empleados,
+           'eventos' => $eventos,
+          'productosDropdown'=> $productosDropdown, 
         ]);
     }
 
