@@ -33,7 +33,6 @@ $this->params['breadcrumbs'][] = $this->title;
           'id_entradas',
             'fecha',
             
-            
             [
                 'attribute'=>'id_empleado',
                 'value'=>$model->empleados->id_empleado,

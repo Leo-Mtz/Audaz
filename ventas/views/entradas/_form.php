@@ -18,17 +18,18 @@ use yii\jui\DatePicker;
 			<?= $form->field($model, 'fecha')->widget(yii\jui\DatePicker::className(),['clientOptions' => ['showAnim'=>'fold','changeMonth'=> true,'changeYear'=> true],'options' => ['class' => 'form-control'],'language' => 'es-MX','dateFormat' => 'yyyy-MM-dd',]) ?>
 		</div>
 
-    <div class= "col-md col-lg">
+        <div class= "col-md col-lg">
         <?= $form->field($model, 'id_empleado')->dropdownList($empleados,['prompt' => 'Seleccionar empleado']) ?>
-</div>
+</div> 
 
+  
     <div class="col-md col-lg">
         <?= $form->field($model, 'id_evento')->dropdownList($eventos,['prompt' => 'Seleccionar evento']) ?>
     </div>
 
-    <div class="col-md col-lg">
     
-    ) ?>
+    <div class="col-md col-lg">
+         <?= $form->field($model, 'id_producto')->dropdownList($productosDropdown,['prompt' => 'Seleccionar producto']) ?>
     </div>
 
     <div class="col-md col-lg">

@@ -35,7 +35,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
             },
         ],
-        
         [
             'attribute'=>'id_evento',
             'value' => function($model, $index, $dataColumn) {

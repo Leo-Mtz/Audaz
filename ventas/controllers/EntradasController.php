@@ -94,7 +94,7 @@ class EntradasController extends Controller
    
         return $this->render('create', [
             'model' => $model,
-            'empleados' => $empleados,
+          'empleados' => $empleados,
             'eventos' => $eventos,
             'productosDropdown'=>$productosDropdown,
         ]);
@@ -113,6 +113,9 @@ public function actionUpdate($id)
     $model = $this->findModel($id);
 
     if ($model->load(Yii::$app->request->post())) { // Load POST data
+
+   
+
         if ($model->save()) { // Save model
             return $this->redirect(['view', 'id' => $model->id_entradas]); // Redirect to view if saved successfully
         } else {
@@ -135,9 +138,9 @@ public function actionUpdate($id)
 
     return $this->render('update', [
         'model' => $model,
-        'empleados' => $empleados,
+       'empleados' => $empleados,
         'eventos' => $eventos,
-        'productos'=>$productosDropdown,
+        'productosDropdown'=>$productosDropdown,
     ]);
 }
 
