@@ -70,6 +70,13 @@ class EntradasController extends Controller
 {
     $model = new Entradas();
   
+  
+    // Set the fecha attribute to the current date
+    $model->fecha = Yii::$app->formatter->asDate('now', 'php:d-m-Y');
+
+
+   
+
     if ($model->load(Yii::$app->request->post())) { // Load POST data
         if ($model->save()) { // Save model
             return $this->redirect(['view', 'id' => $model->id_entradas]); // Redirect to view if saved successfully
