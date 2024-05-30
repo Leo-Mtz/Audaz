@@ -34,7 +34,7 @@ use yii\jui\DatePicker;
 
     <div class="col-md col-lg">
         <?= $form->field($model, 'cantidad_entradas')->textInput() ?>
-        <h1> Esto es una prueba</h1>
+    
     </div>
 
 
