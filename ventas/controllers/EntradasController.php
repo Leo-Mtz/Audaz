@@ -6,8 +6,9 @@ use Yii;
 use app\models\Entradas;
 use app\models\EntradasSearch;
 use app\models\CatEventos;
-use app\models\CatProductos;
+use app\models\CatSabores;
 use app\models\CatEmpleados;
+use app\models\CatPresentaciones;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -70,12 +71,11 @@ class EntradasController extends Controller
 {
     $model = new Entradas();
   
-  
     // Set the fecha attribute to the current date
-    $model->fecha = Yii::$app->formatter->asDate('now', 'php:d-m-Y');
+    $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
+    date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
 
-
-   
+    
 
     if ($model->load(Yii::$app->request->post())) { // Load POST data
         if ($model->save()) { // Save model
@@ -83,6 +83,17 @@ class EntradasController extends Controller
         } else {
             var_dump($model->errors); // Debug errors if save fails
         }
+
+        
+        // Procesar los campos de presentaciones
+        $presentaciones = Yii::$app->request->post('Presentaciones', []);
+        foreach ($presentaciones as $id_presentacion => $value) {
+            // Aquí puedes guardar o procesar los valores como necesites
+            // Ejemplo: guardar en una tabla relacionada
+        }
+
+
+   
     }
 
     $empleados = ArrayHelper::map(CatEmpleados::find()->all(), 'id_empleado', function($model, $defaultValue) {
@@ -90,20 +101,54 @@ class EntradasController extends Controller
     });
     $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
 
-   
-    $productos = CatProductos::find()->all();
-    $productosDropdown = [];
-        foreach ($productos as $producto) {
-            $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
-        }
+    $sabores= ArrayHelper::map(CatSabores::find()->all(), 'id_sabor', 'sabor');
 
+   
+
+    $presentaciones = ArrayHelper::map(CatPresentaciones::find()->all(), 'presentacion', 'presentacion');
+ 
+    $prueba = CatPresentaciones::find()
+    ->select('id_presentacion')  
+    ->where(['presentacion' => 'PRUEBA'])
+    ->scalar();
+
+
+    $ml375 = CatPresentaciones::find()
+    ->select('id_presentacion')  
+    ->where(['presentacion' => '375 ml'])
+    ->scalar();
+
+
+    $ml750 = CatPresentaciones::find()
+    ->select('id_presentacion')  
+    ->where(['presentacion' => '750 ml '])
+    ->scalar();
+
+
+    $onz16 = CatPresentaciones::find()
+    ->select('id_presentacion')  
+    ->where(['presentacion' => '16 onz'])
+    ->scalar();
+
+    $DosLitros = CatPresentaciones::find()
+    ->select('id_presentacion')  
+    ->where(['presentacion' => '2 ltrs'])
+    ->scalar();
 
    
         return $this->render('create', [
             'model' => $model,
-          'empleados' => $empleados,
-            'eventos' => $eventos,
-            'productosDropdown'=>$productosDropdown,
+            'empleados' => $empleados,
+             'eventos' => $eventos,
+             'sabores'=> $sabores,
+             'presentaciones'=> $presentaciones,
+             'prueba' => $prueba,
+             'ml375'=> $ml375,
+             'ml750'=> $ml750,
+             'onz16'=> $onz16,
+             'DosLitros'=> $DosLitros,
+
+            
         ]);
 }
 
@@ -136,20 +181,53 @@ public function actionUpdate($id)
         return $model['nombre'].' '.$model['paterno'].' '.$model['materno'];
     });
     $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
+    
+    $sabores= ArrayHelper::map(CatSabores::find()->all(), 'id_sabor', 'sabor');
+    
+    $presentaciones = ArrayHelper::map(CatPresentaciones::find()->all(), 'presentacion', 'presentacion');
+    $prueba = CatPresentaciones::find()
+    ->select('id_presentacion')  
+    ->where(['presentacion' => 'PRUEBA'])
+    ->scalar();
 
-       
-    $productos = CatProductos::find()->all();
-    $productosDropdown = [];
-        foreach ($productos as $producto) {
-            $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
-        }
+    
 
+   
+    $ml375 = CatPresentaciones::find()
+    ->select('id_presentacion')  
+    ->where(['presentacion' => '375 ml'])
+    ->scalar();
+
+
+    $ml750 = CatPresentaciones::find()
+    ->select('id_presentacion')  
+    ->where(['presentacion' => '750 ml '])
+    ->scalar();
+
+
+    $onz16 = CatPresentaciones::find()
+    ->select('id_presentacion')  
+    ->where(['presentacion' => '16 onz'])
+    ->scalar();
+
+    $DosLitros = CatPresentaciones::find()
+    ->select('id_presentacion')  
+    ->where(['presentacion' => '2 ltrs'])
+    ->scalar();
 
     return $this->render('update', [
+        
         'model' => $model,
        'empleados' => $empleados,
         'eventos' => $eventos,
-        'productosDropdown'=>$productosDropdown,
+        'sabores'=> $sabores,
+        'presentaciones'=> $presentaciones,
+        'prueba' => $prueba,
+        'ml375'=> $ml375,
+        'ml750'=> $ml750,
+        'onz16'=> $onz16,
+        'DosLitros'=> $DosLitros,
+      
     ]);
 }
 

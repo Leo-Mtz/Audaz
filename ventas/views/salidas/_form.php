@@ -40,9 +40,7 @@ use yii\widgets\ActiveForm;
         <?= $form->field($model, 'id_evento')->dropdownList($eventos,['prompt' => 'Seleccionar empleado']) ?>
     </div>
 
-    <div class="col-md col-lg">
-         <?= $form->field($model, 'id_producto')->dropdownList($productosDropdown,['prompt' => 'Seleccionar empleado']) ?>
-    </div>
+   
     
     <div class="col-md col-lg">
     <?= $form->field($model, 'cantidad_vendida')->textInput() ?>

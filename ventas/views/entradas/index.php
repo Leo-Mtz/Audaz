@@ -38,17 +38,25 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'attribute'=>'id_evento',
             'value' => function($model, $index, $dataColumn) {
-                return $model->eventos ? $model->eventos->id_evento : null;
+                return $model->eventos ? $model->eventos->evento : null;
             },
         ],
+
+        
         [
-            'attribute'=>'id_producto',
+            'attribute'=>'id_sabor',
             'value' => function($model, $index, $dataColumn) {
-                return $model->productos ? $model->productos->id_producto: null;
+                return $model->sabores ? $model->sabores->sabor : null;
             },
         ],
 
+        
 
+        'cantidad_pruebas',
+        'cantidad_375ml',
+        'cantidad_16onz',
+        'cantidad_750ml',
+        'cantidad_2L',
         'cantidad_entradas',
 
         [

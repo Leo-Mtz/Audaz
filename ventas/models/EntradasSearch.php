@@ -17,7 +17,8 @@ class EntradasSearch extends Entradas
     public function rules()
     {
         return [
-            [['id_entradas', 'id_empleado', 'id_evento', 'id_producto'], 'integer'],
+            
+            [['id_entradas', 'id_empleado', 'id_evento', 'id_sabor'], 'integer'],
             [['fecha'], 'safe'],
             [['cantidad_entradas'], 'number'],
         ];
@@ -63,7 +64,7 @@ class EntradasSearch extends Entradas
             'fecha' => $this->fecha,
             'id_empleado' => $this->id_empleado,
             'id_evento' => $this->id_evento,
-            'id_producto' => $this->id_producto,
+            'id_sabor' => $this->id_sabor,
             'cantidad_entradas' => $this->cantidad_entradas,
         ]);
 
