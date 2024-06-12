@@ -62,11 +62,6 @@ use yii\jui\DatePicker;
         <?= $form->field($model, 'cantidad_750ml')->textInput(['placeholder' => 'Cantidad 750ml', 'class' => 'quantity-input']) ?>
     </div>
 
-    <?= var_dump($prueba) ?>
-    <?=var_dump($ml375) ?>
-    <?=var_dump($ml750) ?>
-    <?=var_dump($onz16) ?>
-    <?=var_dump($DosLitros) ?>
     
 
     <div class="col-md col-lg">
@@ -91,7 +86,7 @@ use yii\jui\DatePicker;
 
 <?php
 $this->registerJs("
-    function calculateTotal() {
+    function calcularTotal() {
         var total = 0;
         $('.quantity-input').each(function() {
             var value = parseFloat($(this).val());
@@ -103,10 +98,9 @@ $this->registerJs("
     }
 
     $('.quantity-input').on('input', function() {
-        calculateTotal();
+        calcularTotal();
     });
 
-    // Initial calculation
-    calculateTotal();
+    calcularTotal();
 ");
 ?>
