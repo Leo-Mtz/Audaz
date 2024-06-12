@@ -42,11 +42,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 
     
             ],
-            [
-                'attribute' => 'id_producto',
-                'value'=>$model->productos->id_producto,
-    
-            ],
     
             
             'cantidad_vendida',

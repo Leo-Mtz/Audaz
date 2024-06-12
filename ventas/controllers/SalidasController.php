@@ -7,7 +7,7 @@ use Yii;
 use app\models\Salidas;
 use app\models\SalidasSearch;
 use app\models\CatEventos;
-use app\models\CatProductos;
+use app\models\CatSabores;
 use app\models\CatEmpleados;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -82,20 +82,15 @@ class SalidasController extends Controller
         });
 
         $eventos= ArrayHelper::map(CatEventos::find()->all(),'id_evento','evento');
-
         
-           
-    $productos = CatProductos::find()->all();
-    $productosDropdown = [];
-        foreach ($productos as $producto) {
-            $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
-        }
+        $sabores= ArrayHelper::map(CatSabores::find()->all(), 'id_sabor', 'sabor');
 
+     
         return $this->render('create', [
            'model' => $model, 
           'empleados' => $empleados,
           'eventos' => $eventos,
-         'productosDropdown'=> $productosDropdown,
+          'sabores'=> $sabores,
         ]);
     }
 
@@ -124,18 +119,15 @@ class SalidasController extends Controller
 
         $eventos= ArrayHelper::map(CatEventos::find()->all(),'id_evento','evento');
         
-        $productos = CatProductos::find()->all();
-        $productosDropdown = [];
-            foreach ($productos as $producto) {
-                $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
-            }
-    
+        $sabores= ArrayHelper::map(CatSabores::find()->all(), 'id_sabor', 'sabor');
+
         return $this->render('update', [
             
            'model' => $model, 
            'empleados' => $empleados,
            'eventos' => $eventos,
-          'productosDropdown'=> $productosDropdown, 
+           'sabores'=> $sabores,
+
         ]);
     }
 

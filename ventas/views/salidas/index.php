@@ -46,15 +46,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
     
             ],
-            [
-                'attribute' => 'id_producto',
-                'value' =>function($model,$index,$dataColumn)
-    
-                {
-                    return $model->productos->id_producto;
-                },
-    
-            ],
             'cantidad_vendida',
             'cantidad_degustacion',
             'cantidad_cortesia',

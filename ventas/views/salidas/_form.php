@@ -42,13 +42,45 @@ use yii\widgets\ActiveForm;
 
    
     
-    <div class="col-md col-lg">
+<div class= "col-md col-lg">
+    <?= $form->field($model,'id_sabor')->dropdownList($sabores,['prompt' => 'Seleccionar sabor']) ?>
+</div>
+ 
+
+<div class="col-md col-lg">
     <?= $form->field($model, 'cantidad_vendida')->textInput() ?>
 </div>
+
+<style>
+    .small-input {
+        width: 150px;
+    }
+</style>
+
+<div class="col-md col-lg" style="margin-left: 50px;">
+    <?= $form->field($model, 'vendidas_375ml')->textInput(['class' => 'small-input']) ?>
+</div>
+
+<div class="col-md col-lg" style="margin-left: 50px;">
+    <?= $form->field($model, 'vendidas_16onz')->textInput(['class' => 'small-input']) ?>
+</div>
+
+<div class="col-md col-lg" style="margin-left: 50px;">
+    <?= $form->field($model, 'vendidas_750ml')->textInput(['class' => 'small-input']) ?>
+</div>
+
+<div class="col-md col-lg" style="margin-left: 50px;">
+    <?= $form->field($model, 'vendidas_2L')->textInput(['class' => 'small-input']) ?>
+</div>
+
+
+
 
 <div class="col-md col-lg">
     <?= $form->field($model, 'cantidad_degustacion')->textInput() ?>
 </div>
+
+
 
 <div class="col-md col-lg">
     <?= $form->field($model, 'cantidad_cortesia')->textInput() ?>

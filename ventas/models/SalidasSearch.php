@@ -17,7 +17,7 @@ class SalidasSearch extends Salidas
     public function rules()
     {
         return [
-            [['id_salidas', 'id_empleado', 'id_producto'], 'integer'],
+            [['id_salidas', 'id_empleado',], 'integer'],
             [['fecha', 'id_evento'], 'safe'],
             [['cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total'], 'number'],
         ];
@@ -62,7 +62,6 @@ class SalidasSearch extends Salidas
             'id_salidas' => $this->id_salidas,
             'id_empleado' => $this->id_empleado,
             'fecha' => $this->fecha,
-            'id_producto' => $this->id_producto,
             'cantidad_vendida' => $this->cantidad_vendida,
             'cantidad_degustacion' => $this->cantidad_degustacion,
             'cantidad_cortesia' => $this->cantidad_cortesia,

@@ -11,7 +11,19 @@ use Yii;
  * @property int $id_empleado
  * @property string $fecha
  * @property string $id_evento
- * @property int $id_producto
+ * @property string $id_sabor
+ * @property float $vendidas_375ml
+ * @property float $vendidas_750ml
+ * @property float $vendidas_16onz
+ * @property float $vendidas_2L
+ * @property float $degustacion_375ml
+ * @property float $degustacion_16onz
+ * @property float $degustacion_750ml
+ * @property float $degustacion_2L
+ * @property float $cortesia_375ml
+ * @property float $cortesia_16onz
+ * @property float $cortesia_750ml
+ * @property float $cortesia_2L
  * @property float $cantidad_vendida
  * @property float $cantidad_degustacion
  * @property float $cantidad_cortesia
@@ -31,13 +43,13 @@ class Salidas extends \yii\db\ActiveRecord
      * {@inheritdoc}
      */
     public function rules()
-    {
+    { 
         return [
-            [[ 'id_empleado', 'fecha', 'id_evento', 'id_producto', 'cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total'], 'required'],
-            [['id_empleado', 'id_producto'], 'integer'],
+            [[ 'id_empleado', 'fecha', 'id_evento', 'id_sabor', 'cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total','vendidas_375ml','vendidas_750ml','vendidas_16onz','vendidas_2L','degustacion_375ml','degustacion_16onz', 'degustacion_750ml','desgutacion_2L', 'cortesia_375ml','cortesia_16onz', 'cortesia_750ml','cortesia_2L'], 'required'],
+            [['id_empleado', 'id_evento', 'id_sabor'], 'integer'],
             [['fecha'], 'safe'],
-            [['cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total'], 'number'],
-            [['id_evento'], 'string', 'max' => 45],
+            [[ 'cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total','vendidas_375ml','vendidas_750ml','vendidas_16onz','vendidas_2L','degustacion_375ml','degustacion_16onz', 'degustacion_750ml','desgutacion_2L', 'cortesia_375ml','cortesia_16onz', 'cortesia_750ml','cortesia_2L'], 'number'],
+          
           
         ];
     }
@@ -49,13 +61,25 @@ class Salidas extends \yii\db\ActiveRecord
     {
         return [
             'id_salidas' => 'Id Salidas',
-            'id_empleado' => 'Id Empleado',
+            'id_empleado' => 'Empleado',
+            'id_sabor' => ' Sabor',
             'fecha' => 'Fecha',
-            'id_evento' => 'Id Evento',
-            'id_producto' => 'Id Producto',
+            'id_evento' => 'Evento',
             'cantidad_vendida' => 'Cantidad Vendida',
+            'vendidas_375ml' => 'Vendidas 375ml',
+            'vendidas_750ml' => 'Vendidas 750ml',
+            'vendidas_16onz' => 'Vendidas 16onz',
+            'vendidas_2L' => 'Vendidas 2L',
             'cantidad_degustacion' => 'Cantidad Degustacion',
+            'degustacion_375ml' => 'Degustacion 375ml',
+            'degustacion_16onz' => 'Degustacion 16onz',
+            'degustacion_750ml' => 'Degustacion 750ml',
+            'degustacion_2L' => 'Degustacion 2L',
             'cantidad_cortesia' => 'Cantidad Cortesia',
+            'cortesia_375ml' => 'Cortesia 375ml',
+            'cortesia_16onz' => 'Cortesia 16onz',
+            'cortesia_750ml' => 'Cortesia 750ml',
+            'cortesia_2L' => 'Cortesia 2L',
             'cantidad_total' => 'Cantidad Total',
         ];
     }
@@ -70,7 +94,8 @@ class Salidas extends \yii\db\ActiveRecord
         return $this->hasOne(CatEmpleados::className(),['id_empleado'=>'id_empleado']);
     }
 
-    public function getProductos(){
-        return $this->hasOne(CatProductos::className(),['id_producto'=>'id_producto']);
+    public function getSabores(){
+        return $this->hasOne(CatSabores::className(),['id_sabor'=>'id_sabor']);
     }
+ 
 }
