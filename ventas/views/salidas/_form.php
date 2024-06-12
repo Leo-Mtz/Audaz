@@ -68,23 +68,23 @@ use yii\widgets\ActiveForm;
     </div>
 
     <div class="col-md col-lg">
-        <?= $form->field($model, 'cantidad_degustacion')->textInput() ?>
+        <?= $form->field($model, 'cantidad_degustacion')->textInput(['placeholder'=>'Cantidad degustada', 'readonly'=>true]) ?>
     </div>
 
     <div class="col-md col-lg" style="margin-left: 50px;">
-        <?= $form->field($model, 'vendidas_2L')->textInput(['class' => 'small-input', 'name' => 'vendidas_2L']) ?>
+        <?= $form->field($model, 'degustacion_375ml')->textInput(['class' => 'small-input', 'name' => 'degustacion_375ml']) ?>
     </div>
 
     <div class="col-md col-lg" style="margin-left: 50px;">
-        <?= $form->field($model, 'vendidas_2L')->textInput(['class' => 'small-input', 'name' => 'vendidas_2L']) ?>
+        <?= $form->field($model, 'degustacion_16onz')->textInput(['class' => 'small-input', 'name' => 'degustacion_16onz']) ?>
     </div>
 
     <div class="col-md col-lg" style="margin-left: 50px;">
-        <?= $form->field($model, 'vendidas_2L')->textInput(['class' => 'small-input', 'name' => 'vendidas_2L']) ?>
+        <?= $form->field($model, 'degustacion_750ml')->textInput(['class' => 'small-input', 'name' => 'degustacion_750ml']) ?>
     </div>
 
     <div class="col-md col-lg" style="margin-left: 50px;">
-        <?= $form->field($model, 'vendidas_2L')->textInput(['class' => 'small-input', 'name' => 'vendidas_2L']) ?>
+        <?= $form->field($model, 'degustacion_2L')->textInput(['class' => 'small-input', 'name' => 'degustacion_2L']) ?>
     </div>
 
     <div class="col-md col-lg">
@@ -124,5 +124,27 @@ $this->registerJs("
     });
 
     calcularVendidos();
+");
+
+$this->registerJs("
+    function calcularDegustados() {
+        var totales_degustados = 0;
+
+        // Select and iterate over quantity inputs with specific names
+        $('input[name=\"degustacion_375ml\"], input[name=\"degustacion_16onz\"], input[name=\"degustacion_750ml\"], input[name=\"degustacion_2L\"]').each(function() {
+            var valor = parseFloat($(this).val());
+            if (!isNaN(valor)) {
+                totales_degustados += valor;
+            }
+        });
+
+        $('#salidas-cantidad_degustacion').val(totales_degustados);
+    }
+
+    $(document).on('input', 'input[name=\"degustacion_375ml\"], input[name=\"degustacion_16onz\"], input[name=\"degustacion_750ml\"], input[name=\"degustacion_2L\"]', function() {
+        calcularDegustados();
+    });
+
+    calcularDegustados();
 ");
 ?>
