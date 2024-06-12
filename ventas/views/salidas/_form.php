@@ -132,6 +132,29 @@ $this->registerJs("
 
         // Select and iterate over quantity inputs with specific names
         $('input[name=\"degustacion_375ml\"], input[name=\"degustacion_16onz\"], input[name=\"degustacion_750ml\"], input[name=\"degustacion_2L\"]').each(function() {
+            var valor_degustados = parseFloat($(this).val());
+            if (!isNaN(valor_degustados)) {
+                totales_degustados += valor_degustados;
+            }
+        });
+
+        $('#salidas-cantidad_degustacion').val(totales_degustados);
+    }
+
+    $(document).on('input', 'input[name=\"degustacion_375ml\"], input[name=\"degustacion_16onz\"], input[name=\"degustacion_750ml\"], input[name=\"degustacion_2L\"]', function() {
+        calcularDegustados();
+    });
+
+    calcularDegustados();
+");
+
+
+$this->registerJs("
+    function calcularCortesia() {
+        var totales_cortesia = 0;
+
+        // Select and iterate over quantity inputs with specific names
+        $('input[name=\"cortesia_375ml\"], input[name=\"cortesia_16onz\"], input[name=\"cortesia_750ml\"], input[name=\"cortesia_2L\"]').each(function() {
             var valor = parseFloat($(this).val());
             if (!isNaN(valor)) {
                 totales_degustados += valor;
