@@ -70,7 +70,7 @@ class SalidasController extends Controller
     public function actionCreate()
     {
         $model = new Salidas();
-        $model->fecha = Yii::$app->formatter->asDate('now', 'php:d-m-Y');
+        $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id_salidas]);

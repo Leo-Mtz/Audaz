@@ -24,8 +24,8 @@ use yii\widgets\ActiveForm;
             'class' => 'form-control',
         ],
         'language' => 'es-MX',
-        'dateFormat' => 'dd-MM-yyyy',
-        'value' => date('dd-MM-yyyy'), // Set the default value to the current date
+        'dateFormat' => 'yyyy-MM-dd',
+        'value' => date('yyyy-MM-dd'), // Set the default value to the current date
     ]) ?>
     </div>
 
@@ -108,7 +108,7 @@ use yii\widgets\ActiveForm;
     </div>
 
     <div class="col-md col-lg">
-        <?= $form->field($model, 'cantidad_total')->textInput() ?>
+        <?= $form->field($model, 'cantidad_total')->textInput(['placeholder'=>'Total','readonly'=>true]) ?>
     </div>
 
     <div class="form-group">
@@ -183,6 +183,32 @@ $this->registerJs("
     });
 
     calcularCortesia();
+
+
+
 ");
+
+$this->registerJs("
+    function calcularTotalSalidas() {
+        var total_vendida = parseFloat($('#salidas-cantidad_vendida').val()) || 0;
+        var total_degustacion = parseFloat($('#salidas-cantidad_degustacion').val()) || 0;
+        var total_cortesia = parseFloat($('#salidas-cantidad_cortesia').val()) || 0;
+
+        var salidas_totales = total_vendida + total_degustacion + total_cortesia;
+
+        $('#salidas-cantidad_total').val(salidas_totales);
+    }
+
+    $(document).on('input', 'input[name=\"vendidas_375ml\"], input[name=\"vendidas_16onz\"], input[name=\"vendidas_750ml\"], input[name=\"vendidas_2L\"], input[name=\"degustacion_375ml\"], input[name=\"degustacion_16onz\"], input[name=\"degustacion_750ml\"], input[name=\"degustacion_2L\"], input[name=\"cortesia_375ml\"], input[name=\"cortesia_16onz\"], input[name=\"cortesia_750ml\"], input[name=\"cortesia_2L\"]', function() {
+        calcularVendidos();
+        calcularDegustados();
+        calcularCortesia();
+        calcularTotalSalidas();
+    });
+
+    calcularTotalSalidas();
+");
+?>
+
 
 ?>
