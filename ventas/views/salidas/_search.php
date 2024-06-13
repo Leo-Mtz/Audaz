@@ -21,10 +21,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'fecha') ?>
 
-    <?= $form->field($model, 'evento') ?>
+    
+    <?= $form->field($model, 'id_evento')->dropDownList($eventos, ['prompt'=>'']) ?>
 
-   
-    <? $form->field($model, 'sabores') ?>
+    <?= $form->field($model, 'id_sabor')->dropDownList($sabores, ['prompt'=>'']) ?>
+
 
     <? $form->field($model, 'cantidad_vendida') ?>
 
