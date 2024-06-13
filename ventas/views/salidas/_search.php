@@ -24,7 +24,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'id_evento') ?>
 
    
-    <? $form->field($model, 'id_sabores') ?>
+    <? $form->field($model, 'sabores') ?>
 
     <? $form->field($model, 'cantidad_vendida') ?>
 

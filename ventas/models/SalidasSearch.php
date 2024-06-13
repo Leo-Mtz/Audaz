@@ -17,7 +17,7 @@ class SalidasSearch extends Salidas
     public function rules()
     {
         return [
-            [['id_salidas', 'id_empleado',], 'integer'],
+            [['id_salidas', 'id_empleado','id_sabor','id_evento'], 'integer'],
             [['fecha', 'id_evento'], 'safe'],
             [['cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total'], 'number'],
         ];
@@ -69,6 +69,8 @@ class SalidasSearch extends Salidas
         ]);
 
         $query->andFilterWhere(['like', 'id_evento', $this->id_evento]);
+        $query->andFilterWhere(['like', 'id_sabor', $this->id_evento]);
+
 
         return $dataProvider;
     }

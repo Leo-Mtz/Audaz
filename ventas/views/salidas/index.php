@@ -2,12 +2,15 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\SalidasSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+
+// Incluir FontAwesome
+$this->registerCssFile('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
 
 $this->title = 'Salidas';
 $this->params['breadcrumbs'][] = $this->title;
@@ -17,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Salidas', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Crear Salida', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -64,36 +67,40 @@ $this->params['breadcrumbs'][] = $this->title;
             'cantidad_total',
           
 
-            [
-                'class' => 'yii\grid\ActionColumn',
-                'header' => 'Acciones',
-                'headerOptions' => ['style' => 'color:#007bff'],
-                'contentOptions' => ['style' => 'width:12%;'],
-                'template' => '{view} {update} {delete}',
-                'buttons' => [
-                    'view' => function ($url, $model) {
-                        $url = Url::to(['salidas/view','id'=>$model->id_salidas]);
-                        return Html::a('<span class="fa fa-search"></span>', $url, ['title' => 'Ver','style' => 'margin-right:10px']);
-                    },
-                    'update' => function ($url, $model) {
-                        $url = Url::to(['salidas/update','id'=>$model->id_salidas]);
-                        return Html::a('<span class="fa fa-edit"></span>', $url, ['title' => 'Actualizar','style' => 'margin-right:10px']);
-                    },
-                    'delete' => function ($url, $model) {
-                        $url = Url::to(['salidas/delete','id'=>$model->id_salidas]);
-                        return Html::a('<span class="fa fa-times"></span>', $url, [
-                            'title' => 'Borrar',
-                            'style' => 'margin-right:10px',
-                            'data' => [
-                                'confirm' => '¿Estás seguro que quieres eliminar esta entrada?',
-                                'method' => 'post', // Cambiar método a POST
-                            ],
-                        ]);
-                    },
-                ],
+            
+
+        [
+            'class' => 'yii\grid\ActionColumn',
+            'header' => 'Acciones',
+            'headerOptions' => ['style' => 'color:#007bff'],
+            'contentOptions' => ['style' => 'width:12%;'],
+            'template' => '{view} {update} {delete}',
+            'buttons' => [
+                'view' => function ($url, $model) {
+                    $url = Url::to(['salidas/view', 'id' => $model->id_salidas]);
+                    return Html::a('<span class="fa fa-search"></span>', $url, ['title' => 'Ver', 'style' => 'margin-right:10px']);
+                },
+
+                'update' => function ($url, $model) {
+                    $url = Url::to(['salidas/update','id'=>$model->id_salidas]);
+                    return Html::a('<span class="fa fa-edit"></span>', $url, ['title' => 'Actualizar','style' => 'margin-right:10px']);
+                },
+                'delete' => function ($url, $model) {
+                    $url = Url::to(['salidas/delete','id'=>$model->id_salidas]);
+                    return Html::a('<span class="fa fa-times"></span>', $url, [
+                        'title' => 'Borrar',
+                        'style' => 'margin-right:10px',
+                        'data' => [
+                            'confirm' => '¿Estás seguro que quieres eliminar esta entrada?',
+                            'method' => 'post', // Cambiar método a POST
+                        ],
+                    ]);
+                },
             ],
         ],
-    ]); ?>
+    ],
+]); ?>
+ 
      
 
 
