@@ -88,7 +88,23 @@ use yii\widgets\ActiveForm;
     </div>
 
     <div class="col-md col-lg">
-        <?= $form->field($model, 'cantidad_cortesia')->textInput() ?>
+        <?= $form->field($model, 'cantidad_cortesia')->textInput(['placeholder'=>'Cantidad de cortesia','readonly'=>true]) ?>
+    </div>
+
+    <div class="col-md col-lg" style="margin-left: 50px;">
+        <?= $form->field($model, 'cortesia_375ml')->textInput(['class' => 'small-input', 'name' => 'cortesia_375ml']) ?>
+    </div>
+
+    <div class="col-md col-lg" style="margin-left: 50px;">
+        <?= $form->field($model, 'cortesia_16onz')->textInput(['class' => 'small-input', 'name' => 'cortesia_16onz']) ?>
+    </div>
+
+    <div class="col-md col-lg" style="margin-left: 50px;">
+        <?= $form->field($model, 'cortesia_750ml')->textInput(['class' => 'small-input', 'name' => 'cortesia_750ml']) ?>
+    </div>
+
+    <div class="col-md col-lg" style="margin-left: 50px;">
+        <?= $form->field($model, 'cortesia_2L')->textInput(['class' => 'small-input', 'name' => 'cortesia_2L']) ?>
     </div>
 
     <div class="col-md col-lg">
@@ -148,26 +164,25 @@ $this->registerJs("
     calcularDegustados();
 ");
 
-
 $this->registerJs("
     function calcularCortesia() {
         var totales_cortesia = 0;
 
-        // Select and iterate over quantity inputs with specific names
         $('input[name=\"cortesia_375ml\"], input[name=\"cortesia_16onz\"], input[name=\"cortesia_750ml\"], input[name=\"cortesia_2L\"]').each(function() {
-            var valor = parseFloat($(this).val());
-            if (!isNaN(valor)) {
-                totales_degustados += valor;
+            var valor_cortesia = parseFloat($(this).val());
+            if (!isNaN(valor_cortesia)) {
+                totales_cortesia += valor_cortesia;
             }
         });
 
-        $('#salidas-cantidad_degustacion').val(totales_degustados);
+        $('#salidas-cantidad_cortesia').val(totales_cortesia);
     }
 
-    $(document).on('input', 'input[name=\"degustacion_375ml\"], input[name=\"degustacion_16onz\"], input[name=\"degustacion_750ml\"], input[name=\"degustacion_2L\"]', function() {
-        calcularDegustados();
+    $(document).on('input', 'input[name=\"cortesia_375ml\"], input[name=\"cortesia_16onz\"], input[name=\"cortesia_750ml\"], input[name=\"cortesia_2L\"]', function() {
+        calcularCortesia();
     });
 
-    calcularDegustados();
+    calcularCortesia();
 ");
+
 ?>
