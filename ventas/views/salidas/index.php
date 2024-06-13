@@ -34,30 +34,27 @@ $this->params['breadcrumbs'][] = $this->title;
             'id_salidas',
             'fecha',
             
-            [
-                'attribute'=>'id_empleado',
-                'value'=>function($model,$index,$dataColumn)
-                {
-                    return $model->empleados->id_empleado;
-                },
-            ],
+            
+        [
+            'attribute'=>'id_empleado',
+            'value' => function($model, $index, $dataColumn) {
+                return $model->empleados ? $model->empleados->id_empleado : null;
+
+            },
+        ],
             [
                 'attribute'=>'id_evento',
-                'value'=>function($model,$index,$dataColumn)
-                {
-                    return $model->eventos->id_evento;
-                }
-    
+                'value' => function($model, $index, $dataColumn) {
+                    return $model->eventos ? $model->eventos->evento : null;
+                },
             ],
-
+    
+            
             [
-
                 'attribute'=>'id_sabor',
-                'value'=>function($model,$index,$dataColumn)
-                {
-                    return $model->sabores->id_sabor;
-                }
-
+                'value' => function($model, $index, $dataColumn) {
+                    return $model->sabores ? $model->sabores->sabor : null;
+                },
             ],
 
 

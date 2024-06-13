@@ -38,12 +38,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value'=>$model->empleados->id_empleado,
                
             ],
+
             [
-                'attribute'=>'id_evento',
-                'value'=>$model->eventos->evento,
-                
-    
+                'attribute' => 'evento',
+                'value' => $model->eventos->evento,
             ],
+
             [
                 'attribute'=>'id_sabor',
                 'value'=>$model->sabores->sabor,

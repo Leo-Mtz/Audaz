@@ -94,10 +94,12 @@ class SalidasController extends Controller
 
      
         return $this->render('create', [
-           'model' => $model, 
-          'empleados' => $empleados,
-          'eventos' => $eventos,
-          'sabores'=> $sabores,
+       
+            'model' => $model, 
+           'empleados' => $empleados,
+           'eventos' => $eventos,
+           'sabores'=> $sabores,
+           
         ]);
     }
 

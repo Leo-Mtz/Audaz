@@ -96,6 +96,7 @@ class Salidas extends \yii\db\ActiveRecord
 
     public function getSabores(){
         return $this->hasOne(CatSabores::className(),['id_sabor'=>'id_sabor']);
+
     }
  
 }

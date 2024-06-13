@@ -42,6 +42,7 @@ class SalidasSearch extends Salidas
     public function search($params)
     {
         $query = Salidas::find();
+        
 
         // add conditions that should always apply here
 
@@ -68,8 +69,8 @@ class SalidasSearch extends Salidas
             'cantidad_total' => $this->cantidad_total,
         ]);
 
-        $query->andFilterWhere(['like', 'id_evento', $this->id_evento]);
-        $query->andFilterWhere(['like', 'id_sabor', $this->id_evento]);
+        $query->andFilterWhere(['like', 'evento', $this->id_evento]);
+        $query->andFilterWhere(['like', 'sabor', $this->id_sabor]);
 
 
         return $dataProvider;
