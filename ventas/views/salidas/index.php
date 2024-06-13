@@ -46,6 +46,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
     
             ],
+
+            [
+
+                'attribute'=>'id_sabor',
+                'value'=>function($model,$index,$dataColumn)
+                {
+                    return $model->sabores->id_sabor;
+                }
+
+            ],
+
+
             'cantidad_vendida',
             'cantidad_degustacion',
             'cantidad_cortesia',

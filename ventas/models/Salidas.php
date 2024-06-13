@@ -45,10 +45,10 @@ class Salidas extends \yii\db\ActiveRecord
     public function rules()
     { 
         return [
-            [[ 'id_empleado', 'fecha', 'id_evento', 'id_sabor', 'cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total','vendidas_375ml','vendidas_750ml','vendidas_16onz','vendidas_2L','degustacion_375ml','degustacion_16onz', 'degustacion_750ml','desgutacion_2L', 'cortesia_375ml','cortesia_16onz', 'cortesia_750ml','cortesia_2L'], 'required'],
+            [[ 'id_empleado', 'fecha', 'id_evento', 'id_sabor', 'cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total','vendidas_375ml','vendidas_750ml','vendidas_16onz','vendidas_2L','degustacion_375ml','degustacion_16onz', 'degustacion_750ml','degustacion_2L', 'cortesia_375ml','cortesia_16onz', 'cortesia_750ml','cortesia_2L'], 'required'],
             [['id_empleado', 'id_evento', 'id_sabor'], 'integer'],
             [['fecha'], 'safe'],
-            [[ 'cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total','vendidas_375ml','vendidas_750ml','vendidas_16onz','vendidas_2L','degustacion_375ml','degustacion_16onz', 'degustacion_750ml','desgutacion_2L', 'cortesia_375ml','cortesia_16onz', 'cortesia_750ml','cortesia_2L'], 'number'],
+            [[ 'cantidad_vendida', 'cantidad_degustacion', 'cantidad_cortesia', 'cantidad_total','vendidas_375ml','vendidas_750ml','vendidas_16onz','vendidas_2L','degustacion_375ml','degustacion_16onz', 'degustacion_750ml','degustacion_2L', 'cortesia_375ml','cortesia_16onz', 'cortesia_750ml','cortesia_2L'], 'number'],
           
           
         ];

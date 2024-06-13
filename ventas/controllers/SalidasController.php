@@ -70,11 +70,18 @@ class SalidasController extends Controller
     public function actionCreate()
     {
         $model = new Salidas();
+       
         $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id_salidas]);
+        date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
+    
+        if ($model->load(Yii::$app->request->post())) { // Load POST data
+            if ($model->save()) { // Save model
+                return $this->redirect(['view', 'id' => $model->id_salidas]); // Redirect to view if saved successfully
+            } else {
+                var_dump($model->errors); // Debug errors if save fails
+            }
         }
+    
 
        
         $empleados= ArrayHelper::map(CatEmpleados::find()->all(),'id_empleado', function($model, $defaultValue) {
