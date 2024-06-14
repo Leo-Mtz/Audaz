@@ -52,9 +52,11 @@ class UsuariosController extends Controller
 						'roles' => ['otro'],
 					],
 				],
+
 				'denyCallback' => function ($rule, $action) {
 					throw new ForbiddenHttpException();
 				}
+				
 			],
 		];
     }

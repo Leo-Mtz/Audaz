@@ -29,12 +29,11 @@ $this->registerJs(
 				<div class="col-md col-lg">				
 					<?= $form->field($model, 'username')->input('email')?>
 				</div>
-				<!--<div class="col-md col-lg">			
-					<?//= $form->field($model, 'password')->passwordInput() ?>
-				</div>-->
 				<div class="col-md col-lg">			
-					<?//= $form->field($model, 'privilegio')->dropDownList([1=>'Administrador',2=>'Otro',2=>'Otro'],['prompt'=>'Seleccionar privilegio...']) ?>
-					<?= $form->field($model, 'privilegio')->dropDownList([1=>'Administrador'],['prompt'=>'Seleccionar privilegio...']) ?>
+					<?= $form->field($model, 'password')->passwordInput() ?>
+				</div>
+				<div class="col-md col-lg">			
+					<?= $form->field($model, 'privilegio')->dropDownList([1=>'Administrador', 2=>'Otro'],['prompt'=>'Seleccionar privilegio...']) ?>
 				</div>
 			</div>
 			
