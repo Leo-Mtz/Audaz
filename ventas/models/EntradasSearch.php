@@ -20,7 +20,7 @@ class EntradasSearch extends Entradas
             
             [['id_entradas', 'id_empleado', 'id_evento', 'id_sabor'], 'integer'],
             [['fecha'], 'safe'],
-            [['cantidad_entradas'], 'number'],
+            [['cantidad_pruebas', 'cantidad_375ml','cantidad_750ml', 'cantidad_2L', 'cantidad_entradas'], 'number'],
         ];
     }
 
@@ -53,8 +53,7 @@ class EntradasSearch extends Entradas
         $this->load($params);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            $query->where('0=1');
             return $dataProvider;
         }
 
@@ -65,6 +64,11 @@ class EntradasSearch extends Entradas
             'id_empleado' => $this->id_empleado,
             'id_evento' => $this->id_evento,
             'id_sabor' => $this->id_sabor,
+            'cantidad_pruebas'=>$this->cantidad_pruebas,
+            'cantidad_375ml'=>$this->cantidad_375ml,
+            'cantidad_16onz'=>$this->cantidad_16onz,
+            'cantidad_750ml'=>$this->cantidad_750ml,
+            'cantidad_2L'=>$this->cantidad_2L,
             'cantidad_entradas' => $this->cantidad_entradas,
         ]);
 

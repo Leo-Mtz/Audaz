@@ -4,6 +4,10 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
 
+use app\models\CatSabores;
+use yii\helpers\ArrayHelper;
+
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\EntradasSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -20,6 +24,12 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    
+    <?php $sabores = ArrayHelper::map(CatSabores::find()->all(), 'id_sabor', 'sabor'); ?>
+    <?php $eventos = ArrayHelper::map(app\models\CatEventos::find()->all(), 'id_evento', 'evento'); ?>
+
+
+    
     <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel' => $searchModel,
@@ -36,18 +46,19 @@ $this->params['breadcrumbs'][] = $this->title;
             },
         ],
         [
-            'attribute'=>'id_evento',
-            'value' => function($model, $index, $dataColumn) {
-                return $model->eventos ? $model->eventos->evento : null;
+            'attribute' => 'id_evento',
+            'value' => function($model) {
+                return $model->sabores ? $model->eventos->evento : null;
             },
+            'filter' => Html::activeDropDownList($searchModel, 'id_evento', $eventos, ['class' => 'form-control', 'prompt' => '']),
         ],
 
-        
         [
-            'attribute'=>'id_sabor',
-            'value' => function($model, $index, $dataColumn) {
+            'attribute' => 'id_sabor',
+            'value' => function($model) {
                 return $model->sabores ? $model->sabores->sabor : null;
             },
+            'filter' => Html::activeDropDownList($searchModel, 'id_sabor', $sabores, ['class' => 'form-control', 'prompt' => '']),
         ],
 
         
