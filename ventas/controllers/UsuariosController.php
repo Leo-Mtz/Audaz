@@ -50,6 +50,7 @@ class UsuariosController extends Controller
 						'allow' => true,
 						'actions' => ['blank'],
 						'roles' => ['otro'],
+						
 					],
 				],
 

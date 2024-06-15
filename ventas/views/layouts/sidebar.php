@@ -13,7 +13,7 @@
 
             <?php
 			$user = \app\models\Usuarios::findOne(Yii::$app->user->identity->id);
-			if( $user->pass_actualizado == "1" ){
+			if( $user->privilegio == "1" ){
 				echo \hail812\adminlte3\widgets\Menu::widget([
 					'items' => [
 						[
@@ -193,6 +193,35 @@
 								// ],
 							// ]
 						// ],
+					],
+				]);
+			}
+
+
+			if($user->privilegio="2"){
+
+				echo \hail812\adminlte3\widgets\Menu::widget([
+					'items' => [
+						[
+							'label' => 'Ventas',
+							'iconClass' => 'fa fa-fw fa-cash-register',
+							'items' => [
+								[
+									'label' => 'Registrar Venta',
+									'url' => ['ventas/create'],
+									'iconClass' => 'fa fa-fw fa-plus',
+									// 'visible' => \Yii::$app->user->can('verMenuCrearUsuario'),
+								],
+								[
+									'label' => 'Listado Ventas',
+									'url' => ['ventas/index'],
+									'iconClass' => 'fa fa-fw fa-list',
+									// 'visible' => \Yii::$app->user->can('verMenuListarUsuarios'),
+								],
+							],
+							// 'visible' => \Yii::$app->user->can('verMenuUsuario'),
+						],
+
 					],
 				]);
 			}

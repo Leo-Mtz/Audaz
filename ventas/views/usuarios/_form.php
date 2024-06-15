@@ -32,7 +32,7 @@ $this->registerJs(
 
 				<!--
 				<div class="col-md col-lg">			
-					<?= $form->field($model, 'password')->passwordInput() ?>
+			 	<?//= $form->field($model, 'password')->passwordInput() ?>
 				</div>
 
 -->

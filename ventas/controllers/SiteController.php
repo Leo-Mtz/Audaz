@@ -1,4 +1,5 @@
-<?php
+<?php 
+
 
 namespace app\controllers;
 
@@ -62,30 +63,61 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-		// if (!Yii::$app->user->isGuest) {
-			// return $this->goHome();
-		// }
-		
-		
-		$this->layout = 'main-login';
-		$model = new LoginForm();
-			
-		if ($model->load(Yii::$app->request->post())){
-			$user = Usuarios::find()->where(['username'=>trim($model->username)])->one();
-			$model->login();
-			if( is_object($user) && !empty($user) ){			
-				if( $user->pass_actualizado == '0' ){
-					return $this->redirect(['usuarios/pass','id'=>$user->id]);
-				}else{
-					Yii::$app->utilFunctions->log(Yii::$app->user->identity->id,"INICIAR SESIÓN","USUARIO ".Yii::$app->user->identity->id." INICIÓ SESIÓN");
-					return $this->redirect(['usuarios/blank']);				
-				}
-			}
-		}
 
-		return $this->render('log', [
-			'model' => $model,
-		]);
+
+        
+    if (!Yii::$app->user->isGuest) {
+        return $this->goHome();
+    }
+
+    $this->layout = 'main-login';
+    $model = new LoginForm();
+
+    $model = new LoginForm();
+    
+    if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        // If the user's password has not been updated, redirect them to the password reset page
+        $user = Usuarios::findOne(['username' => trim($model->username)]);
+        if ($user->privilegio == '1') {
+            return $this->redirect(['usuarios/blank']);
+        } else {
+            return $this->redirect(['ventas/blank']);
+        }
+    }
+
+    return $this->render('log', [
+        'model' => $model,
+    ]);
+
+        // If the user is already logged in, redirect them to the homepage
+        
+        /*
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        */
+
+        /*
+        $this->layout = 'main-login';
+        $model = new LoginForm();
+
+        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            // If the user's password has not been updated, redirect them to the password reset page
+            $user = Usuarios::findOne(['username' => trim($model->username)]);
+            if ($user->pass_actualizado == '0') {
+                return $this->redirect(['ventas/index', 'id' => $user->id]);
+            } else {
+                // Log the user's login and redirect them to the homepage
+                // Yii::$app->utilFunctions->log(Yii::$app->user->identity->id, "INICIAR SESIÓN", "USUARIO " . Yii::$app->user->identity->id . " INICIÓ SESIÓN");
+                return $this->redirect(['usuarios/blank']);
+            }
+        }
+
+        return $this->render('log', [
+            'model' => $model,
+        ]);
+        */
     }
 
     /**
@@ -93,23 +125,32 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
-    public function actionLogin()
-    {
-       // if (!Yii::$app->user->isGuest) {
-			// return $this->goHome();
-		// }
-
-		// $model = new LoginForm();
-		// if ($model->load(Yii::$app->request->post()) && $model->login()) {
-			// return $this->goBack();
-		// }
-
-		// return $this->render('log', [
-			// 'model' => $model,
-		// ]);
-		return $this->render('index');
+   
+     public function actionLogin()
+{
+    if (!Yii::$app->user->isGuest) {
+        return $this->goHome();
     }
 
+    $this->layout = 'main-login';
+    $model = new LoginForm();
+
+    $model = new LoginForm();
+    
+    if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        // If the user's password has not been updated, redirect them to the password reset page
+        $user = Usuarios::findOne(['username' => trim($model->username)]);
+        if ($user->privilegio == '1') {
+            return $this->redirect(['usuarios/blank']);
+        } else {
+            return $this->redirect(['ventas/index']);
+        }
+    }
+
+    return $this->render('log', [
+        'model' => $model,
+    ]);
+}
     /**
      * Logout action.
      *
