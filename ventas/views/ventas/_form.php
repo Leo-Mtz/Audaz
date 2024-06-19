@@ -55,13 +55,12 @@ use yii\jui\DatePicker;
 
 
     <div class="col-md col-lg">
-    <?= $form->field($model, 'precio_total')->textInput() ?>
+    <?= $form->field($model, 'precio_total_venta')->textInput() ?>
     </div>
 
     <?= $form->field($model, 'id_evento')->textInput() ?>
 
-    <?= $form->field($model, 'id_vendedor')->textInput() ?>
-
+    <?= $form->field($model, 'id_vendedor')->hiddenInput(['value' => Yii::$app->user->identity->id]) ?>
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
