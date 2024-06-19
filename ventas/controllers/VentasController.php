@@ -24,6 +24,12 @@ class VentasController extends \yii\web\Controller
 
         $model = new Ventas();
 
+         // Set the fecha attribute to the current date
+        $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
+        date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
+
+        
+
         if ($model->load(Yii::$app->request->post())) {
 			$model->save();
             return $this->redirect(['view', 'id' => $model->id_venta]);
