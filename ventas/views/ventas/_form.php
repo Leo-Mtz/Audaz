@@ -50,7 +50,7 @@ use yii\jui\DatePicker;
 
     <div id="Productosadicionales" class="mt-3  row "></div>
 
-    <button type="button" class="btn btn-primary" onclick="addProductField()">Agregar Campo Simple</button>
+    <button type="button" class="btn btn-primary" onclick="addProductField()">Agregar Producto</button>
 
 
 
@@ -70,6 +70,7 @@ use yii\jui\DatePicker;
 
 </div>
 <script>
+    const productosDropdown = <?= json_encode($productosDropdown) ?>;
     let productCount = 0; // Initialize productCount
 
     function addProductField() {
@@ -87,12 +88,26 @@ use yii\jui\DatePicker;
         const divIdProducto = document.createElement('div');
         divIdProducto.className = 'col-md-6';
 
-        // Create a text input for id_producto
-        const idProductoField = document.createElement('input');
-        idProductoField.type = 'number';
+           // Create a select input for id_producto
+        const idProductoField = document.createElement('select');
         idProductoField.name = 'Ventas[productos][' + productCount + '][id_producto]'; // Set the name attribute for form submission
         idProductoField.className = 'form-control mb-2'; // Add a class for styling
-        idProductoField.placeholder = 'Id Producto';
+
+        // Create a default option
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.text = 'Seleccionar producto';
+        idProductoField.appendChild(defaultOption);
+
+        
+        for (const key in productosDropdown) {
+            if (productosDropdown.hasOwnProperty(key)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.text = productosDropdown[key];
+                idProductoField.appendChild(option);
+            }
+        }
 
         // Append id_producto input to divIdProducto
         divIdProducto.appendChild(idProductoField);
