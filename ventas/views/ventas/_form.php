@@ -60,7 +60,12 @@ use yii\jui\DatePicker;
 
     <?= $form->field($model, 'id_evento')->textInput() ?>
 
-    <?= $form->field($model, 'id_vendedor')->hiddenInput(['value' => Yii::$app->user->identity->id]) ?>
+    
+    <?= $form->field($model, 'id_vendedor')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false) ?>  <!-- La razon por la que seguia habiendo un label es por que yii genera un label para el field de manera automatica -->
+    
+
+   
+   
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>

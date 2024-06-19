@@ -5,13 +5,12 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Ventas */
 
-$this->title = 'Create Ventas';
+$this->title = 'Registro de Ventas';
 $this->params['breadcrumbs'][] = ['label' => 'Ventas', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="ventas-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <!-- This is a view for creating a new Ventas model -->
     <!-- It renders the '_form' view, which is a form for creating a new Ventas model -->
