@@ -23,7 +23,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'cantidad_vendida') ?>
 
-    <?= $form->field($model, 'precio_total') ?>
+    <?= $form->field($model, 'precio_total_venta') ?>
 
     <?php // echo $form->field($model, 'id_evento') ?>
 
