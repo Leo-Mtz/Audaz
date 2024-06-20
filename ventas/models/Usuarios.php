@@ -105,6 +105,8 @@ class Usuarios extends \yii\db\ActiveRecord implements \yii\web\IdentityInterfac
     {
         return self::findOne(['username'=>$username]);
     }
+
+   
 	
 	public function validatePassword($password)
     {

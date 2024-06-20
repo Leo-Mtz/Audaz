@@ -19,7 +19,7 @@ class VentasSearch extends Ventas
         return [
             [['id_venta', 'id_producto', 'id_evento', 'id_vendedor'], 'integer'],
             [['fecha'], 'safe'],
-            [['cantidad_vendida', 'precio_total'], 'number'],
+            [['cantidad_vendida', 'precio_total_venta'], 'number'],
         ];
     }
 
@@ -63,7 +63,7 @@ class VentasSearch extends Ventas
             'fecha' => $this->fecha,
             'id_producto' => $this->id_producto,
             'cantidad_vendida' => $this->cantidad_vendida,
-            'precio_total' => $this->precio_total,
+            'precio_total_venta' => $this->precio_total_venta,
             'id_evento' => $this->id_evento,
             'id_vendedor' => $this->id_vendedor,
         ]);
