@@ -13,10 +13,37 @@ use yii\filters\VerbFilter;
 
 class VentasController extends \yii\web\Controller
 {
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Lists all Entradas models.
+     * @return mixed
+     */
+ 
     public function actionIndex()
     
     {
-        return $this->render('index');
+
+        $searchModel = new VentasSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
 
@@ -29,14 +56,29 @@ class VentasController extends \yii\web\Controller
         date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
 
         
-
         if ($model->load(Yii::$app->request->post())) {
-			$model->save();
-            return $this->redirect(['view', 'id' => $model->id_venta]);
-        }
-        else{
-            var_dump($model->errors);
-        }
+                $model->save();
+        
+                // Get the automatically generated id_venta
+                $idVenta = $model->id_venta;
+        
+                if (isset(Yii::$app->request->post('Ventas')['productos'])) {
+                    $productos = Yii::$app->request->post('Ventas')['productos'];
+        
+                    foreach ($productos as $producto) {
+                        // Directly insert the product into the Ventas table
+                        $ventaProducto = new Ventas();
+                        $ventaProducto->id_venta = $idVenta;
+                        $ventaProducto->id_producto = $producto['id_producto'];
+                        $ventaProducto->save();
+                    }
+                }
+        
+                return $this->redirect(['view', 'id' => $model->id_venta]);
+            } else {
+                var_dump($model->errors);
+            }
+    
 
     
         $productos = CatProductos::find()->all();
@@ -61,11 +103,27 @@ class VentasController extends \yii\web\Controller
 
     }
 
+    public actioDelete($id){
+
+        $this->findModel($id)->delete();
+
+        return $this->redirect(['index']);
+    }
+
 
     public function actionUpdate($id){
 
         $model= new Ventas();
         return $this->render('update');
+    }
+
+    protected function findModel($id){
+
+        if (($model = Ventas::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 
 }
