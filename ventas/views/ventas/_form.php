@@ -38,13 +38,18 @@ use yii\jui\DatePicker;
     
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <?= $form->field($model, 'id_producto')->dropdownList($productosDropdown,['prompt' => 'Seleccionar producto']) ?>
     </div>
     
-    <div class="col-md-6">
+    <div class="col-md-4">
         <?= $form->field($model, 'cantidad_vendida')->textInput(['class' => 'form-control']) ?>
     </div>
+
+    <div class="col-md-4">
+        <?=$form->field($model, 'precio_total_producto')->textInput(['class' => 'form-control']) ?>
+    </div>
+
 
     </div>
 
@@ -53,10 +58,15 @@ use yii\jui\DatePicker;
     <button type="button" class="btn btn-primary" onclick="addProductField()">Agregar Producto</button>
 
 
+    <div class="col-md col-lg">
+        <?=  $form->field($model, 'cantidad_total_vendida')->textInput() ?>
+
+    </div>
 
     <div class="col-md col-lg">
     <?= $form->field($model, 'precio_total_venta')->textInput() ?>
     </div>
+
 
     <?= $form->field($model, 'id_evento')->textInput() ?>
 
@@ -90,7 +100,7 @@ use yii\jui\DatePicker;
 
         // Create div for id_producto field with col-md-6 class
         const divIdProducto = document.createElement('div');
-        divIdProducto.className = 'col-md-6';
+        divIdProducto.className = 'col-md-4';
 
            // Create a select input for id_producto
         const idProductoField = document.createElement('select');
@@ -118,7 +128,7 @@ use yii\jui\DatePicker;
 
         // Create div for cantidad_vendida field with col-md-6 class
         const divCantidadVendida = document.createElement('div');
-        divCantidadVendida.className = 'col-md-6';
+        divCantidadVendida.className = 'col-md-4';
 
         // Create a text input for cantidad_vendida
         const cantidadVendidaField = document.createElement('input');
@@ -130,9 +140,25 @@ use yii\jui\DatePicker;
         // Append cantidad_vendida input to divCantidadVendida
         divCantidadVendida.appendChild(cantidadVendidaField);
 
+        
+        const divPrecioTotalProducto = document.createElement('div');
+        divPrecioTotalProducto.className = 'col-md-4';
+
+        const PrecioTotalProducto = document.createElement('input');
+        PrecioTotalProducto.type = 'number';
+        PrecioTotalProducto.name = 'Ventas[productos][' + productCount + '][precio_total_producto]'; // Set the name attribute for form submission
+        PrecioTotalProducto.className = 'form-control mb-2'; // Add a class for styling
+        PrecioTotalProducto.placeholder = 'Precio total por producto';
+
+        
         // Append divIdProducto and divCantidadVendida to rowDiv
+        divPrecioTotalProducto.appendChild(PrecioTotalProducto);
+
+        
         rowDiv.appendChild(divIdProducto);
         rowDiv.appendChild(divCantidadVendida);
+        rowDiv.appendChild(divPrecioTotalProducto);
+
 
         // Append rowDiv to productDiv
         productDiv.appendChild(rowDiv);
