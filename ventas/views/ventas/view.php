@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'fecha',
             'id_producto',
             'cantidad_vendida',
-            'precio_total',
+            'precio_total_venta',
             'id_evento',
             'id_vendedor',
         ],
