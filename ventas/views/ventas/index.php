@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
+use app\models\CatProductos;
 
 
 /* @var $this yii\web\View */
@@ -40,7 +41,19 @@ $this->params['breadcrumbs'][] = $this->title;
             'fecha',
             
 
+            [
+                'attribute' => 'id_producto',
+                'value' => function ($model) {
+                    $productos = CatProductos::find()->all();
+                    $productosDropdown = [];
+                    foreach ($productos as $producto) {
+                        $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
+                    }
+                    return $productosDropdown[$model->id_producto];
+                },
+            ],
 
+            'cantidad_vendida',
             'id_vendedor',
             'id_evento',
             'precio_total_producto',

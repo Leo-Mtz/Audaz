@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use app\models\CatProductos;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Ventas */
@@ -17,6 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id_venta], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Nueva Venta', ['create', 'id'=>$model->id_venta], ['class' => 'btn btn-success']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id_venta], [
             'class' => 'btn btn-danger',
             'data' => [
@@ -31,7 +33,18 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id_venta',
             'fecha',
-            'id_producto',
+            
+            [
+                'attribute' => 'id_producto',
+                'value' => function ($model) {
+                    $productos = CatProductos::find()->all();
+                    $productosDropdown = [];
+                    foreach ($productos as $producto) {
+                        $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
+                    }
+                    return $productosDropdown[$model->id_producto];
+                },
+            ],
             'cantidad_vendida',
             'precio_total_venta',
             'id_evento',
