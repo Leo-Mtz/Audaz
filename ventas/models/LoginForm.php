@@ -1,82 +1,80 @@
 <?php
-
 namespace app\models;
 
 use Yii;
 use yii\base\Model;
+use app\models\CatEventos;
+use app\models\Usuarios;
+use yii\helpers\ArrayHelper;
 
-/**
- * LoginForm is the model behind the login form.
- *
- * @property User|null $user This property is read-only.
- *
- */
 class LoginForm extends Model
 {
     public $username;
     public $password;
     public $rememberMe = true;
-    public $role;
+    public $privilegio;
+    public $eventos = [];
+    public $id_evento;
 
     private $_user = false;
 
-
-    /**
-     * @return array the validation rules.
-     */
     public function rules()
     {
         return [
-            // username and password are both required
             [['username', 'password'], 'required'],
-            // rememberMe must be a boolean value
             ['rememberMe', 'boolean'],
-            // password is validated by validatePassword()
+            ['privilegio', 'integer'],
+            ['id_evento', 'required', 'when' => function ($model) {
+                return $model->privilegio == 2;
+            }, 'whenClient' => "function (attribute, value) {
+                return $('#loginform-privilegio').val() == 2;
+            }"],
             ['password', 'validatePassword'],
         ];
     }
 
-    /**
-     * Validates the password.
-     * This method serves as the inline validation for password.
-     *
-     * @param string $attribute the attribute currently being validated
-     * @param array $params the additional name-value pairs given in the rule
-     */
     public function validatePassword($attribute, $params)
     {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
-
             if (!$user || !$user->validatePassword($this->password)) {
                 $this->addError($attribute, 'Usuario o contraseña incorrectos.');
             }
         }
     }
 
-    /**
-     * Logs in a user using the provided username and password.
-     * @return bool whether the user is logged in successfully
-     */
     public function login()
     {
         if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
+            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
         }
         return false;
     }
 
-    /**
-     * Finds user by [[username]]
-     *
-     * @return User|null
-     */
     public function getUser()
     {
         if ($this->_user === false) {
             $this->_user = Usuarios::findByUsername($this->username);
+            if ($this->_user !== null) {
+                $this->privilegio = $this->_user->privilegio;
+                if ($this->privilegio == 2) {
+                    $this->eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
+                }
+            }
         }
-
         return $this->_user;
     }
+
+    public function attributeLabels()
+    {
+        return [
+            'username' => 'Usuario',
+            'password' => 'Contraseña',
+            'id_evento' => 'Evento',
+            'rememberMe' => 'Recordarme'
+        ];
+    }
 }
+
+
+?>
