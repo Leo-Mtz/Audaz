@@ -64,9 +64,9 @@ class SiteController extends Controller
                 return $this->redirect(['usuarios/blank']);
             } else {
                 if ($user->privilegio == '2') {
-                    return $this->redirect(['site/log2']);
+                    return $this->redirect(['ventas/index']);
                 }
-                return $this->redirect(['ventas/index']);
+                
             }
         }
 
