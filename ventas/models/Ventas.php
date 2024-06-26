@@ -4,6 +4,9 @@ namespace app\models;
 
 use Yii;
 
+use app\Models\CatProductos;
+
+
 /**
  * This is the model class for table "ventas".
  *
@@ -12,6 +15,8 @@ use Yii;
  * @property int|null $id_producto
  * @property float|null $cantidad_vendida
  * @property float|null $precio_total_venta
+ * @property string|null $precio_unitario
+ * @property string|null $cantidad_total_vendida
  * @property int|null $id_evento
  * @property int|null $id_vendedor
  */
@@ -31,10 +36,10 @@ class Ventas extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fecha', 'id_evento', 'id_vendedor', 'id_producto', 'cantidad_vendida', 'precio_total_venta'], 'required'],
+            [['fecha', 'id_evento', 'id_vendedor', 'id_producto','precio_unitario','precio_total_producto', 'cantidad_vendida','cantidad_total_vendida', 'precio_total_venta'], 'required'],
             [['fecha'], 'safe'],
             [['id_producto', 'id_evento', 'id_vendedor'], 'integer'],
-            [['cantidad_vendida', 'precio_total_venta'], 'number'],
+            [['cantidad_vendida', 'precio_unitario','precio_total_venta','precio_total_producto', 'cantidad_total_vendida'], 'number'],
         ];
     }
 
@@ -47,7 +52,7 @@ class Ventas extends \yii\db\ActiveRecord
         return [
             'id_venta' => 'Id Venta',
             'fecha' => 'Fecha',
-            'id_producto' => 'Id Producto',
+            'id_producto' => 'Producto',
             'cantidad_vendida' => 'Cantidad Vendida',
             'precio_total__venta' => 'Precio Total',
             'id_evento' => 'Id Evento',
@@ -56,7 +61,8 @@ class Ventas extends \yii\db\ActiveRecord
 
     }
         public function getProductos(){
-            return $this->hasOne(Productos::className(), ['id_producto' => 'id_producto']);
+            //establece relacion entre ventas y productos
+            return $this->hasOne(CatProductos::className(), ['id_producto' => 'id_producto']);
         }
 
         public function getNombreSabor()
@@ -69,6 +75,7 @@ class Ventas extends \yii\db\ActiveRecord
             return $this->productos ? $this->productos->presentacion->nombre : null;
         }
 
+
 public function beforeValidate()
 {
     if ($this->isNewRecord) {
@@ -80,6 +87,25 @@ public function beforeValidate()
     
     return parent::beforeValidate();
 }
+
+
+
+    
+public function getPrecioUnitario($id_producto)
+{
+    if ($this->productos === null) {
+        return null;
     }
+
+    $producto = $this->productos->findOne($id_producto);
+
+    if ($producto === null) {
+        return null;
+    }
+
+    return $producto->precio;
+}
+}
+    
     
 
