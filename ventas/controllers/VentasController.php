@@ -105,6 +105,7 @@ class VentasController extends \yii\web\Controller
 
     public function actionDelete($id){
 
+        echo 
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
