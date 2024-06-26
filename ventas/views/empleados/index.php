@@ -1,0 +1,60 @@
+<?php
+
+use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\grid\GridView;
+
+/* @var $this yii\web\View */
+/* @var $searchModel app\models\CatEmpleadosSearch */
+/* @var $dataProvider yii\data\ActiveDataProvider */
+
+$this->title = 'Empleados';
+$this->params['breadcrumbs'][] = $this->title;
+?>
+<div class="cat-empleados-index">
+    <p>
+        <?= Html::a('Agregar Empleado', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
+
+    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'columns' => [
+            ['class' => 'yii\grid\SerialColumn'],
+
+            // 'id_empleado',
+            'nombre',
+            'paterno',
+            'materno',
+            'fecha_inicio',
+
+            [
+				'class' => 'yii\grid\ActionColumn',
+				'header' => 'Acciones',
+				'headerOptions' => ['style' => 'color:#007bff'],
+				'contentOptions' => ['style' => 'width:12%;'],
+				'template' => '{view}{update}{delete}',
+				'buttons' => [
+					'view' => function ($url, $model) {
+						$url = Url::to(['empleados/view','id'=>$model->id_empleado]);
+						return Html::a('<span class="fa fa-search"></span>', $url, ['title' => 'Ver','style' => 'margin-right:10px']);
+					},
+
+					'update' => function ($url, $model) {
+						$url = Url::to(['empleados/update','id'=>$model->id_empleado]);
+						return Html::a('<span class="fa fa-edit"></span>', $url, ['title' => 'Actualizar','style' => 'margin-right:10px']);
+					},
+										
+					'delete' => function ($url, $model) {
+						$url = Url::to(['empleados/delete','id'=>$model->id_empleado]);
+						return Html::a('<span class="fa fa-times"></span>', $url, ['title' => 'Borrar','data-confirm' => Yii::t('yii', '¿Seguro que desea eliminar este empleado?'), 'data-method'  => 'post']);
+					}
+				],
+			],
+        ],
+    ]); ?>
+
+
+</div>
