@@ -13,8 +13,9 @@ $this->params['breadcrumbs'][] = 'Update';
 <div class="entradas-update">
 
 
+
     <?= $this->render('_form', [
-        
+        //variables 
      
         'model' => $model,
        'empleados' => $empleados,

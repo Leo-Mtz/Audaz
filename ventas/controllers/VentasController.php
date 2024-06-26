@@ -47,63 +47,39 @@ class VentasController extends \yii\web\Controller
     }
 
 
-    public function actionCreate(){
-
+    public function actionCreate()
+    {
         $model = new Ventas();
-
-         // Set the fecha attribute to the current date
+    
+        // Set the fecha attribute to the current date
         $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
         date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
-
-        
-        if ($model->load(Yii::$app->request->post())) {
-                $model->save();
-        
-                // Get the automatically generated id_venta
-                $idVenta = $model->id_venta;
-        
-                if (isset(Yii::$app->request->post('Ventas')['productos'])) {
-                    $productos = Yii::$app->request->post('Ventas')['productos'];
-        
-                    foreach ($productos as $producto) {
-                        // Directly insert the product into the Ventas table
-                        $ventaProducto = new Ventas();
-                        $ventaProducto->id_venta = $idVenta;
-                        $ventaProducto->id_producto = $producto['id_producto'];
-                        $ventaProducto->save();
-                    }
-                }
-        
-                return $this->redirect(['view', 'id' => $model->id_venta]);
-            } else {
-                var_dump($model->errors);
-            }
-    
-
     
         $productos = CatProductos::find()->all();
         $productosDropdown = [];
         foreach ($productos as $producto) {
             $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
         }
-
-
+    
+        if ($model->load(Yii::$app->request->post())) {
+            $precio = $model->getPrecioUnitario($model->id_producto); // Call the method on the model instance
+            $model->precio_unitario = $precio;
+    
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id_venta]);
+            }
+        }
+    
         return $this->render('create', [
-
-            'model'=>$model,
-            //'vendedor'=>$vendedor,
-            'productosDropdown'=>$productosDropdown,
-           // 'eventos'=>$eventos
-            
-
-
-
-
+            'model' => $model,
+            'productosDropdown' => $productosDropdown,
+            'id_producto' => $model->id_producto,
         ]);
-
     }
+    
 
-    public actioDelete($id){
+
+    public function actionDelete($id){
 
         $this->findModel($id)->delete();
 
@@ -112,10 +88,44 @@ class VentasController extends \yii\web\Controller
 
 
     public function actionUpdate($id){
+        
 
-        $model= new Ventas();
-        return $this->render('update');
+        $model = $this->findModel($id);
+
+         // Set the fecha attribute to the current date
+        $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
+        date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
+
+        
+        if ($model->load(Yii::$app->request->post())) { // Load POST data
+
+   
+
+            if ($model->save()) { // Save model
+                return $this->redirect(['view', 'id' => $model->id_venta]); // Redirect to view if saved successfully
+            } else {
+                var_dump($model->errors); // Debug errors if save fails
+            }
+        }
+        
+        $productos = CatProductos::find()->all();
+        $productosDropdown = [];
+        foreach ($productos as $producto) {
+            $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
+        }
+
+
+        return $this->render('update', [
+
+            'model'=>$model,
+            //'vendedor'=>$vendedor,
+            'productosDropdown'=>$productosDropdown,
+           // 'eventos'=>$eventos
+        ]);
+
     }
+    
+
 
     protected function findModel($id){
 
@@ -126,4 +136,27 @@ class VentasController extends \yii\web\Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
+    
+    /**
+     * Retrieves the price of a product based on its ID.
+     *
+     * @param int $id The ID of the product.
+     * @return array The price of the product, or 0 if not found.
+     */
+    public function actionGetProductPrice($id)
+    {
+        // Set the response format to JSON.
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        
+        // Find the product with the given ID.
+        $producto = CatProductos::findOne($id);
+        
+        // Return the price of the product if found, otherwise return 0.
+        return $producto ? ['precio' => $producto->precio] : ['precio' => 0];
+    }
+
+
+    
 }
+
+

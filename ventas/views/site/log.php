@@ -48,10 +48,7 @@ use yii\helpers\ArrayHelper;
             ->label(false)
             ->passwordInput(['placeholder' => 'Contraseña']) ?>
 
-        <?php if ($model->privilegio == 2): ?>
-            <?= $form->field($model, 'id_evento')->dropDownList([], ['prompt' => 'Seleccione Evento']) ?>
-        <?php endif; ?>
-
+         
 
         <div class="row buttons pull-right">
             <?= Html::submitButton('Login', ['class' => 'btn btn-primary btn-block']) ?>
@@ -60,35 +57,3 @@ use yii\helpers\ArrayHelper;
         <?php ActiveForm::end(); ?>
     </div>
 </div>
-
-<?php
-$script = <<< JS
-$(document).ready(function(){
-    $('form#login-form').on('beforeSubmit', function(e){
-        var form = $(this);
-        $.ajax({
-            url: form.attr('action'),
-            type: 'post',
-            data: form.serialize(),
-            success: function(response){
-                if (response.success) {
-                    // Check if the user has privilege 2 and update eventos dropdown
-                    if (response.privilegio == 2 && response.eventos.length > 0) {
-                        var dropdown = $('#loginform-id_evento');
-                        dropdown.empty();
-                        $.each(response.eventos, function(key, value) {
-                            dropdown.append($('<option></option>').attr('value', key).text(value));
-                        });
-                        dropdown.prop('disabled', false); // Enable the dropdown
-                    } else {
-                        $('#loginform-id_evento').empty().append($('<option></option>').attr('value', '').text('Seleccione Evento'));
-                    }
-                }
-            }
-        });
-        return false;
-    });
-});
-JS;
-$this->registerJs($script);
-?>

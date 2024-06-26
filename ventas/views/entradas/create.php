@@ -13,6 +13,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <?= $this->render('_form', [
+
+        //variables que se utilizan en el controlador
         
         'model' => $model,
        'empleados' => $empleados,

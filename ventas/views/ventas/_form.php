@@ -31,20 +31,26 @@ use yii\helpers\Url;
     </div>
 
     <div class="row">
+
         <div class="col-md-4">
-            <?= $form->field($model, 'id_producto')->dropdownList($productosDropdown, ['prompt' => 'Seleccionar producto']) ?>
+            <?= $form->field($model, 'id_producto')->dropdownList($productosDropdown, [
+                'prompt' => 'Seleccionar producto',
+                'onchange' => 'fetchProductPrice(this.value)'
+            ]) ?>
+       
         </div>
-        
     
         <div class="col-md-4">
     <?= $form->field($model, 'cantidad_vendida')->textInput(['class' => 'form-control quantity-input']) ?>
 </div>
+       <div class="col-md-4">
+           <?= $form->field($model, 'precio_unitario')->textInput(['class' => 'form-control', 'readonly' => true, 'value' => $model->getPrecioUnitario($model->id_producto)]) ?>
+       </div>
+       
         <div class="col-md-4">
-            <?= $form->field($model, 'precio_unitario')->textInput(['class' => 'form-control', 'readonly' => true]) ?>
-        </div>
-
-        <div class="col-md-4">
-            <?= $form->field($model, 'precio_total_producto')->textInput(['readonly' => true, 'value' => $model->cantidad_vendida * $model->precio_unitario]) ?>
+          
+           <?= $form->field($model, 'precio_total_producto')->textInput(['readonly' => true]) ?>
+   
         </div>
     </div>
 
@@ -73,7 +79,36 @@ use yii\helpers\Url;
 
 <?php
 
+
 $this->registerJs("
+    function fetchProductPrice(productId) {
+        if (productId) {
+            $.ajax({
+                url: '" . Url::to(['ventas/get-product-price']) . "?id=' + productId,
+                type: 'GET',
+                success: function(data) {
+                    var response = data;
+                    $('#ventas-precio_unitario').val(response.precio);
+                    updatePrecioTotalProducto();
+                }
+            });
+        } else {
+            $('#ventas-precio_unitario').val('');
+            updatePrecioTotalProducto();
+        }
+    }
+
+    function updatePrecioTotalProducto() {
+        var cantidadVendida = parseFloat($('#ventas-cantidad_vendida').val());
+        var precioUnitario = parseFloat($('#ventas-precio_unitario').val());
+        var precioTotalProducto = (cantidadVendida * precioUnitario).toFixed(2);
+        $('#ventas-precio_total_producto').val(precioTotalProducto);
+    }
+
+    $('#ventas-cantidad_vendida').on('input', function() {
+        updatePrecioTotalProducto();
+    });
+
     function calcularTotalVendida() {
         var total_vendida = 0;
         $('.quantity-input').each(function() {
@@ -92,6 +127,7 @@ $this->registerJs("
     calcularTotalVendida(); // Initial calculation
 ");
 ?>
+
 
 
 <script>

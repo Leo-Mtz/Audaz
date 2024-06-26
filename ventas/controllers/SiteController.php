@@ -84,7 +84,7 @@ class SiteController extends Controller
             // Handle the form submission for selecting the event
             if ($model->validate() && $model->id_evento) {
                 // Redirect or perform any action needed after selecting the event
-                return $this->redirect(['site/some-action']);
+                return $this->redirect(['ventas/index']);
             }
         }
 

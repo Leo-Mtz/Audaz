@@ -36,6 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             
             [
                 'attribute' => 'id_producto',
+                'label'=>'Producto',
                 'value' => function ($model) {
                     $productos = CatProductos::find()->all();
                     $productosDropdown = [];
@@ -46,6 +47,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
             ],
             'cantidad_vendida',
+
+            'precio_total_producto',
             'precio_total_venta',
             'id_evento',
             'id_vendedor',

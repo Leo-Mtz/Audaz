@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
        
        'model'=>$model,
      'productosDropdown'=>$productosDropdown,
-      
+      'id_producto'=> $model->id_producto,
     
     ]) ?>
 
