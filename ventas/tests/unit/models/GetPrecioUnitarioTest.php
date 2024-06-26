@@ -6,7 +6,7 @@ use app\models\Ventas;
 use yii\mail\MessageInterface;
 use PHPUnit\Framework\TestCase;
 
-class GetPrecioUnitarioTest extends \Codeception\Test\Unit
+class GetPrecioUnitarioTest extends TestCase
 {
 
     private $model;
