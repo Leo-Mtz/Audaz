@@ -2,30 +2,30 @@
 
 namespace tests\unit\models;
 
+use Yii;
 use app\models\Ventas;
-use yii\mail\MessageInterface;
 use PHPUnit\Framework\TestCase;
 
-class GetPrecioUnitarioTest extends TestCase
+class getPrecioUnitarioTest extends \Codeception\Test\Unit
 {
-
     private $model;
-    public $tester;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->model = new Ventas();
+    }
 
     public function testGetPrecioUnitarioWithValidProductId()
     {
-        $ventas = new Ventas();
-        $precio = $ventas->getPrecioUnitario(2);
+        $precio = $this->model->getPrecioUnitario(2);
         $this->assertNotNull($precio);
         $this->assertIsNumeric($precio);
     }
 
     public function testGetPrecioUnitarioWithInvalidProductId()
     {
-        $ventas = new Ventas();
-        $precio = $ventas->getPrecioUnitario(9999);
+        $precio = $this->model->getPrecioUnitario(9999);
         $this->assertNull($precio);
     }
-
-
 }
