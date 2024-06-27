@@ -85,7 +85,14 @@ use yii\helpers\Url;
     <?= $form->field($model, 'id_evento')->textInput() ?>
     <?= $form->field($model, 'id_vendedor')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false) ?>
 
-    <div class="form-group">
+    <?= $form->field($model, 'forma_de_pago')->dropDownList([
+        'prompt' => 'Selecciona una forma de pago',
+        'efectivo' => 'Efectivo',
+        'tarjeta' => 'Tarjeta de Crédito/Débito',
+        'transferencia' => 'Transferencia Bancaria',
+        'paypal' => 'PayPal',
+        // Add more payment methods as needed
+    ], ['class' => 'form-control']) ?> <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
 
