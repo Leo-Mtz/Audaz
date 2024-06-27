@@ -64,12 +64,13 @@ class VentasController extends \yii\web\Controller
         
                 if (isset(Yii::$app->request->post('Ventas')['productos'])) {
                     $productos = Yii::$app->request->post('Ventas')['productos'];
-        
                     foreach ($productos as $producto) {
                         // Directly insert the product into the Ventas table
                         $ventaProducto = new Ventas();
-                        $ventaProducto->id_venta = $idVenta;
+                        $ventaProducto->id_venta = $model->id_venta;
                         $ventaProducto->id_producto = $producto['id_producto'];
+                        $ventaProducto->cantidad_vendida = $producto['cantidad_vendida'];
+                        $ventaProducto->precio_total_producto = $producto['precio_total_producto'];
                         $ventaProducto->save();
                     }
                 }
@@ -116,6 +117,14 @@ class VentasController extends \yii\web\Controller
 
         $model= new Ventas();
         return $this->render('update');
+    }
+
+    
+    public function actionView($id)
+    {
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
     }
 
     protected function findModel($id){
