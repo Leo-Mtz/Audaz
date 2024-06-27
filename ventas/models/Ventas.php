@@ -31,10 +31,11 @@ class Ventas extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fecha', 'id_evento', 'id_vendedor', 'id_producto', 'cantidad_vendida', 'precio_total_venta'], 'required'],
+            [['fecha', 'id_evento', 'id_vendedor', 'id_producto', 'cantidad_vendida', 'precio_total_venta', 'cantidad_total_vendida', 'precio_unitario', 'forma_de_pago', 'precio_total_producto'], 'required'],
             [['fecha'], 'safe'],
             [['id_producto', 'id_evento', 'id_vendedor'], 'integer'],
-            [['cantidad_vendida', 'precio_total_venta'], 'number'],
+            [['cantidad_vendida', 'precio_total_venta', 'cantidad_total_vendida', 'precio_unitario', 'precio_total_producto'], 'number'],
+            ['forma_de_pago', 'string'], 
         ];
     }
 
@@ -52,6 +53,10 @@ class Ventas extends \yii\db\ActiveRecord
             'precio_total__venta' => 'Precio Total',
             'id_evento' => 'Id Evento',
             'id_vendedor' => 'Id Vendedor',
+            'precio_unitario' => 'Precio Unitario',
+            'cantidad_total_vendida' => 'Cantidad Total Vendida',
+            'precio_total_producto'=> 'Precio Total Producto',
+            'forma_de_pago'=> 'Forma de Pago',
         ];
 
     }
@@ -93,4 +98,6 @@ public function getPrecioUnitario($id_producto)
 
     throw new \yii\web\NotFoundHttpException("Producto with ID $id_producto not found");
 }
+
+
 }
