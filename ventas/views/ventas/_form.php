@@ -32,16 +32,38 @@ use yii\helpers\Url;
 
     <div class="row">
         <div class="col-md-4">
-            <?= $form->field($model, 'id_producto')->dropdownList($productosDropdown, ['prompt' => 'Seleccionar producto']) ?>
+            <?= $form->field($model, 'id_producto')->dropdownList($productosDropdown, ['prompt' => 'Seleccionar producto', 'id' => 'id_producto']) ?>
         </div>
-        
     
+    <div class="col-md-4">
+        <?= $form->field($model, 'cantidad_vendida')->textInput(['class' => 'form-control cantidad-vendida-input']) ?>
+    </div>
+        
+
         <div class="col-md-4">
-    <?= $form->field($model, 'cantidad_vendida')->textInput(['class' => 'form-control quantity-input']) ?>
-</div>
-        <div class="col-md-4">
-            <?= $form->field($model, 'precio_unitario')->textInput(['class' => 'form-control', 'readonly' => true]) ?>
+            <?= $form->field($model, 'precio_unitario')->textInput(['class' => 'form-control precio-unitario-input']) ?>
         </div>
+
+        <script>
+    // Get the dropdown element
+    const idProductoDropdown = document.getElementById('id_producto');
+
+    // Get the precio_unitario element
+    const precioUnitarioField = document.getElementById('precio_unitario');
+
+    // Add an event listener to the dropdown for change events
+    idProductoDropdown.addEventListener('change', function() {
+        // Get the selected option
+        const selectedOption = idProductoDropdown.options[idProductoDropdown.selectedIndex];
+
+        // Get the price value from the selected option's data attribute
+        const price = selectedOption.dataset.price;
+
+        // Set the value of the precio_unitario field to the price
+        precioUnitarioField.value = price;
+    });
+</script>
+
 
         <div class="col-md-4">
             <?= $form->field($model, 'precio_total_producto')->textInput(['readonly' => true, 'value' => $model->cantidad_vendida * $model->precio_unitario]) ?>
@@ -73,10 +95,12 @@ use yii\helpers\Url;
 
 <?php
 
+
+
 $this->registerJs("
     function calcularTotalVendida() {
         var total_vendida = 0;
-        $('.quantity-input').each(function() {
+        $('.cantidad-vendida-input').each(function() {
             var value = parseFloat($(this).val());
             if (!isNaN(value)) {
                 total_vendida += value;
@@ -85,13 +109,39 @@ $this->registerJs("
         $('#ventas-cantidad_total_vendida').val(total_vendida);
     }
 
-    $(document).on('change', '.quantity-input', function() {
+    $(document).on('change', '.cantidad-vendida-input', function() {
         calcularTotalVendida();
     });
 
     calcularTotalVendida(); // Initial calculation
 ");
 ?>
+
+<?php
+$this->registerJs("
+    function calcularMontoProducto() {
+        var monto_producto = 0;
+        var precio_unitario = parseFloat($('#ventas-precio_unitario').val()) || 0;
+        var cantidad_vendida = parseFloat($('#ventas-cantidad_vendida').val()) || 0;
+
+        if (!isNaN(precio_unitario) && !isNaN(cantidad_vendida)) {
+            monto_producto = precio_unitario * cantidad_vendida;
+        }
+
+        $('#ventas-precio_total_producto').val(monto_producto);
+    }
+
+    $(document).ready(function() {
+        $('#ventas-precio_unitario, #ventas-cantidad_vendida').on('input', function() {
+            calcularMontoProducto();
+        });
+
+        // Initial calculation
+        calcularMontoProducto();
+    });
+");
+?>
+
 
 
 <script>
@@ -109,7 +159,7 @@ $this->registerJs("
         const rowDiv = document.createElement('div');
         rowDiv.className = 'row';
 
-        // Create div for id_producto field with col-md-6 class
+        // Create div for id_producto field with col-md-4 class
         const divIdProducto = document.createElement('div');
         divIdProducto.className = 'col-md-4';
 
@@ -136,7 +186,7 @@ $this->registerJs("
         // Append id_producto input to divIdProducto
         divIdProducto.appendChild(idProductoField);
 
-        // Create div for cantidad_vendida field with col-md-6 class
+        // Create div for cantidad_vendida field with col-md-4 class
         const divCantidadVendida = document.createElement('div');
         divCantidadVendida.className = 'col-md-4';
 
@@ -144,24 +194,24 @@ $this->registerJs("
         const cantidadVendidaField = document.createElement('input');
         cantidadVendidaField.type = 'number';
         cantidadVendidaField.name = 'Ventas[productos][' + productCount + '][cantidad_vendida]'; // Set the name attribute for form submission
-        cantidadVendidaField.className = 'form-control mb-2'; // Add a class for styling
+        cantidadVendidaField.className = 'form-control mb-2 cantidad-vendida-input'; // Add a class for styling
         cantidadVendidaField.placeholder = 'Cantidad Vendida';
 
         // Append cantidad_vendida input to divCantidadVendida
         divCantidadVendida.appendChild(cantidadVendidaField);
 
-        // Create div for precio_total_producto field with col-md-6 class
+        // Create div for precio_total_producto field with col-md-4 class
         const divPrecioTotalProducto = document.createElement('div');
         divPrecioTotalProducto.className = 'col-md-4';
 
-        const PrecioTotalProducto = document.createElement('input');
+        const PrecioTotalProductoField = document.createElement('input');
         PrecioTotalProducto.type = 'number';
         PrecioTotalProducto.name = 'Ventas[productos][' + productCount + '][precio_total_producto]'; // Set the name attribute for form submission
         PrecioTotalProducto.className = 'form-control mb-2'; // Add a class for styling
         PrecioTotalProducto.placeholder = 'Precio total por producto';
 
         // Append divIdProducto and divCantidadVendida to rowDiv
-        divPrecioTotalProducto.appendChild(PrecioTotalProducto);
+        divPrecioTotalProducto.appendChild(PrecioTotalProductoField);
 
         rowDiv.appendChild(divIdProducto);
         rowDiv.appendChild(divCantidadVendida);
@@ -179,6 +229,7 @@ $this->registerJs("
         // Add click event listener to delete button
         deleteButton.addEventListener('click', function() {
             ProductFieldsContainer.removeChild(productDiv); // Remove the entire productDiv when delete button is clicked
+            calcularTotalVendida(); // Recalculate total when a product field is removed
         });
 
         // Append delete button to productDiv
@@ -188,9 +239,10 @@ $this->registerJs("
         ProductFieldsContainer.appendChild(productDiv);
 
         productCount++; // Increment productCount for the next field
+
+        // Attach event listener for new cantidad_vendida input
+        $(cantidadVendidaField).on('input', function() {
+            calcularTotalVendida();
+        });
     }
-
-
-
 </script>
-
