@@ -31,11 +31,11 @@ class Ventas extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fecha', 'id_evento', 'id_vendedor', 'id_producto', 'cantidad_vendida', 'precio_total_venta', 'cantidad_total_vendida', 'precio_unitario', 'forma_de_pago', 'precio_total_producto'], 'required'],
+            [['fecha', 'id_evento', 'id_vendedor', 'id_producto', 'cantidad_vendida', 'precio_total_venta','cantidad_total_vendida','precio_unitario','forma_de_pago'], 'required'],
             [['fecha'], 'safe'],
             [['id_producto', 'id_evento', 'id_vendedor'], 'integer'],
-            [['cantidad_vendida', 'precio_total_venta', 'cantidad_total_vendida', 'precio_unitario', 'precio_total_producto'], 'number'],
-            ['forma_de_pago', 'string'], 
+            [['cantidad_vendida', 'precio_total_venta', 'cantidad_total_vendida', 'precio_unitario'], 'number'],
+            [['forma_de_pago'], 'string'],
         ];
     }
 
