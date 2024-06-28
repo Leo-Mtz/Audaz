@@ -164,11 +164,15 @@ public function actionUpdate($id)
 {
     $model = $this->findModel($id);
 
+<<<<<<< HEAD
   // Set the fecha attribute to the current date
   $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
   date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
 
   
+=======
+ 
+>>>>>>> main
 
     if ($model->load(Yii::$app->request->post())) { // Load POST data
 

@@ -64,9 +64,15 @@ class SiteController extends Controller
                 return $this->redirect(['usuarios/blank']);
             } else {
                 if ($user->privilegio == '2') {
+<<<<<<< HEAD
                     return $this->redirect(['site/log2']);
                 }
                 return $this->redirect(['ventas/index']);
+=======
+                    return $this->redirect(['ventas/index']);
+                }
+                
+>>>>>>> main
             }
         }
 
@@ -84,7 +90,11 @@ class SiteController extends Controller
             // Handle the form submission for selecting the event
             if ($model->validate() && $model->id_evento) {
                 // Redirect or perform any action needed after selecting the event
+<<<<<<< HEAD
                 return $this->redirect(['ventas/index']);
+=======
+                return $this->redirect(['site/some-action']);
+>>>>>>> main
             }
         }
 

@@ -11,12 +11,17 @@ use yii\helpers\ArrayHelper;
         </div>
         <p class="login-box-msg">Seleccionar evento</p>
 
+<<<<<<< HEAD
         <?php $form = ActiveForm::begin(['id' => 'login-form2']) ?>
+=======
+        <?php $form = ActiveForm::begin(['id' => 'login-form']) ?>
+>>>>>>> main
 
         <?= $form->field($model, 'id_evento')->dropDownList($model->eventos, ['prompt' => 'Seleccione Evento']) ?>
 
         <div class="row buttons pull-right">
             <?= Html::submitButton('Continuar', ['class' => 'btn btn-primary btn-block']) ?>
+<<<<<<< HEAD
             <?= Html::a('Regresar', ['site/index'], ['class' => 'btn btn-secondary']) ?>
         </div>
 
@@ -27,5 +32,10 @@ use yii\helpers\ArrayHelper;
                 <?= Yii::$app->session->getFlash('error') ?>
             </div>
         <?php endif; ?>
+=======
+        </div>
+
+        <?php ActiveForm::end(); ?>
+>>>>>>> main
     </div>
 </div>

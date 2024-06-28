@@ -230,7 +230,12 @@ class UsuariosController extends Controller
      */
     public function actionDelete($id)
     {
+<<<<<<< HEAD
 		$model = $this->findModel($id);
+=======
+		
+        $model = $this->findModel($id);
+>>>>>>> main
         $this->findModel($id)->delete();
 		
 		Yii::$app->utilFunctions->log(Yii::$app->user->identity->id,"ELIMINAR USUARIO","USUARIO ".$model->id." ELIMINADO");
