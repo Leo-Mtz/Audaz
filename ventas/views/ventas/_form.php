@@ -83,7 +83,8 @@ use yii\helpers\Url;
     </div>
 
     <?= $form->field($model, 'id_evento')->textInput() ?>
-   
+    <?= $form->field($model, 'id_vendedor')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false) ?>
+
     <?= $form->field($model, 'forma_de_pago')->dropDownList([
         'prompt' => 'Selecciona una forma de pago',
         'efectivo' => 'Efectivo',
