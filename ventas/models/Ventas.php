@@ -88,16 +88,7 @@ public function beforeValidate()
     
     
    
-public function getPrecioUnitario($id_producto)
-{
-    $producto = CatProductos::findOne($id_producto);
 
-    if ($producto !== null) {
-        return $producto->precio;
-    }
-
-    throw new \yii\web\NotFoundHttpException("Producto with ID $id_producto not found");
-}
 
 
 }

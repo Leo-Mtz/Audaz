@@ -32,51 +32,31 @@ use yii\helpers\Url;
 
     <div class="row">
         <div class="col-md-4">
-            <?= $form->field($model, 'id_producto')->dropdownList($productosDropdown, ['prompt' => 'Seleccionar producto', 'id' => 'id_producto']) ?>
+            <?= $form->field($model, 'id_producto')->dropdownList($productosDropdown, [
+                'prompt' => 'Seleccionar producto',
+                'id' => 'id_producto',
+                'onchange' => 'updatePrecioUnitario()', // Add the onchange event listener
+            ]) ?>
         </div>
-    
-    <div class="col-md-4">
-        <?= $form->field($model, 'cantidad_vendida')->textInput(['class' => 'form-control cantidad-vendida-input']) ?>
-    </div>
-        
 
         <div class="col-md-4">
-            <?= $form->field($model, 'precio_unitario')->textInput(['class' => 'form-control precio-unitario-input']) ?>
+            <?= $form->field($model, 'cantidad_vendida')->textInput(['class' => 'form-control cantidad-vendida-input']) ?>
         </div>
-
-        <script>
-    // Get the dropdown element
-    const idProductoDropdown = document.getElementById('id_producto');
-
-    // Get the precio_unitario element
-    const precioUnitarioField = document.getElementById('precio_unitario');
-
-    // Add an event listener to the dropdown for change events
-    idProductoDropdown.addEventListener('change', function() {
-        // Get the selected option
-        const selectedOption = idProductoDropdown.options[idProductoDropdown.selectedIndex];
-
-        // Get the price value from the selected option's data attribute
-        const price = selectedOption.dataset.price;
-
-        // Set the value of the precio_unitario field to the price
-        precioUnitarioField.value = price;
-    });
-</script>
-
 
         <div class="col-md-4">
-            <?= $form->field($model, 'precio_total_producto')->textInput(['readonly' => true, 'value' => $model->cantidad_vendida * $model->precio_unitario]) ?>
+            <?= $form->field($model, 'precio_unitario')->textInput(['class' => 'form-control precio-unitario-input', 'id' => 'precio_unitario', 'readonly' => true]) ?>
         </div>
+
+        <div class="col-md-4">
+            <?= $form->field($model, 'precio_total_producto')->textInput(['readonly' => true]) ?>
     </div>
 
     <div id="Productosadicionales" class="mt-3 row"></div>
     <button type="button" class="btn btn-primary" onclick="addProductField()">Agregar Producto</button>
 
     <div class="col-md col-lg">
-        <?= $form->field($model, 'cantidad_total_vendida')->textInput(['placeholder' => 'Total Vendida','readonly' => true]) ?>
+        <?= $form->field($model, 'cantidad_total_vendida')->textInput(['placeholder' => 'Total Vendida', 'readonly' => true]) ?>
     </div>
-
 
     <div class="col-md col-lg">
         <?= $form->field($model, 'precio_total_venta')->textInput() ?>
@@ -92,18 +72,39 @@ use yii\helpers\Url;
         'transferencia' => 'Transferencia Bancaria',
         'paypal' => 'PayPal',
         // Add more payment methods as needed
-    ], ['class' => 'form-control']) ?> <div class="form-group">
+    ], ['class' => 'form-control']) ?>
+
+    <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
 </div>
 
+<script>
+function updatePrecioUnitario() {
+    const selectedOption = document.getElementById('id_producto').value;
+    const precioUnitarioField = document.getElementById('precio_unitario');
 
+    // Perform AJAX request to get the price
+    $.ajax({
+        url: '<?= Url::to(['ventas/get-precio-unitario']) ?>',
+        data: { id: selectedOption },
+        success: function(response) {
+            const data = JSON.parse(response);
+            precioUnitarioField.value = data.precio;
+        },
+        error: function() {
+            precioUnitarioField.value = ''; // Reset if there's an error
+        }
+    });
+}
+</script>
+
+<script>
+
+</script>
 <?php
-
-
-
 $this->registerJs("
     function calcularTotalVendida() {
         var total_vendida = 0;

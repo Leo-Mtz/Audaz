@@ -185,6 +185,14 @@ class VentasController extends \yii\web\Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-  
+    public function actionGetPrecioUnitario($id)
+    {
+        $producto = CatProductos::findOne($id);
+        if ($producto !== null) {
+            return json_encode(['precio' => $producto->precio]);
+        }
+        return json_encode(['precio' => 0]);
+    }
+    
 
 }
