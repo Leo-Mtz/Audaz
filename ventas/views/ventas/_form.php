@@ -151,6 +151,8 @@ $this->registerJs("
 
 
 
+
+
 <script>
     const productosDropdown = <?= json_encode($productosDropdown) ?>;
     let productCount = 0; // Initialize productCount
@@ -166,7 +168,7 @@ $this->registerJs("
         const rowDiv = document.createElement('div');
         rowDiv.className = 'row';
 
-        // Create div for id_producto field with col-md-4 class
+        // Create div for id_producto field with col-md-6 class
         const divIdProducto = document.createElement('div');
         divIdProducto.className = 'col-md-4';
 
@@ -193,7 +195,7 @@ $this->registerJs("
         // Append id_producto input to divIdProducto
         divIdProducto.appendChild(idProductoField);
 
-        // Create div for cantidad_vendida field with col-md-4 class
+        // Create div for cantidad_vendida field with col-md-6 class
         const divCantidadVendida = document.createElement('div');
         divCantidadVendida.className = 'col-md-4';
 
@@ -201,24 +203,24 @@ $this->registerJs("
         const cantidadVendidaField = document.createElement('input');
         cantidadVendidaField.type = 'number';
         cantidadVendidaField.name = 'Ventas[productos][' + productCount + '][cantidad_vendida]'; // Set the name attribute for form submission
-        cantidadVendidaField.className = 'form-control mb-2 cantidad-vendida-input'; // Add a class for styling
+        cantidadVendidaField.className = 'form-control mb-2'; // Add a class for styling
         cantidadVendidaField.placeholder = 'Cantidad Vendida';
 
         // Append cantidad_vendida input to divCantidadVendida
         divCantidadVendida.appendChild(cantidadVendidaField);
 
-        // Create div for precio_total_producto field with col-md-4 class
+        // Create div for precio_total_producto field with col-md-6 class
         const divPrecioTotalProducto = document.createElement('div');
         divPrecioTotalProducto.className = 'col-md-4';
 
-        const PrecioTotalProductoField = document.createElement('input');
+        const PrecioTotalProducto = document.createElement('input');
         PrecioTotalProducto.type = 'number';
         PrecioTotalProducto.name = 'Ventas[productos][' + productCount + '][precio_total_producto]'; // Set the name attribute for form submission
         PrecioTotalProducto.className = 'form-control mb-2'; // Add a class for styling
         PrecioTotalProducto.placeholder = 'Precio total por producto';
 
         // Append divIdProducto and divCantidadVendida to rowDiv
-        divPrecioTotalProducto.appendChild(PrecioTotalProductoField);
+        divPrecioTotalProducto.appendChild(PrecioTotalProducto);
 
         rowDiv.appendChild(divIdProducto);
         rowDiv.appendChild(divCantidadVendida);
@@ -236,7 +238,6 @@ $this->registerJs("
         // Add click event listener to delete button
         deleteButton.addEventListener('click', function() {
             ProductFieldsContainer.removeChild(productDiv); // Remove the entire productDiv when delete button is clicked
-            calcularTotalVendida(); // Recalculate total when a product field is removed
         });
 
         // Append delete button to productDiv
@@ -246,10 +247,8 @@ $this->registerJs("
         ProductFieldsContainer.appendChild(productDiv);
 
         productCount++; // Increment productCount for the next field
-
-        // Attach event listener for new cantidad_vendida input
-        $(cantidadVendidaField).on('input', function() {
-            calcularTotalVendida();
-        });
     }
+
+
+
 </script>
