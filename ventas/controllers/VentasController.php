@@ -56,29 +56,21 @@ class VentasController extends \yii\web\Controller
         date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
 
         
-        if ($model->load(Yii::$app->request->post())) {
-                $model->save();
-        
-                // Get the automatically generated id_venta
-                $idVenta = $model->id_venta;
-        
-                if (isset(Yii::$app->request->post('Ventas')['productos'])) {
-                    $productos = Yii::$app->request->post('Ventas')['productos'];
-                    foreach ($productos as $producto) {
-                        // Directly insert the product into the Ventas table
-                        $ventaProducto = new Ventas();
-                        $ventaProducto->id_venta = $model->id_venta;
-                        $ventaProducto->id_producto = $producto['id_producto'];
-                        $ventaProducto->cantidad_vendida = $producto['cantidad_vendida'];
-                        $ventaProducto->precio_total_producto = $producto['precio_total_producto'];
-                        $ventaProducto->save();
-                    }
-                }
-        
-                return $this->redirect(['view', 'id' => $model->id_venta]);
-            } else {
-                var_dump($model->errors);
-            }
+    if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        $productos = Yii::$app->request->post('Ventas')['productos'];
+
+        foreach ($productos as $productoData) {
+            $model->productos[] = [
+
+                //datos unicos de cada producto
+                'id_producto' => $productoData['id_producto'],
+                'cantidad_vendida' => $productoData['cantidad_vendida'],
+                'precio_unitario' => $productoData['precio_unitario'],
+                'precio_total_producto' => $productoData['precio_total_producto'],
+            ];
+        }
+        return $this->redirect(['view', 'id' => $model->id]);
+    }
     
 
     

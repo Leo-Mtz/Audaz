@@ -45,7 +45,7 @@ use yii\helpers\Url;
         </div>
 
         <div class="col-md-4">
-            <?= $form->field($model, 'precio_unitario')->textInput(['class' => 'form-control precio-unitario-input', 'id' => 'precio_unitario', 'readonly' => true]) ?>
+            <?= $form->field($model, 'precio_unitario')->hiddenInput(['class' => 'form-control precio-unitario-input', 'id' => 'precio_unitario', 'readonly' => true, 'label'=>false]) ?>
         </div>
 
         <div class="col-md-4">
@@ -57,7 +57,7 @@ use yii\helpers\Url;
     <button type="button" class="btn btn-primary" onclick="addProductField()">Agregar Producto</button>
 
     <div class="col-md col-lg">
-        <?= $form->field($model, 'cantidad_total_vendida')->textInput(['placeholder' => 'Total Vendida', 'readonly' => true]) ?>
+        <?= $form->field($model, 'cantidad_total_vendida')->textInput(['placeholder' => 'Total Vendida', 'id'=> 'total_vendida', 'readonly' => true]) ?>
     </div>
 
     <div class="col-md col-lg">
@@ -73,7 +73,6 @@ use yii\helpers\Url;
         'tarjeta' => 'Tarjeta de Crédito/Débito',
         'transferencia' => 'Transferencia Bancaria',
         'paypal' => 'PayPal',
-        // Add more payment methods as needed
     ], ['class' => 'form-control']) ?>
 
     <div class="form-group">
@@ -102,6 +101,9 @@ function updatePrecioUnitario() {
             calcularMontoProducto(); // Recalculate the total product price with the updated (empty) unit price
         }
     });
+
+
+    
 }
 
 function calcularMontoProducto() {
@@ -175,6 +177,7 @@ function addProductField() {
     cantidadVendidaField.className = 'form-control mb-2'; // Add a class for styling
     cantidadVendidaField.placeholder = 'Cantidad Vendida';
 
+    
     // Append cantidad_vendida input to divCantidadVendida
     divCantidadVendida.appendChild(cantidadVendidaField);
 
