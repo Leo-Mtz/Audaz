@@ -49,7 +49,7 @@ use yii\helpers\Url;
         </div>
 
         <div class="col-md-4">
-            <?= $form->field($model, 'precio_total_producto')->textInput(['id' => 'precio_total_producto', 'readonly' => true]) ?>
+            <?= $form->field($model, 'precio_total_producto')->textInput(['class'=>'precio-total-producto-input','id' => 'precio_total_producto', 'readonly' => true]) ?>
         </div>
     </div>
 
@@ -60,9 +60,9 @@ use yii\helpers\Url;
         <?= $form->field($model, 'cantidad_total_vendida')->textInput(['placeholder' => 'Total Vendida', 'id'=> 'total_vendida', 'readonly' => true]) ?>
     </div>
 
-    <div class="col-md col-lg">
-        <?= $form->field($model, 'precio_total_venta')->textInput() ?>
-    </div>
+   <div class="col-md col-lg">
+       <?= $form->field($model, 'precio_total_venta')->textInput(['value' => $model->precio_total_venta, 'readonly' => true]) ?>
+   </div>
 
     <?= $form->field($model, 'id_evento')->textInput() ?>
     <?= $form->field($model, 'id_vendedor')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false) ?>
@@ -83,7 +83,7 @@ use yii\helpers\Url;
 </div>
 
 <script>
-function updatePrecioUnitario() {
+function updatePrecioUnitario() { //funcion para mostrar el precio unitario de cada producto
     const selectedOption = document.getElementById('id_producto').value;
     const precioUnitarioField = document.getElementById('precio_unitario');
 
@@ -107,22 +107,45 @@ function updatePrecioUnitario() {
 }
 
 function calcularMontoProducto() {
-    var precio_unitario = parseFloat(document.getElementById('precio_unitario').value) || 0;
-    var cantidad_vendida = parseFloat(document.getElementById('cantidad_vendida').value) || 0;
-    var monto_producto = precio_unitario * cantidad_vendida;
+        var precio_unitario = parseFloat($('#precio_unitario').val()) || 0;
+        var cantidad_vendida = parseFloat($('#cantidad_vendida').val()) || 0;
+        var monto_producto = precio_unitario * cantidad_vendida;
+        $('#precio_total_producto').val(monto_producto.toFixed(2));
+        calcularTotalVenta();
+    }
 
-    document.getElementById('precio_total_producto').value = monto_producto.toFixed(2); // Set the calculated value in the total price field
-}
+    function calcularTotalVenta() {
+        var totalVenta = 0;
+        var totalCantidadVendida = 0; // Initialize totalCantidadVendida
+    
+        $('.precio-total-producto-input').each(function() {
+            var value = parseFloat($(this).val());
+            if (!isNaN(value)) {
+                totalVenta += value;
+            }
+        });
+    
+        // Calculate total cantidad vendida
+        $('.cantidad-vendida-input').each(function() {
+            var cantidadVendida = parseFloat($(this).val());
+            if (!isNaN(cantidadVendida)) {
+                totalCantidadVendida += cantidadVendida;
+            }
+        });
+    
 
-$(document).ready(function() {
-    $('#precio_unitario, #cantidad_vendida').on('input', function() {
-        calcularMontoProducto();
-    });
+        console.log('Total Venta:', totalVenta.toFixed(2));
+        console.log('Total Cantidad Vendida:', totalCantidadVendida);
 
-    // Initial calculation
-    calcularMontoProducto();
-});
+        // Update the total cantidad vendida field
+        $('#cantidad_total_vendida').val(totalCantidadVendida);
+    
+        $('#precio_total_venta').val(totalVenta.toFixed(2));
+      
+    }
+
 </script>
+
 
 <script>
 const productosDropdown = <?= json_encode($productosDropdown) ?>;
@@ -174,7 +197,7 @@ function addProductField() {
     const cantidadVendidaField = document.createElement('input');
     cantidadVendidaField.type = 'number';
     cantidadVendidaField.name = 'Ventas[productos][' + productCount + '][cantidad_vendida]'; // Set the name attribute for form submission
-    cantidadVendidaField.className = 'form-control mb-2'; // Add a class for styling
+    cantidadVendidaField.className = 'form-control mb-2 cantidad-vendida-input'; // Add a class for styling
     cantidadVendidaField.placeholder = 'Cantidad Vendida';
 
     
@@ -187,11 +210,12 @@ function addProductField() {
 
     const PrecioTotalProducto = document.createElement('input');
     PrecioTotalProducto.type = 'number';
-    PrecioTotalProducto.name = 'Ventas[productos][' + productCount + '][precio_total_producto]'; // Set the name attribute for form submission
-    PrecioTotalProducto.className = 'form-control mb-2'; // Add a class for styling
+    PrecioTotalProducto.name = 'Ventas[productos][' + productCount + '][precio_total_producto]';
+    PrecioTotalProducto.className = 'form-control mb-2 precio-total-producto-input';
     PrecioTotalProducto.placeholder = 'Precio total por producto';
+    PrecioTotalProducto.readOnly = true;
+    PrecioTotalProducto.oninput = calcularTotalVenta;
 
-    // Append divIdProducto and divCantidadVendida to rowDiv
     divPrecioTotalProducto.appendChild(PrecioTotalProducto);
 
     rowDiv.appendChild(divIdProducto);
