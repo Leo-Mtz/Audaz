@@ -31,33 +31,19 @@ use yii\helpers\Url;
         ]) ?>
     </div>
 
-    <div class="row">
-        <div class="col-md-4">
-            <?= $form->field($model, 'id_producto')->dropdownList($productosDropdown, [
-                'prompt' => 'Seleccionar producto',
-                'id' => 'id_producto',
-                'onchange' => 'updatePrecioUnitario(this)',
-            ]) ?>
-        </div>
-        <div class="col-md-4">
-            <?= $form->field($model, 'cantidad_vendida')->textInput(['class' => 'form-control cantidad-vendida-input', 'id' => 'cantidad_vendida', 'oninput' => 'calcularMontoProducto(this)']) ?>
-        </div>
-
-        <div class="col-md-4">
-            <?= $form->field($model, 'precio_unitario')->hiddenInput(['class' => 'form-control precio-unitario-input', 'id' => 'precio_unitario', 'readonly' => true, 'label'=>false]) ?>
-        </div>
-
-        <div class="col-md-4">
-            <?= $form->field($model, 'precio_total_producto')->textInput(['class'=>'precio-total-producto-input','id' => 'precio_total_producto', 'readonly' => true, 'oninput' => 'calcularTotalVenta()']) ?>
-        </div>
+  <div class="col-md col-lg">
+        <?= $form->field($model, 'productos_totales')->textInput([
+            'placeholder' => 'Número de productos',
+            'id' => 'num_productos',
+            'oninput' => 'generateProductFields()'
+        ]) ?>
     </div>
-
+    
+    
     <div id="Productosadicionales" class="mt-3 row"></div>
     <button type="button" class="btn btn-primary" onclick="addProductField()">Agregar Producto</button>
 
-    <div class="col-md col-lg">
-        <?= $form->field($model, 'cantidad_total_vendida')->textInput(['placeholder' => 'Total Vendida', 'id'=> 'total_vendida', 'readonly' => true]) ?>
-    </div>
+
 
    <div class="col-md col-lg">
        <?= $form->field($model, 'precio_total_venta')->textInput(['value' => $model->precio_total_venta, 'readonly' => false]) ?>
@@ -73,7 +59,7 @@ use yii\helpers\Url;
         'cortesia'=>'Cortesía',
 
     ], ['class'=>'form-control'])?>
-    
+
     <?= $form->field($model, 'forma_de_pago')->dropDownList([
         'prompt' => 'Selecciona una forma de pago',
         'efectivo' => 'Efectivo',
@@ -96,8 +82,20 @@ const productosDropdown = <?= json_encode($productosDropdown) ?>;
 // Contador para llevar la cuenta de los productos agregados dinámicamente
 let productCount = 0;
 
+
+function generateProductFields() {
+    const numProductos = parseInt(document.getElementById('num_productos').value) || 0;
+    const ProductFieldsContainer = document.getElementById('Productosadicionales');
+    ProductFieldsContainer.innerHTML = ''; // Clear existing fields
+
+    for (let i = 0; i < numProductos; i++) {
+        addProductField(i);
+    }
+}
+
+
 // Función para agregar campos de productos adicionales dinámicamente
-function addProductField() {
+function addProductField(index) {
     // Obtener el contenedor donde se agregarán los campos de producto
     const ProductFieldsContainer = document.getElementById('Productosadicionales');
 

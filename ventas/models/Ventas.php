@@ -55,7 +55,7 @@ class Ventas extends \yii\db\ActiveRecord
             'id_vendedor' => 'Id Vendedor',
             'precio_unitario' => 'Precio Unitario',
             'cantidad_total_vendida' => 'Cantidad Total Vendida',
-            'precio_total_producto'=> 'Precio Total Producto',
+            'subtotal_Producto'=> 'Subtotal',
             'forma_de_pago'=> 'Forma de Pago',
         ];
 
