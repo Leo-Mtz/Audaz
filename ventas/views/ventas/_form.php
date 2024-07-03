@@ -268,6 +268,7 @@ function calcularMontoProducto(element) {
     const precioTotalField = rowDiv.querySelector('.precio-total-producto-input'); // Campo de precio total del producto
 
     const selectedOption = idProductoField.value;
+    console.log(`Selected option: ${selectedOption}`);
 
     if (selectedOption === '') {
         console.log('No product selected');
@@ -280,17 +281,28 @@ function calcularMontoProducto(element) {
         type: 'GET',
         data: { id: selectedOption },
         success: function(data) {
-            const precioUnitario = parseFloat(data);
+
+            console.log('Data from server: ', data);
+            const response=JSON.parse(data);
+            const precioUnitario = parseFloat(response.precio);
             const cantidadVendida = parseFloat(cantidadVendidaField.value);
+
+            console.log('Parsed precioUnitario:', precioUnitario);
+            console.log('Parsed cantidadVendida:', cantidadVendida);
+
 
             if (!isNaN(precioUnitario) && !isNaN(cantidadVendida)) {
                 const precioTotal = precioUnitario * cantidadVendida;
+                console.log('Precio Total', precioTotal);
                 precioTotalField.value = precioTotal.toFixed(2);
             } else {
-                precioTotalField.value = '';
+                precioTotalField.value = 0;
             }
 
             // Recalcular el total de la venta
+            console.log('Updating precioTotalField:', precioTotalField.value);
+
+
             calcularTotalVenta();
         }
     });
