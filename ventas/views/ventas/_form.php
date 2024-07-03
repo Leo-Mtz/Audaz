@@ -337,7 +337,7 @@ function calcularTotalVenta() {
     // Mostrar el total de la cantidad vendida y el total de la venta en los campos correspondientes
    
     document.getElementById('total_vendida').value = totalCantidadVendida.toFixed(2);
-    document.getElementById('precio_total_venta').value = totalVenta.toFixed(2);
+    document.getElementById('total_venta').value = totalVenta.toFixed(2);
 
 
         // Mostrar el total de la cantidad vendida y el total de la venta en los campos correspondientes
@@ -349,7 +349,7 @@ function calcularTotalVenta() {
             console.log('El campo cantidad_vendida no se encontró.');
         }
 
-    const totalVentaField = document.getElementById('ventas-precio_total_venta');
+    const totalVentaField = document.getElementById('total_venta');
     if(totalVentaField) {
         
             totalVentaField.value = totalVenta.toFixed(2);
