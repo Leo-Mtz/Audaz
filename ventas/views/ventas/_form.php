@@ -233,7 +233,9 @@ function updatePrecioUnitario(element) {
         data: { id: selectedOption },
         success: function(data) {
           
-            const precioUnitario = parseFloat(data);
+            console.log('Data from server: ', data);
+            const response=JSON.parse(data);
+            const precioUnitario = parseFloat(response.precio);
             console.log(`Received price: ${precioUnitario} for product ID: ${selectedOption}`);
 
           
@@ -251,10 +253,8 @@ function updatePrecioUnitario(element) {
                     // Recalcular el total de la venta
                     calcularTotalVenta();
                 }
-
-                else{
-                    console.error("Invalidad pprice for product : ${selectedOption}")
-                }
+            } else {
+                console.log(`Failed to retrieve price for product ID: ${selectedOption}`);
             }
         }
     });
