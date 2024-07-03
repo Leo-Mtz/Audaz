@@ -31,11 +31,11 @@ class Ventas extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fecha', 'id_evento', 'id_vendedor', 'id_producto', 'cantidad_vendida', 'precio_total_venta', 'cantidad_total_vendida', 'precio_unitario', 'forma_de_pago', 'precio_total_producto'], 'required'],
+            [['fecha', 'id_evento', 'id_vendedor', 'id_producto', 'cantidad_vendida', 'precio_total_venta', 'cantidad_total_vendida', 'precio_unitario', 'forma_de_pago', 'subtotal_producto','productos_totales'], 'required'],
             [['fecha'], 'safe'],
             [['id_producto', 'id_evento', 'id_vendedor'], 'integer'],
-            [['cantidad_vendida', 'precio_total_venta', 'cantidad_total_vendida', 'precio_unitario', 'precio_total_producto'], 'number'],
-            ['forma_de_pago', 'string'], 
+            [['cantidad_vendida', 'precio_total_venta', 'cantidad_total_vendida', 'precio_unitario', 'subtotal_producto','productos_totales'], 'number'],
+            ['forma_de_pago','tipo_de_venta', 'string'], 
         ];
     }
 
@@ -55,8 +55,12 @@ class Ventas extends \yii\db\ActiveRecord
             'id_vendedor' => 'Id Vendedor',
             'precio_unitario' => 'Precio Unitario',
             'cantidad_total_vendida' => 'Cantidad Total Vendida',
-            'subtotal_Producto'=> 'Subtotal',
+            'subtotal_producto'=> 'Subtotal',
             'forma_de_pago'=> 'Forma de Pago',
+            'tipo_de_venta'=> 'Tipo de Venta',
+            'productos_totales' => 'Productos Totales',
+            
+           
         ];
 
     }

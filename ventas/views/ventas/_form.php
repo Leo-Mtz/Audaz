@@ -76,7 +76,6 @@ use yii\helpers\Url;
     </div>
 
     <?php ActiveForm::end(); ?>
-</>
 
 <script>
 // Arreglo de productos para el dropdown
@@ -349,7 +348,7 @@ function calcularTotalVenta() {
             console.log('El campo cantidad_vendida no se encontró.');
         }
 
-    const totalVentaField = document.getElementById('total_venta');
+    const totalVentaField = document.getElementById('ventas-precio_total_venta');
     if(totalVentaField) {
         
             totalVentaField.value = totalVenta.toFixed(2);
@@ -358,9 +357,6 @@ function calcularTotalVenta() {
             console.log('El campo precio_total_venta no se encontró.');
         }
     
-
-    console.log('Total Cantidad Vendida:', totalCantidadVendida);
-    console.log('Total Venta:', totalVenta);
 
 }
 </script>
