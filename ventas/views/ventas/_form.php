@@ -260,7 +260,7 @@ function updatePrecioUnitario(element) {
     });
 }
 
-// Función para calcular el monto total de cada producto
+// Función para calcular el monto total de cada producto ( subtotal de producto)
 function calcularMontoProducto(element) {
     const rowDiv = element.closest('.row'); // Obtener el div de fila que contiene los campos
     const idProductoField = rowDiv.querySelector('select[name^="Ventas[productos]"]'); // Campo de id_producto
@@ -303,6 +303,7 @@ function calcularMontoProducto(element) {
             console.log('Updating precioTotalField:', precioTotalField.value);
 
 
+            //function called to update total
             calcularTotalVenta();
         }
     });
@@ -321,14 +322,19 @@ function calcularTotalVenta() {
         }
     });
 
+    //funcion para obtener el total de la cantidad vendida
     document.querySelectorAll('.cantidad-vendida-input').forEach(function(element) {
+        //gets the cantidad from each product 
         const cantidadVendida = parseFloat(element.value);
         if (!isNaN(cantidadVendida)) {
             totalCantidadVendida += cantidadVendida;
+            console.log('Cantidad Vendida: ', cantidadVendida);
         }
     });
 
     // Mostrar el total de la cantidad vendida y el total de la venta en los campos correspondientes
+   
+    console.log('Total Cantidad Vendida:', totalCantidadVendida);
     document.getElementById('total_vendida').value = totalCantidadVendida.toFixed(2);
     document.getElementById('precio_total_venta').value = totalVenta.toFixed(2);
 }
