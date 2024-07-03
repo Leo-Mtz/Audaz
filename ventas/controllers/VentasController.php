@@ -180,6 +180,7 @@ class VentasController extends \yii\web\Controller
     public function actionGetPrecioUnitario($id)
     {
         $producto = CatProductos::findOne($id);
+        
         if ($producto !== null) {
             return json_encode(['precio' => $producto->precio]);
         }
