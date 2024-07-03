@@ -43,14 +43,14 @@ use yii\helpers\Url;
     <div id="Productosadicionales" class="mt-3 row"></div>
     <button type="button" class="btn btn-primary" onclick="addProductField()">Agregar Producto</button>
 
-    <div class="col-md-4">
-            <?= $form->field($model, 'cantidad_vendida')->textInput(['class' => 'form-control cantidad-vendida-input', 'id' => 'cantidad_vendida', 'oninput' => 'calcularMontoProducto(this)', 'readonly' => true]) ?>
-        </div>
+    <div class="col-md col-lg">
+        <?= $form->field($model, 'cantidad_total_vendida')->textInput(['placeholder' => 'Total Vendida', 'id'=> 'total_vendida', 'readonly' => true]) ?>
+    </div>
 
 
    <div class="col-md col-lg">
-       <?= $form->field($model, 'precio_total_venta')->textInput(['value' => $model->precio_total_venta, 'readonly' => false]) ?>
-   </div>
+    <?=$form->field($model, 'precio_total_venta')->textInput(['placeholder'=>'Monto Total', 'id'=> 'total_venta', 'readonly' => true])?>
+    </div>
 
     <?= $form->field($model, 'id_evento')->textInput() ?>
     <?= $form->field($model, 'id_vendedor')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false) ?>
@@ -317,8 +317,10 @@ function calcularTotalVenta() {
     // Iterar sobre todos los campos de precio total por producto y cantidad vendida para calcular el total de la venta
     document.querySelectorAll('.precio-total-producto-input').forEach(function(element) {
         const value = parseFloat(element.value);
+        console.log("Precio Total: ", value);
         if (!isNaN(value)) {
             totalVenta += value;
+            console.log('Total Venta: ', totalVenta);
         }
     });
 
@@ -334,8 +336,31 @@ function calcularTotalVenta() {
 
     // Mostrar el total de la cantidad vendida y el total de la venta en los campos correspondientes
    
-    console.log('Total Cantidad Vendida:', totalCantidadVendida);
     document.getElementById('total_vendida').value = totalCantidadVendida.toFixed(2);
     document.getElementById('precio_total_venta').value = totalVenta.toFixed(2);
+
+
+        // Mostrar el total de la cantidad vendida y el total de la venta en los campos correspondientes
+    
+        const cantidadVendidaField = document.getElementById('cantidad_vendida'); 
+        if (cantidadVendidaField) {
+            cantidadVendidaField.value = totalCantidadVendida.toFixed(2);
+        } else {
+            console.log('El campo cantidad_vendida no se encontró.');
+        }
+
+    const totalVentaField = document.getElementById('ventas-precio_total_venta');
+    if(totalVentaField) {
+        
+            totalVentaField.value = totalVenta.toFixed(2);
+        
+        }    else{
+            console.log('El campo precio_total_venta no se encontró.');
+        }
+    
+
+    console.log('Total Cantidad Vendida:', totalCantidadVendida);
+    console.log('Total Venta:', totalVenta);
+
 }
 </script>
