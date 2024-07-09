@@ -10,7 +10,6 @@ use yii\helpers\Url;
 /* @var $productosDropdown array */
 ?>
 
-
 <div class="ventas-form">
 
     <?php $form = ActiveForm::begin(); ?>
@@ -31,332 +30,286 @@ use yii\helpers\Url;
         ]) ?>
     </div>
 
-  <div class="col-md col-lg">
+    <div class="col-md col-lg">
         <?= $form->field($model, 'productos_totales')->textInput([
             'placeholder' => 'Número de productos',
             'id' => 'num_productos',
             'oninput' => 'generateProductFields()'
         ]) ?>
     </div>
-    
-    
+
     <div id="Productosadicionales" class="mt-3 row"></div>
     <button type="button" class="btn btn-primary" onclick="addProductField()">Agregar Producto</button>
 
     <div class="col-md col-lg">
-        <?= $form->field($model, 'cantidad_total_vendida')->textInput(['placeholder' => 'Total Vendida', 'id'=> 'total_vendida', 'readonly' => true]) ?>
+        <?= $form->field($model, 'cantidad_total_vendida')->textInput(['placeholder' => 'Total Vendida', 'id' => 'total_vendida', 'readonly' => true]) ?>
+    </div>
+
+    
+    <div class="col-md col-lg">
+        <?= $form->field($model, 'precio_total_venta')->textInput(['placeholder' => 'Monto Total', 'id' => 'total_venta', 'readonly' => true]) ?>
     </div>
 
 
-   <div class="col-md col-lg">
-    <?=$form->field($model, 'precio_total_venta')->textInput(['placeholder'=>'Monto Total', 'id'=> 'total_venta', 'readonly' => true])?>
+
+    <div class="col-md col-lg">
+        <?= $form->field($model, 'id_evento')->dropdownList($eventos, ['prompt' => 'Seleccionar evento']) ?>
     </div>
 
-    <?= $form->field($model, 'id_evento')->textInput() ?>
+
     <?= $form->field($model, 'id_vendedor')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false) ?>
 
-    <?=$form->field($model, 'tipo_de_venta')->dropDownList([
-        'prompt'=>  "Tipo de venta",
-        'venta'=>'Venta',
-        'degustacion'=>'Degustacion',
-        'cortesia'=>'Cortesía',
-
-    ], ['class'=>'form-control'])?>
+    <?= $form->field($model, 'tipo_de_venta')->dropDownList([
+        'venta' => 'Venta',
+        'degustacion' => 'Degustación',
+        'cortesia' => 'Cortesía',
+    ], ['prompt' => 'Seleccione tipo de venta']) ?>
 
     <?= $form->field($model, 'forma_de_pago')->dropDownList([
-        'prompt' => 'Selecciona una forma de pago',
         'efectivo' => 'Efectivo',
         'tarjeta' => 'Tarjeta de Crédito/Débito',
         'transferencia' => 'Transferencia Bancaria',
-        
-    ], ['class' => 'form-control']) ?>
+    ], ['prompt' => 'Seleccione una forma de pago']) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Guardar', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
 
+</div>
+
 <script>
-// Arreglo de productos para el dropdown
+    const productosDropdown = <?= json_encode($productosDropdown) ?>;
+    let productCount = 0;
 
-// Arreglo de productos para el dropdown
-const productosDropdown = <?= json_encode($productosDropdown) ?>;
+    function generateProductFields() {
+        const numProductos = parseInt(document.getElementById('num_productos').value) || 0;
+        const ProductFieldsContainer = document.getElementById('Productosadicionales');
+        ProductFieldsContainer.innerHTML = ''; // Clear existing fields
 
-// Contador para llevar la cuenta de los productos agregados dinámicamente
-let productCount = 0;
-
-function generateProductFields() {
-    const numProductos = parseInt(document.getElementById('num_productos').value) || 0;
-    const ProductFieldsContainer = document.getElementById('Productosadicionales');
-    ProductFieldsContainer.innerHTML = ''; // Clear existing fields
-
-    for (let i = 0; i < numProductos; i++) {
-        addProductField(i);
-    }
-}
-
-function addProductField(index) {
-    const ProductFieldsContainer = document.getElementById('Productosadicionales');
-
-    // Create a div to hold each pair of fields with col-md-12 class
-    const productDiv = document.createElement('div');
-    productDiv.className = 'col-md-12 mb-2'; // Apply Bootstrap grid class and margin bottom
-
-    // Create a row div to ensure fields are side by side
-    const rowDiv = document.createElement('div');
-    rowDiv.className = 'row';
-
-    // Create div for id_producto field with col-md-4 class
-    const divIdProducto = document.createElement('div');
-    divIdProducto.className = 'col-md-4';
-
-    // Create a select input for id_producto
-    const idProductoField = document.createElement('select');
-    idProductoField.name = 'Ventas[productos][' + productCount + '][id_producto]'; // Set the name attribute for form submission
-    idProductoField.className = 'form-control mb-2'; // Add a class for styling
-    idProductoField.onchange = function() { 
-        
-        console.log('Selected Product ID:' , this.value);
-        updatePrecioUnitario(this) };
-
-    // Create a default option
-    const defaultOption = document.createElement('option');
-    defaultOption.value = '';
-    defaultOption.text = 'Seleccionar producto';
-    idProductoField.appendChild(defaultOption);
-
-    for (const key in productosDropdown) {
-        if (productosDropdown.hasOwnProperty(key)) {
-            const option = document.createElement('option');
-            option.value = key;
-            option.text = productosDropdown[key];
-            idProductoField.appendChild(option);
+        for (let i = 0; i < numProductos; i++) {
+            addProductField();
         }
     }
 
-    // Append id_producto input to divIdProducto
-    divIdProducto.appendChild(idProductoField);
+    function addProductField() {
+        const ProductFieldsContainer = document.getElementById('Productosadicionales');
+        const productDiv = document.createElement('div');
+        productDiv.className = 'col-md-12 mb-2';
 
-    // Create div for cantidad_vendida field with col-md-4 class
-    const divCantidadVendida = document.createElement('div');
-    divCantidadVendida.className = 'col-md-4';
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'row';
 
-    // Create a text input for cantidad_vendida
-    const cantidadVendidaField = document.createElement('input');
-    cantidadVendidaField.type = 'number';
-    cantidadVendidaField.name = 'Ventas[productos][' + productCount + '][cantidad_vendida]'; // Set the name attribute for form submission
-    cantidadVendidaField.className = 'form-control mb-2 cantidad-vendida-input'; // Add a class for styling
-    cantidadVendidaField.placeholder = 'Cantidad Vendida';
-    cantidadVendidaField.oninput = function() { calcularMontoProducto(this) };
+        const divIdProducto = document.createElement('div');
+        divIdProducto.className = 'col-md-4';
 
-    // Append cantidad_vendida input to divCantidadVendida
-    divCantidadVendida.appendChild(cantidadVendidaField);
+        const idProductoField = document.createElement('select');
+        idProductoField.name = 'Ventas[productos][' + productCount + '][id_producto]';
+        idProductoField.className = 'form-control mb-2';
+        idProductoField.onchange = function() {
+            updatePrecioUnitario(this);
+        };
 
-    // Create div for precio_total_producto field with col-md-4 class
-    const divPrecioTotalProducto = document.createElement('div');
-    divPrecioTotalProducto.className = 'col-md-4';
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.text = 'Seleccionar producto';
+        idProductoField.appendChild(defaultOption);
 
-    const precioTotalProductoField = document.createElement('input');
-    precioTotalProductoField.type = 'number';
-    precioTotalProductoField.name = 'Ventas[productos][' + productCount + '][precio_total_producto]';
-    precioTotalProductoField.className = 'form-control mb-2 precio-total-producto-input';
-    precioTotalProductoField.placeholder = 'Precio total por producto';
-    precioTotalProductoField.readOnly = true;
+        for (const key in productosDropdown) {
+            if (productosDropdown.hasOwnProperty(key)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.text = productosDropdown[key];
+                idProductoField.appendChild(option);
+            }
+        }
 
-    divPrecioTotalProducto.appendChild(precioTotalProductoField);
+        divIdProducto.appendChild(idProductoField);
 
-    rowDiv.appendChild(divIdProducto);
-    rowDiv.appendChild(divCantidadVendida);
-    rowDiv.appendChild(divPrecioTotalProducto);
+        const divCantidadVendida = document.createElement('div');
+        divCantidadVendida.className = 'col-md-4';
 
-    // Append rowDiv to productDiv
-    productDiv.appendChild(rowDiv);
+        const cantidadVendidaField = document.createElement('input');
+        cantidadVendidaField.type = 'number';
+        cantidadVendidaField.name = 'Ventas[productos][' + productCount + '][cantidad_vendida]';
+        cantidadVendidaField.className = 'form-control mb-2 cantidad-vendida-input';
+        cantidadVendidaField.placeholder = 'Cantidad Vendida';
+        cantidadVendidaField.oninput = function() {
+            calcularMontoProducto(this);
+        };
 
-    // Create delete button
-    const deleteButton = document.createElement('button');
-    deleteButton.type = 'button';
-    deleteButton.className = 'btn btn-danger btn-sm'; // Bootstrap button classes for styling
-    deleteButton.textContent = 'Eliminar Campo'; // Button text
+        divCantidadVendida.appendChild(cantidadVendidaField);
 
-    // Add click event listener to delete button
-    deleteButton.addEventListener('click', function() {
-        deleteProductField(productDiv); // Call delete function with productDiv parameter
-    });
+        const divPrecioTotalProducto = document.createElement('div');
+        divPrecioTotalProducto.className = 'col-md-4';
 
-    // Append delete button to productDiv
-    productDiv.appendChild(deleteButton);
+        const precioTotalProductoField = document.createElement('input');
+        precioTotalProductoField.type = 'number';
+        precioTotalProductoField.name = 'Ventas[productos][' + productCount + '][subtotal_producto]';
+        precioTotalProductoField.className = 'form-control mb-2 precio-total-producto-input';
+        precioTotalProductoField.placeholder = 'Precio total por producto';
+        precioTotalProductoField.readOnly = true;
 
-    // Append productDiv (col-md-12) to ProductFieldsContainer
-    ProductFieldsContainer.appendChild(productDiv);
+        divPrecioTotalProducto.appendChild(precioTotalProductoField);
 
-    // Increment productCount for the next field
-    productCount++;
+        rowDiv.appendChild(divIdProducto);
+        rowDiv.appendChild(divCantidadVendida);
+        rowDiv.appendChild(divPrecioTotalProducto);
 
-    // Update num_productos field
-    document.getElementById('num_productos').value = productCount;
-}
+        productDiv.appendChild(rowDiv);
 
-function deleteProductField(productDiv) {
-    const ProductFieldsContainer = document.getElementById('Productosadicionales');
-    ProductFieldsContainer.removeChild(productDiv);
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.className = 'btn btn-danger btn-sm';
+        deleteButton.textContent = 'Eliminar Campo';
+        deleteButton.addEventListener('click', function() {
+            deleteProductField(productDiv);
+        });
 
-    // Decrement numProductos field when a product is deleted
-    productCount--;
+        productDiv.appendChild(deleteButton);
 
-    // Update num_productos field
-    if (ProductFieldsContainer.children.length === 0) {
-        document.getElementById('num_productos').value = 0;
-    } else {
+        ProductFieldsContainer.appendChild(productDiv);
+
+        productCount++;
+
         document.getElementById('num_productos').value = productCount;
+
+        calcularTotalVenta();
     }
 
-    // Recalculate total quantities and prices after deletion
-    calcularTotalVenta();
-}
+    function deleteProductField(productDiv) {
+        const ProductFieldsContainer = document.getElementById('Productosadicionales');
+        ProductFieldsContainer.removeChild(productDiv);
 
-// Función para actualizar el precio unitario al cambiar el producto seleccionado
-function updatePrecioUnitario(element) {
-    const selectedOption = element.value;
-    const rowDiv = element.closest('.row'); // Obtener el div de fila que contiene los campos
-    const precioUnitarioField = rowDiv.querySelector('.precio-unitario-input'); // Campo de precio unitario
-    const cantidadVendidaField = rowDiv.querySelector('.cantidad-vendida-input'); // Campo de cantidad vendida
+        productCount--;
 
-    console.log(`Fetching price for product ID: ${selectedOption}`);
+        if (ProductFieldsContainer.children.length === 0) {
+            document.getElementById('num_productos').value = 0;
+        } else {
+            document.getElementById('num_productos').value = productCount;
+        }
 
+        calcularTotalVenta();
+    }
 
-    // Realizar una solicitud AJAX para obtener el precio unitario del producto seleccionado
-    $.ajax({
-        url: '<?= Url::to(['ventas/get-precio-unitario']) ?>', // URL de la acción que obtiene el precio unitario
-        type: 'GET',
-        data: { id: selectedOption },
-        success: function(data) {
-          
-            console.log('Data from server: ', data);
-            const response=JSON.parse(data);
-            const precioUnitario = parseFloat(response.precio);
-            console.log(`Received price: ${precioUnitario} for product ID: ${selectedOption}`);
+    // Función para actualizar el precio unitario al cambiar el producto seleccionado
+    function updatePrecioUnitario(element) {
+        const selectedOption = element.value;
+        const rowDiv = element.closest('.row'); // Obtener el div de fila que contiene los campos
+        const cantidadVendidaField = rowDiv.querySelector('.cantidad-vendida-input'); // Campo de cantidad vendida
 
-          
-            if (!isNaN(precioUnitario)) {
-                // Updating precioUnitarioField is not required anymore since it was removed from addProductField function
-                // precioUnitarioField.value = precioUnitario.toFixed(2);
+        console.log(`Fetching price for product ID: ${selectedOption}`);
 
-                // Actualizar el precio total del producto
-                const cantidadVendida = parseFloat(cantidadVendidaField.value);
-                if (!isNaN(cantidadVendida)) {
-                    const precioTotal = precioUnitario * cantidadVendida;
-                    const precioTotalField = rowDiv.querySelector('.precio-total-producto-input');
-                    precioTotalField.value = precioTotal.toFixed(2);
+        // Realizar una solicitud AJAX para obtener el precio unitario del producto seleccionado
+        $.ajax({
+            url: '<?= Url::to(['ventas/get-precio-unitario']) ?>', // URL de la acción que obtiene el precio unitario
+            type: 'GET',
+            data: { id: selectedOption },
+            success: function(data) {
+                console.log('Data from server: ', data);
+                const response = JSON.parse(data);
+                const precioUnitario = parseFloat(response.precio);
+                console.log(`Received price: ${precioUnitario} for product ID: ${selectedOption}`);
 
-                    // Recalcular el total de la venta
-                    calcularTotalVenta();
+                if (!isNaN(precioUnitario)) {
+                    // Actualizar el precio total del producto
+                    const cantidadVendida = parseFloat(cantidadVendidaField.value);
+                    if (!isNaN(cantidadVendida)) {
+                        const precioTotal = precioUnitario * cantidadVendida;
+                        const precioTotalField = rowDiv.querySelector('.precio-total-producto-input');
+                        precioTotalField.value = precioTotal.toFixed(2);
+
+                        // Recalcular el total de la venta
+                        calcularTotalVenta();
+                    }
+                } else {
+                    console.log(`Failed to retrieve price for product ID: ${selectedOption}`);
                 }
-            } else {
-                console.log(`Failed to retrieve price for product ID: ${selectedOption}`);
             }
-        }
-    });
-}
-
-// Función para calcular el monto total de cada producto ( subtotal de producto)
-function calcularMontoProducto(element) {
-    const rowDiv = element.closest('.row'); // Obtener el div de fila que contiene los campos
-    const idProductoField = rowDiv.querySelector('select[name^="Ventas[productos]"]'); // Campo de id_producto
-    const cantidadVendidaField = rowDiv.querySelector('.cantidad-vendida-input'); // Campo de cantidad vendida
-    const precioTotalField = rowDiv.querySelector('.precio-total-producto-input'); // Campo de precio total del producto
-
-    const selectedOption = idProductoField.value;
-    console.log(`Selected option: ${selectedOption}`);
-
-    if (selectedOption === '') {
-        console.log('No product selected');
-        return; // No product selected
+        });
     }
 
-    // Fetch the price for the selected product
-    $.ajax({
-        url: '<?= Url::to(['ventas/get-precio-unitario']) ?>', // URL de la acción que obtiene el precio unitario
-        type: 'GET',
-        data: { id: selectedOption },
-        success: function(data) {
+    // Función para calcular el monto total de cada producto (subtotal de producto)
+    function calcularMontoProducto(element) {
+        const rowDiv = element.closest('.row'); // Obtener el div de fila que contiene los campos
+        const idProductoField = rowDiv.querySelector('select[name^="Ventas[productos]"]'); // Campo de id_producto
+        const cantidadVendidaField = rowDiv.querySelector('.cantidad-vendida-input'); // Campo de cantidad vendida
+        const precioTotalField = rowDiv.querySelector('.precio-total-producto-input'); // Campo de precio total del producto
 
-            console.log('Data from server: ', data);
-            const response=JSON.parse(data);
-            const precioUnitario = parseFloat(response.precio);
-            const cantidadVendida = parseFloat(cantidadVendidaField.value);
+        const selectedOption = idProductoField.value;
+        console.log(`Selected option: ${selectedOption}`);
 
-            console.log('Parsed precioUnitario:', precioUnitario);
-            console.log('Parsed cantidadVendida:', cantidadVendida);
+        if (selectedOption === '') {
+            console.log('No product selected');
+            return; // No product selected
+        }
 
+        // Fetch the price for the selected product
+        $.ajax({
+            url: '<?= Url::to(['ventas/get-precio-unitario']) ?>', // URL de la acción que obtiene el precio unitario
+            type: 'GET',
+            data: { id: selectedOption },
+            success: function(data) {
+                console.log('Data from server: ', data);
+                const response = JSON.parse(data);
+                const precioUnitario = parseFloat(response.precio);
+                const cantidadVendida = parseFloat(cantidadVendidaField.value);
 
-            if (!isNaN(precioUnitario) && !isNaN(cantidadVendida)) {
-                const precioTotal = precioUnitario * cantidadVendida;
-                console.log('Precio Total', precioTotal);
-                precioTotalField.value = precioTotal.toFixed(2);
-            } else {
-                precioTotalField.value = 0;
+                console.log('Parsed precioUnitario:', precioUnitario);
+                console.log('Parsed cantidadVendida:', cantidadVendida);
+
+                if (!isNaN(precioUnitario) && !isNaN(cantidadVendida)) {
+                    const precioTotal = precioUnitario * cantidadVendida;
+                    console.log('Precio Total', precioTotal);
+                    precioTotalField.value = precioTotal.toFixed(2);
+                } else {
+                    precioTotalField.value = 0;
+                }
+
+                // Recalcular el total de la venta
+                console.log('Updating precioTotalField:', precioTotalField.value);
+
+                // Function called to update total
+                calcularTotalVenta();
             }
+        });
+    }
 
-            // Recalcular el total de la venta
-            console.log('Updating precioTotalField:', precioTotalField.value);
+    // Función para calcular el total de la venta sumando los precios totales de todos los productos
+    function calcularTotalVenta() {
+        let totalVenta = 0;
+        let totalCantidadVendida = 0;
 
+        // Iterar sobre todos los campos de precio total por producto y cantidad vendida para calcular el total de la venta
+        document.querySelectorAll('.precio-total-producto-input').forEach(function(element) {
+            const value = parseFloat(element.value);
+            console.log("Precio Total: ", value);
+            if (!isNaN(value)) {
+                totalVenta += value;
+                console.log('Total Venta: ', totalVenta);
+            }
+        });
 
-            //function called to update total
-            calcularTotalVenta();
-        }
-    });
-}
-
-// Función para calcular el total de la venta sumando los precios totales de todos los productos
-function calcularTotalVenta() {
-    let totalVenta = 0;
-    let totalCantidadVendida = 0;
-
-    // Iterar sobre todos los campos de precio total por producto y cantidad vendida para calcular el total de la venta
-    document.querySelectorAll('.precio-total-producto-input').forEach(function(element) {
-        const value = parseFloat(element.value);
-        console.log("Precio Total: ", value);
-        if (!isNaN(value)) {
-            totalVenta += value;
-            console.log('Total Venta: ', totalVenta);
-        }
-    });
-
-    //funcion para obtener el total de la cantidad vendida
-    document.querySelectorAll('.cantidad-vendida-input').forEach(function(element) {
-        //gets the cantidad from each product 
-        const cantidadVendida = parseFloat(element.value);
-        if (!isNaN(cantidadVendida)) {
-            totalCantidadVendida += cantidadVendida;
-            console.log('Cantidad Vendida: ', cantidadVendida);
-        }
-    });
-
-    // Mostrar el total de la cantidad vendida y el total de la venta en los campos correspondientes
-   
-    document.getElementById('total_vendida').value = totalCantidadVendida.toFixed(2);
-    document.getElementById('total_venta').value = totalVenta.toFixed(2);
-
+        // Función para obtener el total de la cantidad vendida
+        document.querySelectorAll('.cantidad-vendida-input').forEach(function(element) {
+            // Obtiene la cantidad de cada producto 
+            const cantidadVendida = parseFloat(element.value);
+            if (!isNaN(cantidadVendida)) {
+                totalCantidadVendida += cantidadVendida;
+                console.log('Cantidad Vendida: ', cantidadVendida);
+            }
+        });
 
         // Mostrar el total de la cantidad vendida y el total de la venta en los campos correspondientes
-    
-        const cantidadVendidaField = document.getElementById('cantidad_vendida'); 
-        if (cantidadVendidaField) {
-            cantidadVendidaField.value = totalCantidadVendida.toFixed(2);
-        } else {
-            console.log('El campo cantidad_vendida no se encontró.');
-        }
+        document.getElementById('total_vendida').value = totalCantidadVendida.toFixed(2);
+        document.getElementById('total_venta').value = totalVenta.toFixed(2);
 
-    const totalVentaField = document.getElementById('ventas-precio_total_venta');
-    if(totalVentaField) {
-        
+        const totalVentaField = document.getElementById('ventas-precio_total_venta');
+        if (totalVentaField) {
             totalVentaField.value = totalVenta.toFixed(2);
-        
-        }    else{
+        } else {
             console.log('El campo precio_total_venta no se encontró.');
         }
-    
-
-}
+    }
 </script>
