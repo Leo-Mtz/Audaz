@@ -34,21 +34,18 @@ $this->params['breadcrumbs'][] = $this->title;
             'id_venta',
             'fecha',
             
-            [
-                'attribute' => 'id_producto',
-                'value' => function ($model) {
-                    $productos = CatProductos::find()->all();
-                    $productosDropdown = [];
-                    foreach ($productos as $producto) {
-                        $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
-                    }
-                    return $productosDropdown[$model->id_producto];
-                },
-            ],
-            'cantidad_vendida',
-            'precio_total_venta',
             'id_evento',
             'id_vendedor',
+            'productos_totales',
+            'tipo_de_venta',
+            'forma_de_pago',
+            
+            [
+               'attribute' => 'precio_total_venta',
+            'value' => function ($model) {
+                return '$' . $model->precio_total_venta;
+            }, 
+        ],
         ],
     ]) ?>
 
