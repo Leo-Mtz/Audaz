@@ -50,80 +50,34 @@ class VentasController extends \yii\web\Controller
     }
 
 
+    
     public function actionCreate()
 {
     $model = new Ventas();
     $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
     date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
 
-    // Initial page load
-    if (Yii::$app->request->isGet) {
-        echo 'Initial page load<br>';
-    }
-
-    // Form submission handling
     if (Yii::$app->request->isPost) {
-        echo 'Form submitted<br>';
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            if (isset(Yii::$app->request->post('Ventas')['productos'])) {
+                $productos = Yii::$app->request->post('Ventas')['productos'];
 
-        if ($model->load(Yii::$app->request->post())) {
-            echo 'Model loaded with data:<br>';
-            echo '<pre>';
-            var_dump($model->attributes);
-            var_dump(Yii::$app->request->post());
-            echo '</pre>';
+                foreach ($productos as $productoData) {
+                    $productoPorVenta = new ProductosPorVenta();
+                    $productoPorVenta->id_venta = $model->id_venta;
+                    $productoPorVenta->id_producto = $productoData['id_producto'];
+                    $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
+                  //  $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
+                    $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
 
-            if ($model->save()) {
-                echo 'Model saved successfully:<br>';
-                echo '<pre>';
-                var_dump($model->attributes);
-                echo '</pre>';
-
-                if (isset(Yii::$app->request->post('Ventas')['productos'])) {
-                    $productos = Yii::$app->request->post('Ventas')['productos'];
-                    echo 'Productos data:<br>';
-                    echo '<pre>';
-                    var_dump($productos);
-                    echo '</pre>';
-
-                    foreach ($productos as $productoData) {
-                        $productoPorVenta = new ProductosPorVenta();
-                        $productoPorVenta->id_venta = $model->id_venta;
-                        $productoPorVenta->id_producto = $productoData['id_producto'];
-                        $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
-                        //$productoPorVenta->precio_unitario = $productoData['precio_unitario'];
-                        $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
-
-                        if (!$productoPorVenta->save()) {
-                            Yii::debug($productoPorVenta->errors, 'productoPorVenta_errors');
-                            echo 'Failed to save ProductosPorVenta:<br>';
-                            echo '<pre>';
-                            var_dump($productoPorVenta->errors);
-                            echo '</pre>';
-                        } else {
-                            echo 'ProductosPorVenta saved successfully:<br>';
-                            echo '<pre>';
-                            var_dump($productoPorVenta->attributes);
-                            echo '</pre>';
-                        }
+                    if (!$productoPorVenta->save()) {
+                        Yii::debug($productoPorVenta->errors, 'productoPorVenta_errors');
                     }
-                } else {
-                    echo 'No productos data found in POST request<br>';
                 }
-
-                return $this->redirect(['view', 'id' => $model->id_venta]);
-            } else {
-                Yii::debug($model->errors, 'model_save_errors');
-                echo 'Failed to save Ventas model:<br>';
-                echo '<pre>';
-                var_dump($model->errors);
-                echo '</pre>';
             }
+            return $this->redirect(['view', 'id' => $model->id_venta]);
         } else {
-            Yii::debug($model->errors, 'model_load_errors');
-            echo 'Failed to load Ventas model:<br>';
-            echo '<pre>';
-            var_dump($model->errors);
-            echo '</pre>';
+            Yii::debug($model->errors, 'ventas_errors');
         }
     }
 
@@ -141,6 +95,7 @@ class VentasController extends \yii\web\Controller
         'eventos' => $eventos,
     ]);
 }
+
 
     public function actionDelete($id){
 
