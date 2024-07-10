@@ -84,7 +84,7 @@ use yii\helpers\Url;
     let productCount = 0;
 
    
-    function generateProductFields() {
+       function generateProductFields() {
         const numProductos = parseInt(document.getElementById('num_productos').value) || 0;
         const ProductFieldsContainer = document.getElementById('Productosadicionales');
         const currentProductFields = ProductFieldsContainer.childElementCount;
@@ -112,7 +112,6 @@ use yii\helpers\Url;
     }
 
 
-    
     function addProductField() {
     const ProductFieldsContainer = document.getElementById('Productosadicionales');
     const productDiv = document.createElement('div');
@@ -163,11 +162,15 @@ use yii\helpers\Url;
 
     const divPrecioUnitario = document.createElement('div');
     divPrecioUnitario.className = 'col-md-3';
-
+    
     const precioUnitarioField = document.createElement('input');
     precioUnitarioField.type = 'hidden'; // Hidden field
     precioUnitarioField.name = 'Ventas[productos][' + productCount + '][precio_unitario]';
     precioUnitarioField.className = 'form-control mb-2 precio-unitario-input';
+    
+    // Set the style of the divPrecioUnitario to hide it
+    divPrecioUnitario.style.display = 'none';
+    
     divPrecioUnitario.appendChild(precioUnitarioField);
 
     const divPrecioTotalProducto = document.createElement('div');
