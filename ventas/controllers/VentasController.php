@@ -52,9 +52,82 @@ class VentasController extends \yii\web\Controller
 
     
     public function actionCreate()
-{
-    $model = new Ventas();
-    $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
+    {
+        $model = new Ventas();
+    
+        echo 'Entered actionCreate method';
+        var_dump('Entered actionCreate method');
+    
+        $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
+        date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
+    
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            // Print the entire POST request data
+            echo '<pre>';
+            var_dump(Yii::$app->request->post());
+            echo '</pre>';
+    
+            if (isset(Yii::$app->request->post('Ventas')['productos'])) {
+                $productos = Yii::$app->request->post('Ventas')['productos'];
+    
+                // Print the products array
+                echo '<pre>';
+                var_dump($productos);
+                echo '</pre>';
+    
+                foreach ($productos as $productoData) {
+    
+                    $productoPorVenta = new ProductosPorVenta();
+                    $productoPorVenta->id_venta = $model->id_venta;
+                    $productoPorVenta->id_producto = $productoData['id_producto'];
+                    $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
+                    $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
+                    $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
+    
+                    if (!$productoPorVenta->save()) {
+                        Yii::debug($productoPorVenta->errors, 'productoPorVenta_errors');
+                    }
+                }
+            } else {
+                echo 'No productos data found in post request';
+            }
+    
+            return $this->redirect(['view', 'id' => $model->id_venta]);
+        } else {
+            Yii::debug($model->errors, 'ventas_errors');
+        }
+    
+        $productos = CatProductos::find()->all();
+        $productosDropdown = [];
+    
+        foreach ($productos as $producto) {
+            $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
+        }
+    
+        $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
+    
+        return $this->render('create', [
+            'model' => $model,
+            'productosDropdown' => $productosDropdown,
+            'eventos' => $eventos,
+        ]);
+    }
+    
+
+
+    public function actionDelete($id){
+
+        $this->findModel($id)->delete();
+
+        return $this->redirect(['index']);
+    }
+
+
+    public function actionUpdate($id){
+
+        $model= $this->findModel($id);
+
+        $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
     date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
 
     if (Yii::$app->request->isPost) {
@@ -67,7 +140,7 @@ class VentasController extends \yii\web\Controller
                     $productoPorVenta->id_venta = $model->id_venta;
                     $productoPorVenta->id_producto = $productoData['id_producto'];
                     $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
-                  //  $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
+                //    $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
                     $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
 
                     if (!$productoPorVenta->save()) {
@@ -94,71 +167,6 @@ class VentasController extends \yii\web\Controller
         'productosDropdown' => $productosDropdown,
         'eventos' => $eventos,
     ]);
-}
-
-
-    public function actionDelete($id){
-
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
-    }
-
-
-    public function actionUpdate($id){
-
-        $model= $this->findModel($id);
-
-        // Set the fecha attribute to the current date
-       $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
-       date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
-
-       
-       if ($model->load(Yii::$app->request->post())) {
-               $model->save();
-       
-               // Get the automatically generated id_venta
-               $idVenta = $model->id_venta;
-       
-               if (isset(Yii::$app->request->post('Ventas')['productos'])) {
-                   $productos = Yii::$app->request->post('Ventas')['productos'];
-                   foreach ($productos as $producto) {
-                       // Directly insert the product into the Ventas table
-                       $ventaProducto = new Ventas();
-                       $ventaProducto->id_venta = $model->id_venta;
-                       $ventaProducto->id_producto = $producto['id_producto'];
-                       $ventaProducto->cantidad_vendida = $producto['cantidad_vendida'];
-                       
-                       $ventaProducto->save();
-                   }
-               }
-       
-               return $this->redirect(['view', 'id' => $model->id_venta]);
-           } else {
-               var_dump($model->errors);
-           }
-   
-
-   
-       $productos = CatProductos::find()->all();
-       $productosDropdown = [];
-       foreach ($productos as $producto) {
-           $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
-       }
-
-
-       return $this->render('update', [
-
-           'model'=>$model,
-           //'vendedor'=>$vendedor,
-           'productosDropdown'=>$productosDropdown,
-          // 'eventos'=>$eventos
-           
-       ]);
-
-
-
-
     }
 
     
