@@ -34,6 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id_venta',
             'fecha',
             
+<<<<<<< HEAD
             [
                 'attribute' => 'id_producto',
 <<<<<<< HEAD
@@ -56,8 +57,20 @@ $this->params['breadcrumbs'][] = $this->title;
 =======
 >>>>>>> main
             'precio_total_venta',
+=======
+>>>>>>> main
             'id_evento',
             'id_vendedor',
+            'productos_totales',
+            'tipo_de_venta',
+            'forma_de_pago',
+            
+            [
+               'attribute' => 'precio_total_venta',
+            'value' => function ($model) {
+                return '$' . $model->precio_total_venta;
+            }, 
+        ],
         ],
     ]) ?>
 

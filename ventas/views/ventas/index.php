@@ -36,10 +36,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
     
-        
             'id_venta',
             'fecha',
             
+<<<<<<< HEAD
 
             [
                 'attribute' => 'id_producto',
@@ -59,11 +59,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'cantidad_vendida',
             'id_vendedor',
+=======
+>>>>>>> main
             'id_evento',
-            'precio_total_producto',
-            'precio_unitario',
-            'precio_total_venta',
-
+            'id_vendedor',
+            'productos_totales',
+            'tipo_de_venta',
+            'forma_de_pago',
+            
+            [
+               'attribute' => 'precio_total_venta',
+            'value' => function ($model) {
+                return '$' . $model->precio_total_venta;
+            }, 
+        ],
     
         
 

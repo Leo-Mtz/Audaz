@@ -6,10 +6,13 @@ namespace app\controllers;
 use Yii;
 use app\models\Ventas;
 use app\Models\CatProductos;
+use app\models\ProductosPorVenta;
+use app\models\CatEventos;
 use app\models\VentasSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 class VentasController extends \yii\web\Controller
 {
@@ -48,6 +51,7 @@ class VentasController extends \yii\web\Controller
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     public function actionCreate()
     {
         $model = new Ventas();
@@ -58,45 +62,67 @@ class VentasController extends \yii\web\Controller
 =======
     public function actionCreate(){
 
+=======
+    
+    public function actionCreate()
+    {
+>>>>>>> main
         $model = new Ventas();
-
-         // Set the fecha attribute to the current date
+    
+        echo 'Entered actionCreate method';
+        var_dump('Entered actionCreate method');
+    
         $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
         date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
-
-        
-        if ($model->load(Yii::$app->request->post())) {
-                $model->save();
-        
-                // Get the automatically generated id_venta
-                $idVenta = $model->id_venta;
-        
-                if (isset(Yii::$app->request->post('Ventas')['productos'])) {
-                    $productos = Yii::$app->request->post('Ventas')['productos'];
-                    foreach ($productos as $producto) {
-                        // Directly insert the product into the Ventas table
-                        $ventaProducto = new Ventas();
-                        $ventaProducto->id_venta = $model->id_venta;
-                        $ventaProducto->id_producto = $producto['id_producto'];
-                        $ventaProducto->cantidad_vendida = $producto['cantidad_vendida'];
-                        $ventaProducto->precio_total_producto = $producto['precio_total_producto'];
-                        $ventaProducto->save();
+    
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            // Print the entire POST request data
+            echo '<pre>';
+            var_dump(Yii::$app->request->post());
+            echo '</pre>';
+    
+            if (isset(Yii::$app->request->post('Ventas')['productos'])) {
+                $productos = Yii::$app->request->post('Ventas')['productos'];
+    
+                // Print the products array
+                echo '<pre>';
+                var_dump($productos);
+                echo '</pre>';
+    
+                foreach ($productos as $productoData) {
+    
+                    $productoPorVenta = new ProductosPorVenta();
+                    $productoPorVenta->id_venta = $model->id_venta;
+                    $productoPorVenta->id_producto = $productoData['id_producto'];
+                    $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
+                    $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
+                    $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
+    
+                    if (!$productoPorVenta->save()) {
+                        Yii::debug($productoPorVenta->errors, 'productoPorVenta_errors');
                     }
                 }
-        
-                return $this->redirect(['view', 'id' => $model->id_venta]);
             } else {
-                var_dump($model->errors);
+                echo 'No productos data found in post request';
             }
     
+<<<<<<< HEAD
 
+>>>>>>> main
+=======
+            return $this->redirect(['view', 'id' => $model->id_venta]);
+        } else {
+            Yii::debug($model->errors, 'ventas_errors');
+        }
 >>>>>>> main
     
         $productos = CatProductos::find()->all();
         $productosDropdown = [];
+    
         foreach ($productos as $producto) {
             $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
         }
+<<<<<<< HEAD
 <<<<<<< HEAD
     
         if ($model->load(Yii::$app->request->post())) {
@@ -120,20 +146,19 @@ class VentasController extends \yii\web\Controller
 =======
 
 
+=======
+    
+        $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
+    
+>>>>>>> main
         return $this->render('create', [
-
-            'model'=>$model,
-            //'vendedor'=>$vendedor,
-            'productosDropdown'=>$productosDropdown,
-           // 'eventos'=>$eventos
-            
-
-
-
-
+            'model' => $model,
+            'productosDropdown' => $productosDropdown,
+            'eventos' => $eventos,
         ]);
-
     }
+    
+
 
 >>>>>>> main
     public function actionDelete($id){
@@ -188,56 +213,46 @@ class VentasController extends \yii\web\Controller
 
         $model= $this->findModel($id);
 
-        // Set the fecha attribute to the current date
-       $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
-       date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
+        $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
+    date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
 
-       
-       if ($model->load(Yii::$app->request->post())) {
-               $model->save();
-       
-               // Get the automatically generated id_venta
-               $idVenta = $model->id_venta;
-       
-               if (isset(Yii::$app->request->post('Ventas')['productos'])) {
-                   $productos = Yii::$app->request->post('Ventas')['productos'];
-                   foreach ($productos as $producto) {
-                       // Directly insert the product into the Ventas table
-                       $ventaProducto = new Ventas();
-                       $ventaProducto->id_venta = $model->id_venta;
-                       $ventaProducto->id_producto = $producto['id_producto'];
-                       $ventaProducto->cantidad_vendida = $producto['cantidad_vendida'];
-                       $ventaProducto->precio_total_producto = $producto['precio_total_producto'];
-                       $ventaProducto->save();
-                   }
-               }
-       
-               return $this->redirect(['view', 'id' => $model->id_venta]);
-           } else {
-               var_dump($model->errors);
-           }
-   
+    if (Yii::$app->request->isPost) {
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            if (isset(Yii::$app->request->post('Ventas')['productos'])) {
+                $productos = Yii::$app->request->post('Ventas')['productos'];
 
-   
-       $productos = CatProductos::find()->all();
-       $productosDropdown = [];
-       foreach ($productos as $producto) {
-           $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
-       }
+                foreach ($productos as $productoData) {
+                    $productoPorVenta = new ProductosPorVenta();
+                    $productoPorVenta->id_venta = $model->id_venta;
+                    $productoPorVenta->id_producto = $productoData['id_producto'];
+                    $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
+                //    $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
+                    $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
 
+                    if (!$productoPorVenta->save()) {
+                        Yii::debug($productoPorVenta->errors, 'productoPorVenta_errors');
+                    }
+                }
+            }
+            return $this->redirect(['view', 'id' => $model->id_venta]);
+        } else {
+            Yii::debug($model->errors, 'ventas_errors');
+        }
+    }
 
-       return $this->render('update', [
+    $productos = CatProductos::find()->all();
+    $productosDropdown = [];
+    foreach ($productos as $producto) {
+        $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
+    }
 
-           'model'=>$model,
-           //'vendedor'=>$vendedor,
-           'productosDropdown'=>$productosDropdown,
-          // 'eventos'=>$eventos
-           
-       ]);
+    $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
 
-
-
-
+    return $this->render('create', [
+        'model' => $model,
+        'productosDropdown' => $productosDropdown,
+        'eventos' => $eventos,
+    ]);
     }
 
     
@@ -287,12 +302,18 @@ class VentasController extends \yii\web\Controller
     public function actionGetPrecioUnitario($id)
     {
         $producto = CatProductos::findOne($id);
-        if ($producto !== null) {
-            return json_encode(['precio' => $producto->precio]);
-        }
-        return json_encode(['precio' => 0]);
-    }
     
+        if ($producto !== null) {
+            $precioUnitario = $producto->precio;
+            $productoData = [
+                'precio' => $precioUnitario,
+                'precio_unitario' => $precioUnitario,
+            ];
+            return json_encode($productoData);
+        }
+        return json_encode(['precio' => 0, 'precio_unitario' => 0]);
+    }
+
 
 }
 >>>>>>> main
