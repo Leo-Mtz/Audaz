@@ -83,15 +83,36 @@ use yii\helpers\Url;
     const productosDropdown = <?= json_encode($productosDropdown) ?>;
     let productCount = 0;
 
+   
     function generateProductFields() {
         const numProductos = parseInt(document.getElementById('num_productos').value) || 0;
         const ProductFieldsContainer = document.getElementById('Productosadicionales');
-        ProductFieldsContainer.innerHTML = ''; // Clear existing fields
+        const currentProductFields = ProductFieldsContainer.childElementCount;
 
-        for (let i = 0; i < numProductos; i++) {
-            addProductField();
+        // Clear existing fields if numProductos is zero
+        if (numProductos === 0) {
+            ProductFieldsContainer.innerHTML = ''; // Clear all fields
+            productCount = 0; // Reset product count
+            calcularTotalVenta(); // Recalculate total sale
+            return;
+        }
+
+        if (numProductos > currentProductFields) {
+            for (let i = currentProductFields; i < numProductos; i++) {
+                addProductField();
+            }
+        } else if (numProductos < currentProductFields) {
+            for (let i = currentProductFields; i > numProductos; i--) {
+                ProductFieldsContainer.removeChild(ProductFieldsContainer.lastChild);
+                productCount--;
+            }
+            document.getElementById('num_productos').value = productCount;
+            calcularTotalVenta();
         }
     }
+
+
+    
     function addProductField() {
     const ProductFieldsContainer = document.getElementById('Productosadicionales');
     const productDiv = document.createElement('div');
