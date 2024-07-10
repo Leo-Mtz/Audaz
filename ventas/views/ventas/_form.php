@@ -83,6 +83,15 @@ use yii\helpers\Url;
     const productosDropdown = <?= json_encode($productosDropdown) ?>;
     let productCount = 0;
 
+    function generateProductFields() {
+        const numProductos = parseInt(document.getElementById('num_productos').value) || 0;
+        const ProductFieldsContainer = document.getElementById('Productosadicionales');
+        ProductFieldsContainer.innerHTML = ''; // Clear existing fields
+
+        for (let i = 0; i < numProductos; i++) {
+            addProductField();
+        }
+    }
     function addProductField() {
     const ProductFieldsContainer = document.getElementById('Productosadicionales');
     const productDiv = document.createElement('div');
