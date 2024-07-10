@@ -17,9 +17,10 @@ class VentasSearch extends Ventas
     public function rules()
     {
         return [
-            [['id_venta', 'id_producto', 'id_evento', 'id_vendedor'], 'integer'],
+            [['id_venta', 'id_evento', 'id_vendedor'], 'integer'],
             [['fecha'], 'safe'],
-            [['cantidad_vendida', 'precio_total_venta'], 'number'],
+            [['precio_total_venta', 'cantidad_total_vendida', 'productos_totales'], 'number'],
+            [['forma_de_pago', 'tipo_de_venta'], 'string'],
         ];
     }
 
@@ -61,13 +62,17 @@ class VentasSearch extends Ventas
         $query->andFilterWhere([
             'id_venta' => $this->id_venta,
             'fecha' => $this->fecha,
-            'id_producto' => $this->id_producto,
-            'cantidad_vendida' => $this->cantidad_vendida,
             'precio_total_venta' => $this->precio_total_venta,
+            'cantidad_total_vendida' => $this->cantidad_total_vendida,
+            'productos_totales' => $this->productos_totales,
             'id_evento' => $this->id_evento,
             'id_vendedor' => $this->id_vendedor,
         ]);
 
+        $query->andFilterWhere(['like', 'forma_de_pago', $this->forma_de_pago])
+              ->andFilterWhere(['like', 'tipo_de_venta', $this->tipo_de_venta]);
+
         return $dataProvider;
     }
 }
+
