@@ -1,4 +1,3 @@
-
 <!--
 This is a view file for the "log" action in the "site" controller.
 
@@ -19,6 +18,8 @@ use yii\helpers\Html;
 use yii\bootstrap4\ActiveForm;
 use yii\helpers\ArrayHelper;
 
+use yii\helpers\Url;
+
 ?>
 
 <div class="login-box">
@@ -37,7 +38,7 @@ use yii\helpers\ArrayHelper;
             'wrapperOptions' => ['class' => 'input-group mb-3']
         ])
             ->label(false)
-            ->textInput(['placeholder' => 'Usuario']) ?>
+            ->textInput(['placeholder' => 'Usuario', 'onchange' => 'fetchEventos()']) ?>
 
         <?= $form->field($model, 'password', [
             'options' => ['class' => 'form-group has-feedback'],
@@ -48,11 +49,11 @@ use yii\helpers\ArrayHelper;
             ->label(false)
             ->passwordInput(['placeholder' => 'Contraseña']) ?>
 
-        <?php if ($model->privilegio == 2): ?>
-            <?= $form->field($model, 'id_evento')->dropDownList([], ['prompt' => 'Seleccione Evento']) ?>
-        <?php endif; ?>
-
-
+        <!-- Eventos Dropdown Container -->
+        <div class="row form-group has-feedback" id="eventosDropdownContainer" style="display: none;">
+            <div id="eventosDropdown"></div>
+        </div>
+ 
         <div class="row buttons pull-right">
             <?= Html::submitButton('Login', ['class' => 'btn btn-primary btn-block']) ?>
         </div>
@@ -60,35 +61,34 @@ use yii\helpers\ArrayHelper;
         <?php ActiveForm::end(); ?>
     </div>
 </div>
+<script>
+    function fetchEventos() {
+        var username = $('#loginform-username').val();
+        console.log("Fetching eventos for username:", username); // Debug: Log the username
 
-<?php
-$script = <<< JS
-$(document).ready(function(){
-    $('form#login-form').on('beforeSubmit', function(e){
-        var form = $(this);
+        var data = {
+            'username': username
+        };
+
         $.ajax({
-            url: form.attr('action'),
-            type: 'post',
-            data: form.serialize(),
-            success: function(response){
+            type: 'POST',
+            url: '<?= Url::to(['site/get-eventos']) ?>',
+            data: data,
+            success: function(response) {
+                console.log("Received response:", response); // Debug: Log the response
+
                 if (response.success) {
-                    // Check if the user has privilege 2 and update eventos dropdown
-                    if (response.privilegio == 2 && response.eventos.length > 0) {
-                        var dropdown = $('#loginform-id_evento');
-                        dropdown.empty();
-                        $.each(response.eventos, function(key, value) {
-                            dropdown.append($('<option></option>').attr('value', key).text(value));
-                        });
-                        dropdown.prop('disabled', false); // Enable the dropdown
-                    } else {
-                        $('#loginform-id_evento').empty().append($('<option></option>').attr('value', '').text('Seleccione Evento'));
-                    }
+                    $('#eventosDropdown').html(response.dropdown);
+                    $('#eventosDropdownContainer').show();
+                } else {
+                    console.log("Error:", response.message); // Debug: Log any error message
+                    $('#eventosDropdownContainer').hide();
                 }
+            },
+            error: function(xhr, status, error) {
+                console.log("AJAX error:", status, error); // Debug: Log AJAX errors
+                console.log("Response text:", xhr.responseText); // Debug: Log the response text from server
             }
         });
-        return false;
-    });
-});
-JS;
-$this->registerJs($script);
-?>
+    }
+</script>
