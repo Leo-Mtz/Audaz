@@ -115,13 +115,21 @@ class VentasController extends \yii\web\Controller
     
 
 
-    public function actionDelete($id){
-
-        $this->findModel($id)->delete();
-
+    public function actionDelete($id)
+    {
+        $model = $this->findModel($id);
+    
+        // Delete related productos_por_venta records first
+        $productosPorVenta = ProductosPorVenta::findAll(['id_venta' => $id]);
+        foreach ($productosPorVenta as $productoPorVenta) {
+            $productoPorVenta->delete();
+        }
+    
+        // Now delete the venta record
+        $model->delete();
+    
         return $this->redirect(['index']);
     }
-
 
     public function actionUpdate($id){
 
