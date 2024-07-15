@@ -1,25 +1,8 @@
-<!--
-This is a view file for the "log" action in the "site" controller.
-
-The view file is responsible for rendering the login form. The form is built using the Yii2 framework's form builder.
-
-The form has two fields: "username" and "password". The form is submitted to the "login" action in the "site" controller.
-
-The form is wrapped in a "div" with the class "login-box" and "login-box-body". This is likely part of a larger design framework.
-
-The form also includes a logo and a message at the top of the form.
-
-The form is styled using Bootstrap 4.
-
-The form also includes some JavaScript code to handle form validation.
--->
 <?php
 use yii\helpers\Html;
 use yii\bootstrap4\ActiveForm;
 use yii\helpers\ArrayHelper;
-
 use yii\helpers\Url;
-
 ?>
 
 <div class="login-box">
@@ -61,34 +44,41 @@ use yii\helpers\Url;
         <?php ActiveForm::end(); ?>
     </div>
 </div>
+
 <script>
-    function fetchEventos() {
-        var username = $('#loginform-username').val();
-        console.log("Fetching eventos for username:", username); // Debug: Log the username
+function fetchEventos() {
+    var username = $('#loginform-username').val();
+    console.log("Fetching eventos for username:", username); // Debug: Log the username
 
-        var data = {
-            'username': username
-        };
+    var data = {
+        'username': username,
+        '_csrf': '<?= Yii::$app->request->csrfToken ?>' // Ensure CSRF token is included
+    };
 
-        $.ajax({
-            type: 'POST',
-            url: '<?= Url::to(['site/get-eventos']) ?>',
-            data: data,
-            success: function(response) {
-                console.log("Received response:", response); // Debug: Log the response
+    $.ajax({
+        type: 'POST',
+        url: '<?= Url::to(['site/get-eventos']) ?>',
+        data: data,
+        success: function(response) {
+            console.log("Received response:", response); // Debug: Log the response
 
-                if (response.success) {
-                    $('#eventosDropdown').html(response.dropdown);
-                    $('#eventosDropdownContainer').show();
-                } else {
-                    console.log("Error:", response.message); // Debug: Log any error message
-                    $('#eventosDropdownContainer').hide();
-                }
-            },
-            error: function(xhr, status, error) {
-                console.log("AJAX error:", status, error); // Debug: Log AJAX errors
-                console.log("Response text:", xhr.responseText); // Debug: Log the response text from server
+            if (response.success) {
+                $('#eventosDropdown').html(response.dropdown);
+                $('#eventosDropdownContainer').show();
+
+                const selectedEventoId=$('#eventoDropdown').val();
+                setSelectedEventoId(selectedEventoId);
+                console.log("Selected evento ID:", selectedEventoId); // Debug: Log the selected evento ID
+            } else {
+                console.log("Error:", response.message); // Debug: Log any error message
+                $('#eventosDropdownContainer').hide();
             }
-        });
-    }
+        },
+        error: function(xhr, status, error) {
+            console.log("AJAX error:", status, error); // Debug: Log AJAX errors
+            console.log("Response text:", xhr.responseText); // Debug: Log the response text from server
+        }
+    });
+}
 </script>
+ 

@@ -11,7 +11,7 @@ use app\models\Usuarios;
 use app\models\CatEventos;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\ActiveForm;
+use yii\widgets\ActiveForm;
 class SiteController extends Controller
 {
     public function behaviors()
@@ -50,102 +50,128 @@ class SiteController extends Controller
         ];
     }
 
-    public function actionIndex()
+   public function actionIndex()
+   {
+       // Ensure the layout is set for the index page
+       $this->layout = 'main-login';
+   
+       // Check if the user is authenticated
+       if (Yii::$app->user->isGuest) {
+           return $this->redirect(['site/login']);
+       }
+   
+       // Retrieve the identity of the logged-in user
+       $user = Yii::$app->user->identity;
+   
+       // Check if user identity is null (should ideally not happen if user is authenticated)
+       if ($user === null) {
+           throw new \yii\web\ServerErrorHttpException('User identity not found.');
+       }
+   
+       // Get user details assuming 'privilegio' and 'username' attributes exist in identity
+       $privilegio = $user->privilegio;
+       $username = $user->username;
+   
+       // Debugging for privilege and user details
+       var_dump($privilegio);
+       var_dump($username);
+   
+       // Prepare data based on user's privilege level
+       $data = [];
+       if ($privilegio == 1) {
+           // Logic for privilegio 1
+           // Example: $data = Model::findAll(['user_id' => $user->id]);
+           $data = []; // Replace with actual data retrieval logic
+       } elseif ($privilegio == 2) {
+           // Logic for privilegio 2
+           // Example: $data = EventModel::findAll();
+           $data = []; // Replace with actual data retrieval logic
+   
+           // Debugging for privilege level 2 data retrieval
+           var_dump($data);
+       } else {
+           // Default or other privilege levels logic
+           $data = []; // Replace with actual data retrieval logic
+       }
+   
+       // Render the index view and pass the retrieved data
+       return $this->render('index', [
+           'username' => $username,
+           'data' => $data,
+       ]);
+   }
+
+public function actionLogin()
 {
-    // Ensure the layout is set for the index page
     $this->layout = 'main-login';
+    $model = new LoginForm();
 
-    // Check if the user is authenticated
-    if (Yii::$app->user->isGuest) {
-        return $this->redirect(['site/login']);
+    // Set the page title to the application name
+    $this->view->title = Yii::$app->name;
+
+    // Handle AJAX validation requests
+    if (Yii::$app->request->isAjax && Yii::$app->request->post('ajax') === 'login-form') {
+        echo ActiveForm::validate($model);
+        Yii::$app->end();
     }
 
-    // Retrieve the identity of the logged-in user
-    $user = Yii::$app->user->identity;
+    // Collect user input data
+    if ($model->load(Yii::$app->request->post())) {
+        // Validate user input and attempt to login
+        if ($model->validate() && $model->login()) {
+            // Obtener el privilegio del usuario
+            $user = Yii::$app->user->identity;
+            $privilegio = $user->privilegio;
 
-    // Check if user identity is null (should ideally not happen if user is authenticated)
-    if ($user === null) {
-        throw new \yii\web\ServerErrorHttpException('User identity not found.');
-    }
+            // Debugging for privilegio value
+            var_dump($privilegio);
 
-    // Get user details assuming 'privilegio' and 'username' attributes exist in identity
-    $privilegio = $user->privilegio;
-    $username = $user->username;
-
-    // Prepare data based on user's privilege level
-    $data = [];
-    if ($privilegio == 1) {
-        // Logic for privilegio 1
-        // Example: $data = Model::findAll(['user_id' => $user->id]);
-        $data = []; // Replace with actual data retrieval logic
-    } elseif ($privilegio == 2) {
-        // Logic for privilegio 2
-        // Example: $data = EventModel::findAll();
-        $data = []; // Replace with actual data retrieval logic
-    } else {
-        // Default or other privilege levels logic
-        $data = []; // Replace with actual data retrieval logic
-    }
-
-    // Render the index view and pass the retrieved data
-    return $this->render('index', [
-        'username' => $username,
-        'data' => $data,
-    ]);
-}
-
-
-    public function actionLogin()
-    {
-        $this->layout = 'main-login';
-        $model = new LoginForm();
-    
-        // Set the page title to the application name
-        $this->view->title = Yii::$app->name;
-        // Handle AJAX validation requests
-        if (Yii::$app->request->isAjax && Yii::$app->request->post('ajax') === 'login-form') {
-            echo ActiveForm::validate($model);
-            Yii::$app->end();
-        }
-    
-        // Collect user input data
-        if ($model->load(Yii::$app->request->post())) {
-            // Validate user input and attempt to login
-            if ($model->validate() && $model->login()) {
-                // Obtener el privilegio del usuario
-                $user = Yii::$app->user->identity;
-                $privilegio = $user->privilegio;
-    
-                // Check the user's privilegio
-                if ($privilegio == 2) {
-                    // Ensure evento is provided
+            // Check the user's privilegio
+          
+            switch ($privilegio) {
+                case 2:  // Case for privilegio level 2
+                    // Check if the evento attribute is not empty
                     if (!empty($model->evento)) {
-                        // Store evento in session
+                        // Store the evento in the session for future use
                         Yii::$app->session->set('evento', $model->evento);
-    
-                        // Redirect users with privilegio 2 to the specific page after evento validation
-                        return $this->redirect(['ventas/index']); // Change to your desired redirection page
+            
+                        // Debugging statement to confirm redirection
+                        var_dump('Redirecting to ventas/index');
+            
+                        // Redirect to the ventas/index page after setting the evento
+                        return $this->redirect(['ventas/index']);
                     } else {
-                        // Handle case where evento is required but not provided
+                        // If the evento is not provided, add an error message to the model
                         $model->addError('evento', 'Evento is required.');
+            
+                        // Debugging statement to indicate rendering the log view
+                        var_dump('Rendering log view');
+            
+                        // Additional debugging to show that evento isn't being set
+                        var_dump('Evento isnt being set');
+            
+                        // Render the login view again with the model, showing the validation error
+                        return $this->render('log', ['model' => $model]);
                     }
-                } elseif ($privilegio == 1) {
-                    // Redirect users with privilegio 1 to usuarios/index
+            
+                case 1:
+                    // Debugging for redirection
+                    var_dump('Redirecting to usuarios/index');
+
                     return $this->redirect(['usuarios/index']);
-                } else {
-                    // Handle other privilegio levels or default redirect
-                    return $this->redirect(['site/index']); // Change to your default redirect action
-                }
-    
-                // Initialize dynamic connection string (specific to your application)
-                Yii::$app->dynamicConnString->init();
+                default:
+                    // Debugging for redirection
+                    var_dump('Redirecting to site/index');
+
+                    return $this->redirect(['site/index']);
             }
         }
-    
-        // Render the login form with the LoginForm model
-        return $this->render('log', ['model' => $model]);
     }
-    
+
+    // Render the login form with the LoginForm model
+    return $this->render('log', ['model' => $model]);
+}
+
     public function actionGetEventos()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
