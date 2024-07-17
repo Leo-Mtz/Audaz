@@ -123,6 +123,7 @@ public function actionLogin()
             // Obtener el privilegio del usuario
             $user = Yii::$app->user->identity;
             $privilegio = $user->privilegio;
+           
 
 
            
@@ -132,16 +133,17 @@ public function actionLogin()
                 case 2:  // Case for privilegio level 2
 
                     
-                    var_dump("Este es el id del evento", $model->id_evento);
                     //problem could be here
                     // Check if the evento attribute is not empty
                     if (!empty($model->id_evento)) {
                         // Store the evento in the session for future use
-                        Yii::$app->session->set('evento', $model->id_evento);
+                        Yii::$app->session->set('id_evento', $model->id_evento);
             
                         // Debugging statement to confirm redirection
-                        var_dump('Redirecting to ventas/index');
+                        //var_dump('Redirecting to ventas/index');
             
+                        
+                        
                         // Redirect to the ventas/index page after setting the evento
                         return $this->redirect(['ventas/index']);
                     } else {

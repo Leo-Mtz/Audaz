@@ -8,6 +8,9 @@ use yii\helpers\Url;
 /* @var $model app\models\Ventas */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $productosDropdown array */
+
+$id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from session
+
 ?>
 
 <div class="ventas-form">
@@ -53,7 +56,7 @@ use yii\helpers\Url;
 
 
     <div class="col-md col-lg">
-        <?= $form->field($model, 'id_evento')->hiddenInput(['id' => 'id_evento_input'])->label(false) ?>
+        <?= $form->field($model, 'id_evento')->hiddenInput(['id' => 'id_evento_input', 'value' => $id_evento])->label(false) ?>
     </div>
 
 
@@ -112,11 +115,6 @@ use yii\helpers\Url;
         }
     }
 
-    function setSelectedEventoId(eventoId) {
-        selectedEventoId = eventoId;
-        console.log('Selected Evento ID:', selectedEventoId);
-        document.getElementById('id_evento_input').value = selectedEventoId;
-    }
 
 
     function addProductField() {

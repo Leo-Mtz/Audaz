@@ -86,8 +86,6 @@ public function beforeValidate()
         $this->id_vendedor = Yii::$app->user->identity->id; // Assign the ID of the logged-in user
     }
     
-    var_dump($this->id_vendedor); // Display the value of id_vendedor
-    
     return parent::beforeValidate();
 }
     
