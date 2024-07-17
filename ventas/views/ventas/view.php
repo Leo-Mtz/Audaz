@@ -38,7 +38,9 @@ $dataProvider = new ActiveDataProvider([
                 'method' => 'post',
             ],
         ]) ?>
+        <?= Html::a('Print Ticket', ['ticket', 'id' => $model->id_venta], ['class' => 'btn btn-info']) ?>
     </p>
+
 
     <?= DetailView::widget([
         'model' => $model,

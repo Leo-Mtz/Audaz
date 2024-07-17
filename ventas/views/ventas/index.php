@@ -80,6 +80,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]);
                 },
+                'ticket' => function ($url, $model) {
+                        $url = Url::to(['ventas/ticket', 'id' => $model->id_venta]);
+                        return Html::a('<span class="fa-solid fa-ticket"></span>', $url, ['title' => 'Ticket', 'style' => 'margin-right:10px']);
+                    },
             ],
         ],
     ],

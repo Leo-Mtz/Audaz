@@ -49,6 +49,17 @@ class VentasController extends \yii\web\Controller
         ]);
     }
 
+    public function actionAgregarTicket($id)
+    {
+        $model = $this->findModel($id);
+        $productosPorVenta = ProductosPorVenta::findAll(['id_venta' => $id]);
+
+        // Render the ticket view
+        return $this->render('ticket', [
+            'model' => $model,
+            'productosPorVenta' => $productosPorVenta,
+        ]);
+    }
 
     
     public function actionCreate()
