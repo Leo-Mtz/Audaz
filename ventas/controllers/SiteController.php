@@ -117,23 +117,27 @@ public function actionLogin()
 
     // Collect user input data
     if ($model->load(Yii::$app->request->post())) {
-        // Validate user input and attempt to login
+        // Debugging statement to print the POST data
+       // var_dump(Yii::$app->request->post());
         if ($model->validate() && $model->login()) {
             // Obtener el privilegio del usuario
             $user = Yii::$app->user->identity;
             $privilegio = $user->privilegio;
 
-            // Debugging for privilegio value
-            var_dump($privilegio);
 
-            // Check the user's privilegio
-          
+           
             switch ($privilegio) {
+
+                
                 case 2:  // Case for privilegio level 2
+
+                    
+                    var_dump("Este es el id del evento", $model->id_evento);
+                    //problem could be here
                     // Check if the evento attribute is not empty
-                    if (!empty($model->evento)) {
+                    if (!empty($model->id_evento)) {
                         // Store the evento in the session for future use
-                        Yii::$app->session->set('evento', $model->evento);
+                        Yii::$app->session->set('evento', $model->id_evento);
             
                         // Debugging statement to confirm redirection
                         var_dump('Redirecting to ventas/index');
@@ -145,10 +149,10 @@ public function actionLogin()
                         $model->addError('evento', 'Evento is required.');
             
                         // Debugging statement to indicate rendering the log view
-                        var_dump('Rendering log view');
+                       // var_dump('Rendering log view');
             
                         // Additional debugging to show that evento isn't being set
-                        var_dump('Evento isnt being set');
+                    //    var_dump('Evento isnt being set');
             
                         // Render the login view again with the model, showing the validation error
                         return $this->render('log', ['model' => $model]);
@@ -172,7 +176,8 @@ public function actionLogin()
     return $this->render('log', ['model' => $model]);
 }
 
-    public function actionGetEventos()
+
+   public function actionGetEventos()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         
@@ -218,6 +223,7 @@ public function actionLogin()
             return [
                 'success' => false,
                 'message' => 'User not found',
+                
             ];
         }
     }
@@ -246,6 +252,8 @@ public function actionLogin()
     {
         return $this->render('about');
     }
+
+    
 }
 
 

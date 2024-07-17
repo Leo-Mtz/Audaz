@@ -14,7 +14,7 @@ class LoginForm extends Model
     public $password;
     public $rememberMe = true;
     public $privilegio;
-    public $eventos = [];
+    public $eventos;
     public $id_evento;
 
     private $_user = false;

@@ -33,9 +33,13 @@ use yii\helpers\Url;
             ->passwordInput(['placeholder' => 'Contraseña']) ?>
 
         <!-- Eventos Dropdown Container -->
-        <div class="row form-group has-feedback" id="eventosDropdownContainer" style="display: none;">
-            <div id="eventosDropdown"></div>
+        
+        <div id="eventosDropdownContainer" style="display: none;">
+            <div id="eventosDropdown">
+            <?= $form->field($model, 'id_evento')->dropDownList([], ['id' => 'eventosDropdown']) ?>
+            </div>
         </div>
+
  
         <div class="row buttons pull-right">
             <?= Html::submitButton('Login', ['class' => 'btn btn-primary btn-block']) ?>
@@ -55,9 +59,11 @@ function fetchEventos() {
         '_csrf': '<?= Yii::$app->request->csrfToken ?>' // Ensure CSRF token is included
     };
 
+    console.log("Data:", data); // Debug: Log the data
+
     $.ajax({
         type: 'POST',
-        url: '<?= Url::to(['site/get-eventos']) ?>',
+        url: '<?= yii\helpers\Url::to(['site/get-eventos']) ?>',
         data: data,
         success: function(response) {
             console.log("Received response:", response); // Debug: Log the response
@@ -66,11 +72,14 @@ function fetchEventos() {
                 $('#eventosDropdown').html(response.dropdown);
                 $('#eventosDropdownContainer').show();
 
-                const selectedEventoId=$('#eventoDropdown').val();
-                setSelectedEventoId(selectedEventoId);
-                console.log("Selected evento ID:", selectedEventoId); // Debug: Log the selected evento ID
+                // Add change event listener to the new dropdown
+                $('#eventosDropdown select').on('change', function() {
+                    const selectedEventoId = $(this).val();
+                    console.log("Selected evento ID:", selectedEventoId); // Log the selected evento ID
+                });
+
             } else {
-                console.log("Error:", response.message); // Debug: Log any error message
+                console.log("Couldn't quite do it"); // Debug: Log any error message
                 $('#eventosDropdownContainer').hide();
             }
         },
@@ -81,4 +90,3 @@ function fetchEventos() {
     });
 }
 </script>
- 

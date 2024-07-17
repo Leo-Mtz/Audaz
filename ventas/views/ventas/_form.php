@@ -53,7 +53,7 @@ use yii\helpers\Url;
 
 
     <div class="col-md col-lg">
-        <?= $form->field($model, 'id_evento')->dropdownList($eventos, ['prompt' => 'Seleccionar evento']) ?>
+        <?= $form->field($model, 'id_evento')->hiddenInput(['id' => 'id_evento_input'])->label(false) ?>
     </div>
 
 
@@ -82,6 +82,7 @@ use yii\helpers\Url;
 <script>
     const productosDropdown = <?= json_encode($productosDropdown) ?>;
     let productCount = 0;
+    let selectedEventoId=null;
 
    
        function generateProductFields() {
@@ -109,6 +110,12 @@ use yii\helpers\Url;
             document.getElementById('num_productos').value = productCount;
             calcularTotalVenta();
         }
+    }
+
+    function setSelectedEventoId(eventoId) {
+        selectedEventoId = eventoId;
+        console.log('Selected Evento ID:', selectedEventoId);
+        document.getElementById('id_evento_input').value = selectedEventoId;
     }
 
 
