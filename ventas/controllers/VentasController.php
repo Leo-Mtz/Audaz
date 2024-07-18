@@ -66,9 +66,7 @@ class VentasController extends \yii\web\Controller
     {
         $model = new Ventas();
     
-        echo 'Entered actionCreate method';
-        var_dump('Entered actionCreate method');
-    
+      
         $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
         date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
     
@@ -142,54 +140,64 @@ class VentasController extends \yii\web\Controller
     
         return $this->redirect(['index']);
     }
-
-    public function actionUpdate($id){
-
-        $model= $this->findModel($id);
-
+    public function actionUpdate($id)
+    {
+        // Find the sale model
+        $model = $this->findModel($id);
+        
+        // Set the current date and time
         $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
-    date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
-
-    if (Yii::$app->request->isPost) {
+        date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
+    
+        // Fetch related product records for the sale
+        $productosPorVenta = ProductosPorVenta::findAll(['id_venta' => $model->id_venta]);
+    
+        // Load POST data and save the model
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            // Handle product data from POST request
             if (isset(Yii::$app->request->post('Ventas')['productos'])) {
                 $productos = Yii::$app->request->post('Ventas')['productos'];
-
+    
+                // Delete old products associated with the sale
+                ProductosPorVenta::deleteAll(['id_venta' => $model->id_venta]);
+    
+                // Save new products
                 foreach ($productos as $productoData) {
                     $productoPorVenta = new ProductosPorVenta();
                     $productoPorVenta->id_venta = $model->id_venta;
                     $productoPorVenta->id_producto = $productoData['id_producto'];
                     $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
-                //    $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
+                    $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
                     $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
-
+    
                     if (!$productoPorVenta->save()) {
                         Yii::debug($productoPorVenta->errors, 'productoPorVenta_errors');
                     }
                 }
             }
-            return $this->redirect(['view', 'id' => $model->id_venta]);
-        } else {
-            Yii::debug($model->errors, 'ventas_errors');
-        }
-    }
-
-    $productos = CatProductos::find()->all();
-    $productosDropdown = [];
-    foreach ($productos as $producto) {
-        $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
-    }
-
-    $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
-
-    return $this->render('create', [
-        'model' => $model,
-        'productosDropdown' => $productosDropdown,
-        'eventos' => $eventos,
-    ]);
-    }
-
     
+            // Redirect to the view page after successful update
+            return $this->redirect(['view', 'id' => $model->id_venta]);
+        }
+    
+        $id_evento= Yii::$app->session->get('id_evento');
+    
+        // Prepare dropdown list for products
+        $productos = CatProductos::find()->all();
+        $productosDropdown = ArrayHelper::map($productos, 'id_producto', function($producto) {
+            return $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
+        });
+    
+        // Render the update view with the model and related data
+        return $this->render('update', [
+            'model' => $model,
+                'productosPorVenta' => $productosPorVenta,
+                'productosDropdown' => $productosDropdown,
+                'id_evento' => $id_evento
+        ]);
+    }
+    
+        
     public function actionView($id)
     {
         return $this->render('view', [
