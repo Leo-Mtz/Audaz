@@ -81,7 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'header' => 'Acciones',
             'headerOptions' => ['style' => 'color:#007bff'],
             'contentOptions' => ['style' => 'width:12%;'],
-            'template' => '{view} {update} {delete}',
+            'template' => '{view} {update} {delete} {ticket}',
             'buttons' => [
                 'view' => function ($url, $model) {
                     $url = Url::to(['ventas/view','id'=>$model->id_venta]);
@@ -102,6 +102,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]);
                 },
+                'ticket' => function ($url, $model) {
+                        $url = Url::to(['ventas/ticket', 'id' => $model->id_venta]);
+                        return Html::a('<span class="fa-solid fa-ticket"></span>', $url, ['title' => 'Ticket', 'style' => 'margin-right:10px']);
+                    },
             ],
         ],
     ],

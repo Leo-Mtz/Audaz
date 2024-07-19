@@ -53,10 +53,11 @@ class Usuarios extends \yii\db\ActiveRecord implements \yii\web\IdentityInterfac
             'username' => 'Usuario',
             'password' => 'Contraseña',
             'authKey' => 'Auth Key',
-			'privilegio' => 'Privilegio',
-			'_passAnterior' => 'Contraseña Anterior',
-			'_passNuevo' => 'Contraseña Nueva',
-			'_passConfirmarNuevo' => 'Confirmar Contraseña Nueva',
+            'password_reset_token' => 'Password Reset Token',
+            'privilegio' => 'Privilegio',
+            '_passAnterior' => 'Contraseña Anterior',
+            '_passNuevo' => 'Contraseña Nueva',
+            '_passConfirmarNuevo' => 'Confirmar Contraseña Nueva',
         ];
     }
 	
@@ -113,6 +114,19 @@ class Usuarios extends \yii\db\ActiveRecord implements \yii\web\IdentityInterfac
 		return Yii::$app->getSecurity()->validatePassword($password, $this->password);
         // return $this->password === $password;
     }
+
+    public function generatePasswordResetToken()
+    {
+        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
+    }
+
+    /**
+     * Removes password reset token.
+     */
+    public function removePasswordResetToken()
+    {
+        $this->password_reset_token = null;
+    }
 	
 	public function beforeSave($insert)
     {
@@ -125,4 +139,7 @@ class Usuarios extends \yii\db\ActiveRecord implements \yii\web\IdentityInterfac
         }
         return false;
     }
+
+
+ 
 }

@@ -1,24 +1,8 @@
-
-<!--
-This is a view file for the "log" action in the "site" controller.
-
-The view file is responsible for rendering the login form. The form is built using the Yii2 framework's form builder.
-
-The form has two fields: "username" and "password". The form is submitted to the "login" action in the "site" controller.
-
-The form is wrapped in a "div" with the class "login-box" and "login-box-body". This is likely part of a larger design framework.
-
-The form also includes a logo and a message at the top of the form.
-
-The form is styled using Bootstrap 4.
-
-The form also includes some JavaScript code to handle form validation.
--->
 <?php
 use yii\helpers\Html;
 use yii\bootstrap4\ActiveForm;
 use yii\helpers\ArrayHelper;
-
+use yii\helpers\Url;
 ?>
 
 <div class="login-box">
@@ -37,7 +21,7 @@ use yii\helpers\ArrayHelper;
             'wrapperOptions' => ['class' => 'input-group mb-3']
         ])
             ->label(false)
-            ->textInput(['placeholder' => 'Usuario']) ?>
+            ->textInput(['placeholder' => 'Usuario', 'onchange' => 'fetchEventos()']) ?>
 
         <?= $form->field($model, 'password', [
             'options' => ['class' => 'form-group has-feedback'],
@@ -49,6 +33,7 @@ use yii\helpers\ArrayHelper;
             ->passwordInput(['placeholder' => 'Contraseña']) ?>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
          
 =======
         <?php if ($model->privilegio == 2): ?>
@@ -56,7 +41,17 @@ use yii\helpers\ArrayHelper;
         <?php endif; ?>
 
 >>>>>>> main
+=======
+        <!-- Eventos Dropdown Container -->
+        
+        <div id="eventosDropdownContainer" style="display: none;">
+            <div id="eventosDropdown">
+            <?= $form->field($model, 'id_evento')->dropDownList([], ['id' => 'eventosDropdown']) ?>
+            </div>
+        </div>
+>>>>>>> main
 
+ 
         <div class="row buttons pull-right">
             <?= Html::submitButton('Login', ['class' => 'btn btn-primary btn-block']) ?>
         </div>
@@ -67,35 +62,52 @@ use yii\helpers\ArrayHelper;
 <<<<<<< HEAD
 =======
 
-<?php
-$script = <<< JS
-$(document).ready(function(){
-    $('form#login-form').on('beforeSubmit', function(e){
-        var form = $(this);
-        $.ajax({
-            url: form.attr('action'),
-            type: 'post',
-            data: form.serialize(),
-            success: function(response){
-                if (response.success) {
-                    // Check if the user has privilege 2 and update eventos dropdown
-                    if (response.privilegio == 2 && response.eventos.length > 0) {
-                        var dropdown = $('#loginform-id_evento');
-                        dropdown.empty();
-                        $.each(response.eventos, function(key, value) {
-                            dropdown.append($('<option></option>').attr('value', key).text(value));
-                        });
-                        dropdown.prop('disabled', false); // Enable the dropdown
-                    } else {
-                        $('#loginform-id_evento').empty().append($('<option></option>').attr('value', '').text('Seleccione Evento'));
-                    }
-                }
+<script>
+function fetchEventos() {
+    var username = $('#loginform-username').val();
+    console.log("Fetching eventos for username:", username); // Debug: Log the username
+
+    var data = {
+        'username': username,
+        '_csrf': '<?= Yii::$app->request->csrfToken ?>' // Ensure CSRF token is included
+    };
+
+    console.log("Data:", data); // Debug: Log the data
+
+    $.ajax({
+        type: 'POST',
+        url: '<?= yii\helpers\Url::to(['site/get-eventos']) ?>',
+        data: data,
+        success: function(response) {
+            console.log("Received response:", response); // Debug: Log the response
+
+            if (response.success) {
+                $('#eventosDropdown').html(response.dropdown);
+                $('#eventosDropdownContainer').show();
+
+                // Add change event listener to the new dropdown
+                $('#eventosDropdown select').on('change', function() {
+                    const selectedEventoId = $(this).val();
+                    console.log("Selected evento ID:", selectedEventoId); // Log the selected evento ID
+                });
+
+            } else {
+                console.log("Couldn't quite do it"); // Debug: Log any error message
+                $('#eventosDropdownContainer').hide();
             }
-        });
-        return false;
+        },
+        error: function(xhr, status, error) {
+            console.log("AJAX error:", status, error); // Debug: Log AJAX errors
+            console.log("Response text:", xhr.responseText); // Debug: Log the response text from server
+        }
     });
+<<<<<<< HEAD
 });
 JS;
 $this->registerJs($script);
 ?>
+>>>>>>> main
+=======
+}
+</script>
 >>>>>>> main

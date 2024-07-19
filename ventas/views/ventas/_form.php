@@ -10,6 +10,9 @@ use yii\helpers\Url;
 /* @var $model app\models\Ventas */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $productosDropdown array */
+
+$id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from session
+
 ?>
 
 <div class="ventas-form">
@@ -55,7 +58,7 @@ use yii\helpers\Url;
 
 
     <div class="col-md col-lg">
-        <?= $form->field($model, 'id_evento')->dropdownList($eventos, ['prompt' => 'Seleccionar evento']) ?>
+        <?= $form->field($model, 'id_evento')->hiddenInput(['id' => 'id_evento_input', 'value' => $id_evento])->label(false) ?>
     </div>
 
 
@@ -84,6 +87,7 @@ use yii\helpers\Url;
 <script>
     const productosDropdown = <?= json_encode($productosDropdown) ?>;
     let productCount = 0;
+    let selectedEventoId=null;
 
    
        function generateProductFields() {
@@ -112,6 +116,7 @@ use yii\helpers\Url;
             calcularTotalVenta();
         }
     }
+
 
 
     function addProductField() {

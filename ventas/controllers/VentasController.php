@@ -49,6 +49,17 @@ class VentasController extends \yii\web\Controller
         ]);
     }
 
+    public function actionAgregarTicket($id)
+    {
+        $model = $this->findModel($id);
+        $productosPorVenta = ProductosPorVenta::findAll(['id_venta' => $id]);
+
+        // Render the ticket view
+        return $this->render('ticket', [
+            'model' => $model,
+            'productosPorVenta' => $productosPorVenta,
+        ]);
+    }
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -69,9 +80,7 @@ class VentasController extends \yii\web\Controller
 >>>>>>> main
         $model = new Ventas();
     
-        echo 'Entered actionCreate method';
-        var_dump('Entered actionCreate method');
-    
+      
         $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
         date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
     
@@ -114,6 +123,11 @@ class VentasController extends \yii\web\Controller
         } else {
             Yii::debug($model->errors, 'ventas_errors');
         }
+<<<<<<< HEAD
+>>>>>>> main
+=======
+
+        $id_evento= Yii::$app->session->get('id_evento');
 >>>>>>> main
     
         $productos = CatProductos::find()->all();
@@ -148,26 +162,50 @@ class VentasController extends \yii\web\Controller
 
 =======
     
+<<<<<<< HEAD
         $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
     
+>>>>>>> main
+=======
+     
 >>>>>>> main
         return $this->render('create', [
             'model' => $model,
             'productosDropdown' => $productosDropdown,
-            'eventos' => $eventos,
+            'id_evento' => $id_evento,
         ]);
     }
     
 
 
+<<<<<<< HEAD
 >>>>>>> main
     public function actionDelete($id){
 
         $this->findModel($id)->delete();
 
+=======
+    public function actionDelete($id)
+    {
+        $model = $this->findModel($id);
+    
+        // Delete related productos_por_venta records first
+        $productosPorVenta = ProductosPorVenta::findAll(['id_venta' => $id]);
+        foreach ($productosPorVenta as $productoPorVenta) {
+            $productoPorVenta->delete();
+        }
+    
+        // Now delete the venta record
+        $model->delete();
+    
+>>>>>>> main
         return $this->redirect(['index']);
     }
+    public function actionUpdate($id)
+{
+    $model = $this->findModel($id);
 
+<<<<<<< HEAD
 
     public function actionUpdate($id){
 <<<<<<< HEAD
@@ -214,48 +252,62 @@ class VentasController extends \yii\web\Controller
         $model= $this->findModel($id);
 
         $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
+=======
+    $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
+>>>>>>> main
     date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
 
-    if (Yii::$app->request->isPost) {
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            if (isset(Yii::$app->request->post('Ventas')['productos'])) {
-                $productos = Yii::$app->request->post('Ventas')['productos'];
+    if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if (isset(Yii::$app->request->post('Ventas')['productos'])) {
+            $productos = Yii::$app->request->post('Ventas')['productos'];
 
-                foreach ($productos as $productoData) {
-                    $productoPorVenta = new ProductosPorVenta();
-                    $productoPorVenta->id_venta = $model->id_venta;
-                    $productoPorVenta->id_producto = $productoData['id_producto'];
-                    $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
-                //    $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
-                    $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
+            // Delete old productos for the current venta
+            ProductosPorVenta::deleteAll(['id_venta' => $model->id_venta]);
 
-                    if (!$productoPorVenta->save()) {
-                        Yii::debug($productoPorVenta->errors, 'productoPorVenta_errors');
-                    }
+            foreach ($productos as $productoData) {
+                $productoPorVenta = new ProductosPorVenta();
+                $productoPorVenta->id_venta = $model->id_venta;
+                $productoPorVenta->id_producto = $productoData['id_producto'];
+                $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
+                $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
+                $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
+
+                if (!$productoPorVenta->save()) {
+                    Yii::debug($productoPorVenta->errors, 'productoPorVenta_errors');
                 }
             }
-            return $this->redirect(['view', 'id' => $model->id_venta]);
-        } else {
-            Yii::debug($model->errors, 'ventas_errors');
         }
+
+        return $this->redirect(['view', 'id' => $model->id_venta]);
+    } else {
+        Yii::debug($model->errors, 'ventas_errors');
     }
+
+    $id_evento = Yii::$app->session->get('id_evento');
 
     $productos = CatProductos::find()->all();
     $productosDropdown = [];
+
     foreach ($productos as $producto) {
         $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
     }
 
-    $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
+    // Fetch the related products for the current sale
+    $dataProvider = new \yii\data\ActiveDataProvider([
+        'query' => ProductosPorVenta::find()->where(['id_venta' => $model->id_venta]),
+        'pagination' => false,
+    ]);
 
-    return $this->render('create', [
+    return $this->render('update', [
         'model' => $model,
         'productosDropdown' => $productosDropdown,
-        'eventos' => $eventos,
+        'id_evento' => $id_evento,
+        'dataProvider' => $dataProvider,
     ]);
-    }
+}
 
     
+        
     public function actionView($id)
     {
         return $this->render('view', [
@@ -263,6 +315,15 @@ class VentasController extends \yii\web\Controller
         ]);
     }
 >>>>>>> main
+
+    public function actionTicket($id)
+    {
+
+        return $this->render('ticket', [
+            'model' => $this->findModel($id),
+            'productosPorVenta' => ProductosPorVenta::find()->where(['id_venta' => $id])->all(),    
+        ]);
+    }
 
     protected function findModel($id){
 

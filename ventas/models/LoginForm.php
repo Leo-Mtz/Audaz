@@ -7,13 +7,14 @@ use app\models\CatEventos;
 use app\models\Usuarios;
 use yii\helpers\ArrayHelper;
 
+use yii\helpers\Url;
 class LoginForm extends Model
 {
     public $username;
     public $password;
     public $rememberMe = true;
     public $privilegio;
-    public $eventos = [];
+    public $eventos;
     public $id_evento;
 
     private $_user = false;
