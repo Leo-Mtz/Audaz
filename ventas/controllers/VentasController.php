@@ -205,6 +205,15 @@ class VentasController extends \yii\web\Controller
         ]);
     }
 
+    public function actionTicket($id)
+    {
+
+        return $this->render('ticket', [
+            'model' => $this->findModel($id),
+            'productosPorVenta' => ProductosPorVenta::find()->where(['id_venta' => $id])->all(),    
+        ]);
+    }
+
     protected function findModel($id){
 
         if (($model = Ventas::findOne($id)) !== null) {

@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'header' => 'Acciones',
             'headerOptions' => ['style' => 'color:#007bff'],
             'contentOptions' => ['style' => 'width:12%;'],
-            'template' => '{view} {update} {delete}',
+            'template' => '{view} {update} {delete} {ticket}',
             'buttons' => [
                 'view' => function ($url, $model) {
                     $url = Url::to(['ventas/view','id'=>$model->id_venta]);
