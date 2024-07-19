@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
 					},
 					
 					'reset' => function ($url, $model) {
-						$url = Url::to(['usuarios/reset','id'=>$model->id]);
+						$url = Url::to(['usuarios/pass','id'=>$model->id]);
 						return Html::a('<span class="fa fa-retweet"></span>', $url, ['title' => 'Reiniciar Contraseña','style' => 'margin-right:10px','data-confirm' => Yii::t('yii', '¿Desea reiniciar la contraseña para este usuario?'), 'data-method'  => 'post']);
 					},
 					

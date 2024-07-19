@@ -62,7 +62,7 @@ $dataProvider = new ActiveDataProvider([
         'columns' => [
             [
                 'attribute' => 'id_producto',
-                'label' => 'Producto (Sabor y Presentación)',
+                'label' => 'Producto ',
                 'value' => function ($model) {
                     $producto = CatProductos::findOne($model->id_producto);
                     return $producto ? $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion : 'N/A';
