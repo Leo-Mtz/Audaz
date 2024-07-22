@@ -140,40 +140,39 @@ class VentasController extends \yii\web\Controller
     
         return $this->redirect(['index']);
     }
+    
     public function actionUpdate($id)
 {
     $model = $this->findModel($id);
 
-    $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
-    date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
-
     if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        if (isset(Yii::$app->request->post('Ventas')['productos'])) {
-            $productos = Yii::$app->request->post('Ventas')['productos'];
+        $productosData = Yii::$app->request->post('ProductosPorVenta', []);
+        foreach ($productosData as $index => $productoData) {
+            $producto = ProductosPorVenta::findOne($productoData['id']);
+            if ($producto) {
+                $producto->attributes = $productoData;
+                $producto->save();
+            } else {
+                // If the product is new, create it
+                $newProducto = new ProductosPorVenta();
 
-            // Delete old productos for the current venta
-            ProductosPorVenta::deleteAll(['id_venta' => $model->id_venta]);
-
-            foreach ($productos as $productoData) {
-                $productoPorVenta = new ProductosPorVenta();
-                $productoPorVenta->id_venta = $model->id_venta;
-                $productoPorVenta->id_producto = $productoData['id_producto'];
-                $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
-                $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
-                $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
-
-                if (!$productoPorVenta->save()) {
-                    Yii::debug($productoPorVenta->errors, 'productoPorVenta_errors');
-                }
+                $newProducto->id_venta = $model->id_venta; // Ensure it links to the current sale
+                 $newProducto->id_producto = $productoData['id_producto'];
+                 $newProducto->cantidad_vendida = $productoData['cantidad_vendida'];
+                $newProducto->precio_unitario = $productoData['precio_unitario'];
+                $newProducto->subtotal_producto = $productoData['subtotal_producto'];
             }
+
+            if (!$newProducto->save()) {
+                Yii::debug($newProducto->errors, 'productoPorVenta_errors');
+            }
+
+            
         }
 
+        
         return $this->redirect(['view', 'id' => $model->id_venta]);
-    } else {
-        Yii::debug($model->errors, 'ventas_errors');
     }
-
-    $id_evento = Yii::$app->session->get('id_evento');
 
     $productos = CatProductos::find()->all();
     $productosDropdown = [];
@@ -182,21 +181,21 @@ class VentasController extends \yii\web\Controller
         $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
     }
 
-    // Fetch the related products for the current sale
-    $dataProvider = new \yii\data\ActiveDataProvider([
-        'query' => ProductosPorVenta::find()->where(['id_venta' => $model->id_venta]),
-        'pagination' => false,
-    ]);
+    
+    $id_evento= Yii::$app->session->get('id_evento');
+    
+
+    // Fetch existing product data
+    $existingProductData = $model->getProductosPorVenta()->asArray()->all();
 
     return $this->render('update', [
         'model' => $model,
         'productosDropdown' => $productosDropdown,
         'id_evento' => $id_evento,
-        'dataProvider' => $dataProvider,
+        'existingProductData' => $existingProductData,
     ]);
 }
 
-    
         
     public function actionView($id)
     {
