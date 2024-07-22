@@ -275,51 +275,69 @@ function deleteProductField(productDiv) {
 }
 
 
-    // Función para calcular el monto total de cada producto (subtotal de producto)
-    function calcularMontoProducto(element) {
-        const rowDiv = element.closest('.row'); // Obtener el div de fila que contiene los campos
-        const idProductoField = rowDiv.querySelector('select[name^="Ventas[productos]"]'); // Campo de id_producto
-        const cantidadVendidaField = rowDiv.querySelector('.cantidad-vendida-input'); // Campo de cantidad vendida
-        const precioTotalField = rowDiv.querySelector('.precio-total-producto-input'); // Campo de precio total del producto
+function calcularMontoProducto(element) {
+    const rowDiv = element.closest('.row');
+    const idProductoField = rowDiv.querySelector('select[name^="ProductosPorVenta"]');
+    const cantidadVendidaField = rowDiv.querySelector('.cantidad-vendida-input');
+    const precioTotalField = rowDiv.querySelector('.precio-total-producto-input');
 
-        const selectedOption = idProductoField.value;
-        console.log(`Selected option: ${selectedOption}`);
+    // Debugging output
+    console.log('rowDiv:', rowDiv);
+    console.log('idProductoField:', idProductoField);
+    console.log('cantidadVendidaField:', cantidadVendidaField);
+    console.log('precioTotalField:', precioTotalField);
 
-        if (selectedOption === '') {
-            console.log('No product selected');
-            return; // No product selected
-        }
+    if (!idProductoField || !cantidadVendidaField || !precioTotalField) {
+        console.error('One or more required fields are missing.');
+        return;
+    }
+    
+    const selectedOption = idProductoField.value;
+    console.log('Selected option:', selectedOption);
 
-        // Fetch the price for the selected product
-        $.ajax({
-            url: '<?= Url::to(['ventas/get-precio-unitario']) ?>', // URL de la acción que obtiene el precio unitario
-            type: 'GET',
-            data: { id: selectedOption },
-            success: function(data) {
-                console.log('Data from server: ', data);
+    if (selectedOption === '') {
+        console.log('No product selected');
+        return;
+    }
+
+    // Fetch the price for the selected product
+    $.ajax({
+        url: '<?= Url::to(['ventas/get-precio-unitario']) ?>',
+        type: 'GET',
+        data: { id: selectedOption },
+        success: function(data) {
+            console.log('Data from server:', data); // Debug: Check the raw data received from the server
+            
+            try {
                 const response = JSON.parse(data);
+                console.log('Parsed response:', response); // Debug: Check the parsed response
+
                 const precioUnitario = parseFloat(response.precio);
                 const cantidadVendida = parseFloat(cantidadVendidaField.value);
 
-                console.log('Parsed precioUnitario:', precioUnitario);
-                console.log('Parsed cantidadVendida:', cantidadVendida);
+                console.log('Parsed precioUnitario:', precioUnitario); // Debug: Check if precioUnitario is correct
+                console.log('Parsed cantidadVendida:', cantidadVendida); // Debug: Check if cantidadVendida is correct
 
                 if (!isNaN(precioUnitario) && !isNaN(cantidadVendida)) {
                     const precioTotal = precioUnitario * cantidadVendida;
-                    console.log('Precio Total', precioTotal);
+                    console.log('Precio Total:', precioTotal); // Debug: Check calculated precioTotal
                     precioTotalField.value = precioTotal.toFixed(2);
                 } else {
                     precioTotalField.value = 0;
                 }
 
-                // Recalcular el total de la venta
+                // Recalculate total sale
                 console.log('Updating precioTotalField:', precioTotalField.value);
-
-                // Function called to update total
                 calcularTotalVenta();
+            } catch (e) {
+                console.error('Error parsing response:', e);
             }
-        });
-    }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('AJAX request failed:', textStatus, errorThrown); // Debug: Check if AJAX request fails
+        }
+    });
+}
 
    
     
