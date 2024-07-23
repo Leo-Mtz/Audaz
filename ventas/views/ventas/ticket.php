@@ -85,9 +85,9 @@ $dataProvider = new ActiveDataProvider([
         
         <?= Html::a('Regresar', 'javascript:history.back()', ['class' => 'btn btn-danger']) ?>
       
-      <br>
         <?= Html::a('Nueva Venta', ['create', 'id' => $model->id_venta], ['class' => 'btn btn-success']) ?>
-      
+
+        <?= Html::a('Aceptar', ['ventas/index', 'id' => $model->id_venta], ['class' => 'btn btn-success']) ?>
 
     </p>
     </div>
