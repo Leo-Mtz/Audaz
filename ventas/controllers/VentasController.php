@@ -124,77 +124,73 @@ class VentasController extends \yii\web\Controller
     }
     
 
-
-    public function actionDelete($id)
+    public function actionUpdate($id)
     {
         $model = $this->findModel($id);
     
-        // Delete related productos_por_venta records first
-        $productosPorVenta = ProductosPorVenta::findAll(['id_venta' => $id]);
-        foreach ($productosPorVenta as $productoPorVenta) {
-            $productoPorVenta->delete();
-        }
-    
-        // Now delete the venta record
-        $model->delete();
-    
-        return $this->redirect(['index']);
-    }
-    
-    public function actionUpdate($id)
-{
-    $model = $this->findModel($id);
-
-    if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        $productosData = Yii::$app->request->post('ProductosPorVenta', []);
-        foreach ($productosData as $index => $productoData) {
-            $producto = ProductosPorVenta::findOne($productoData['id']);
-            if ($producto) {
-                $producto->attributes = $productoData;
-                $producto->save();
-            } else {
-                // If the product is new, create it
-                $newProducto = new ProductosPorVenta();
-
-                $newProducto->id_venta = $model->id_venta; // Ensure it links to the current sale
-                 $newProducto->id_producto = $productoData['id_producto'];
-                 $newProducto->cantidad_vendida = $productoData['cantidad_vendida'];
-                $newProducto->precio_unitario = $productoData['precio_unitario'];
-                $newProducto->subtotal_producto = $productoData['subtotal_producto'];
-            }
-
-            if (!$newProducto->save()) {
-                Yii::debug($newProducto->errors, 'productoPorVenta_errors');
-            }
-
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $productosData = Yii::$app->request->post('ProductosPorVenta', []);
             
+            // Debugging output
+            echo "Productos Data: ";
+            var_dump($productosData);
+            echo PHP_EOL;
+    
+            // Fetch existing product data
+            $existingProductIds = array_column($model->getProductosPorVenta()->asArray()->all(), 'id');
+    
+            // Prepare new product IDs from the form data
+            $newProductIds = array_column($productosData, 'id');
+            
+            // Delete products that are no longer in the form submission
+            foreach ($existingProductIds as $existingProductId) {
+                if (!in_array($existingProductId, $newProductIds)) {
+                    $productoToDelete = ProductosPorVenta::findOne($existingProductId);
+                    if ($productoToDelete) {
+                        $productoToDelete->delete();
+                    }
+                }
+            }
+    
+            // Update or create new products
+            foreach ($productosData as $productoData) {
+                if (isset($productoData['id']) && $productoData['id']) {
+                    $producto = ProductosPorVenta::findOne($productoData['id']);
+                    if ($producto) {
+                        $producto->attributes = $productoData;
+                        $producto->save();
+                    }
+                } else {
+                    $newProducto = new ProductosPorVenta();
+                    $newProducto->attributes = $productoData;
+                    $newProducto->id_venta = $model->id_venta; // Ensure it links to the current sale
+                    $newProducto->save();
+                }
+            }
+    
+            return $this->redirect(['view', 'id' => $model->id_venta]);
         }
-
-        
-        return $this->redirect(['view', 'id' => $model->id_venta]);
-    }
-
-    $productos = CatProductos::find()->all();
-    $productosDropdown = [];
-
-    foreach ($productos as $producto) {
-        $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
-    }
-
     
-    $id_evento= Yii::$app->session->get('id_evento');
+        $productos = CatProductos::find()->all();
+        $productosDropdown = [];
     
-
-    // Fetch existing product data
-    $existingProductData = $model->getProductosPorVenta()->asArray()->all();
-
-    return $this->render('update', [
-        'model' => $model,
-        'productosDropdown' => $productosDropdown,
-        'id_evento' => $id_evento,
-        'existingProductData' => $existingProductData,
-    ]);
-}
+        foreach ($productos as $producto) {
+            $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
+        }
+    
+        $id_evento = Yii::$app->session->get('id_evento');
+    
+        // Fetch existing product data
+        $existingProductData = $model->getProductosPorVenta()->asArray()->all();
+    
+        return $this->render('update', [
+            'model' => $model,
+            'id_evento' => $id_evento,
+            'productosDropdown' => $productosDropdown,
+            'existingProductData' => $existingProductData,
+        ]);
+    }
+    
 
         
     public function actionView($id)
