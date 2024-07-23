@@ -96,7 +96,6 @@ const productosDropdown = <?= json_encode($productosDropdown) ?>;
 let productCount = 0;
 let selectedEventoId = null;
 const existingProductData = <?= json_encode($existingProductData) ?>;
-
 function generateProductFields() {
     const numProductos = parseInt(document.getElementById('num_productos').value) || 0;
     const ProductFieldsContainer = document.getElementById('Productosadicionales');
@@ -118,6 +117,7 @@ function generateProductFields() {
             ProductFieldsContainer.removeChild(ProductFieldsContainer.lastChild);
             productCount--;
         }
+        // Ensure num_productos field is updated
         document.getElementById('num_productos').value = productCount;
         calcularTotalVenta();
     }
@@ -213,6 +213,9 @@ function addProductField(data = null) {
     ProductFieldsContainer.appendChild(productDiv);
     productCount++;
 
+    // Update the num_productos field
+    document.getElementById('num_productos').value = productCount;
+
     // Populate fields if data is provided
     if (data) {
         idProductoField.value = data.id_producto;
@@ -226,9 +229,11 @@ function addProductField(data = null) {
 function deleteProductField(productDiv) {
     productDiv.remove();
     productCount--;
+    // Ensure num_productos field is updated
     document.getElementById('num_productos').value = productCount;
     calcularTotalVenta();
 }
+
 
 
     // Función para actualizar el precio unitario al cambiar el producto seleccionado
