@@ -43,6 +43,16 @@ use yii\helpers\Url;
  
         <div class="row buttons pull-right">
             <?= Html::submitButton('Login', ['class' => 'btn btn-primary btn-block']) ?>
+          
+            <?= Html::a(
+            '¿Olvidaste tu contraseña?',
+            ['site/requestpasswordreset'], // Adjust the route if needed
+            [
+                'class' => 'btn btn-link btn-block', // Changed class for better visibility
+                'title' => 'Solicitar restablecimiento de contraseña', // Tooltip for accessibility
+            ]
+        ) ?>
+
         </div>
 
         <?php ActiveForm::end(); ?>
@@ -52,7 +62,7 @@ use yii\helpers\Url;
 <script>
 function fetchEventos() {
     var username = $('#loginform-username').val();
-    console.log("Fetching eventos for username:", username); // Debug: Log the username
+  //  console.log("Fetching eventos for username:", username); // Debug: Log the username
 
     var data = {
         'username': username,
@@ -66,7 +76,7 @@ function fetchEventos() {
         url: '<?= yii\helpers\Url::to(['site/get-eventos']) ?>',
         data: data,
         success: function(response) {
-            console.log("Received response:", response); // Debug: Log the response
+        //    console.log("Received response:", response); // Debug: Log the response
 
             if (response.success) {
                 $('#eventosDropdown').html(response.dropdown);
@@ -75,17 +85,17 @@ function fetchEventos() {
                 // Add change event listener to the new dropdown
                 $('#eventosDropdown select').on('change', function() {
                     const selectedEventoId = $(this).val();
-                    console.log("Selected evento ID:", selectedEventoId); // Log the selected evento ID
+              //      console.log("Selected evento ID:", selectedEventoId); // Log the selected evento ID
                 });
 
             } else {
-                console.log("Couldn't quite do it"); // Debug: Log any error message
+              //  console.log("Couldn't quite do it"); // Debug: Log any error message
                 $('#eventosDropdownContainer').hide();
             }
         },
         error: function(xhr, status, error) {
-            console.log("AJAX error:", status, error); // Debug: Log AJAX errors
-            console.log("Response text:", xhr.responseText); // Debug: Log the response text from server
+           // console.log("AJAX error:", status, error); // Debug: Log AJAX errors
+          //  console.log("Response text:", xhr.responseText); // Debug: Log the response text from server
         }
     });
 }
