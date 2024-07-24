@@ -96,5 +96,6 @@ $dataProvider = new ActiveDataProvider([
     ]) ?>
 
 <?= Html::a('Generar Ticket', ['ventas/agregar-ticket', 'id' => $model->id_venta], ['class' => 'btn btn-primary']) ?>
+<?= Html::a('Aceptar', ['ventas/index', 'id' => $model->id_venta], ['class' => 'btn btn-success']) ?>
 
 </div>

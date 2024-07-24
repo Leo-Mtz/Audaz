@@ -79,17 +79,13 @@ $dataProvider = new ActiveDataProvider([
             ],
         ]) ?>
 
-        
-    <p>
-        <?= Html::a('Imprimir Ticket', '#', ['class' => 'btn btn-primary', 'onclick' => 'window.print(); return false;']) ?>
-        
-        <?= Html::a('Regresar', 'javascript:history.back()', ['class' => 'btn btn-danger']) ?>
       
-        <?= Html::a('Nueva Venta', ['create', 'id' => $model->id_venta], ['class' => 'btn btn-success']) ?>
-
-        <?= Html::a('Aceptar', ['ventas/index', 'id' => $model->id_venta], ['class' => 'btn btn-success']) ?>
-
-    </p>
+<div class="button-group">
+            <?= Html::a('Imprimir Ticket', '#', ['class' => 'btn btn-info', 'onclick' => 'window.print(); return false;']) ?>
+            <?= Html::a('Regresar', 'javascript:history.back()', ['class' => 'btn btn-danger']) ?>
+            <?= Html::a('Nueva Venta', ['create', 'id' => $model->id_venta], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Aceptar', ['ventas/index', 'id' => $model->id_venta], ['class' => 'btn btn-success']) ?>
+        </div>
     </div>
 
 </div>
@@ -131,6 +127,15 @@ $css = <<<CSS
 
 .ticket-view .ticket-details th {
     background-color: #f2f2f2;
+}
+
+.button-group {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.button-group .btn {
+    margin: 5px;
 }
 
 @media print {
