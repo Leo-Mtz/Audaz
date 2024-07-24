@@ -67,10 +67,10 @@ class VentasSearch extends Ventas
             'productos_totales' => $this->productos_totales,
             'id_evento' => $this->id_evento,
             'id_vendedor' => $this->id_vendedor,
+            'forma_de_pago' => $this->forma_de_pago,
+            'tipo_de_venta' => $this->tipo_de_venta,
         ]);
 
-        $query->andFilterWhere(['like', 'forma_de_pago', $this->forma_de_pago])
-              ->andFilterWhere(['like', 'tipo_de_venta', $this->tipo_de_venta]);
 
         return $dataProvider;
     }

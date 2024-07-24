@@ -25,6 +25,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Registro de Venta', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
+    <?php $eventos = ArrayHelper::map(app\models\CatEventos::find()->all(), 'id_evento', 'evento'); ?>
+
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
     
    
@@ -39,7 +41,15 @@ $this->params['breadcrumbs'][] = $this->title;
             'id_venta',
             'fecha',
             
-            'id_evento',
+            
+        [
+            'attribute' => 'id_evento',
+            'value' => function($model) {
+                return  $model->eventos ? $model->eventos->evento : null;
+            },
+            'filter' => Html::activeDropDownList($searchModel, 'id_evento', $eventos, ['class' => 'form-control', 'prompt' => '']),
+        ],
+        
             'id_vendedor',
             'productos_totales',
             'tipo_de_venta',
