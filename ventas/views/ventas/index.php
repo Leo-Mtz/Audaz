@@ -27,6 +27,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php $eventos = ArrayHelper::map(app\models\CatEventos::find()->all(), 'id_evento', 'evento'); ?>
 
+    <?php  $formasDePago = [
+        'efectivo' => 'Efectivo',
+        'tarjeta' => 'Tarjeta de Crédito/Débito',
+        'transferencia' => 'Transferencia Bancaria',
+    ];
+
+    $tipo_de_venta= [
+        'venta' => 'Venta',
+        'degustacion' => 'Degustación',
+        'cortesia' => 'Cortesía',
+    ]; 
+    ?>
+
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
     
    
@@ -52,8 +65,22 @@ $this->params['breadcrumbs'][] = $this->title;
         
             'id_vendedor',
             'productos_totales',
-            'tipo_de_venta',
-            'forma_de_pago',
+
+            [ 'attribute' => 'tipo_de_venta',
+                'value' => function($model) {
+                    return $model->tipo_de_venta;
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'tipo_de_venta', $tipo_de_venta, ['class' => 'form-control', 'prompt' => '']),
+
+            ],
+
+            [
+                'attribute' => 'forma_de_pago',
+                'value' => function($model) {
+                    return $model->forma_de_pago;
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'forma_de_pago', $formasDePago, ['class' => 'form-control', 'prompt' => '']),
+            ],
             
             [
                'attribute' => 'precio_total_venta',
