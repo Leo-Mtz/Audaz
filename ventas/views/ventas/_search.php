@@ -1,6 +1,8 @@
 <?php
 
 use yii\helpers\Html;
+use app\models\CatEventos;
+use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -25,8 +27,12 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'precio_total_venta') ?>
 
-    <?php // echo $form->field($model, 'id_evento') ?>
+    <?= $form->field($model, 'id_evento')->dropDownList(
+        ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento'), 
+        ['prompt' => '']
+    ) ?>
 
+    <?= $form->field($model, 'forma_de_pago' )->dropDownList($forma_de_pago, ['prompt'=>'']) ?>
     <?php // echo $form->field($model, 'id_vendedor') ?>
 
     <div class="form-group">

@@ -126,6 +126,29 @@ $dataProvider = new ActiveDataProvider([
         ],
     ]) ?>
 
-<?= Html::a('Generar Ticket', ['ventas/agregar-ticket', 'id' => $model->id_venta], ['class' => 'btn btn-primary']) ?>
+    
 
+        <div id= button-group>
+    <?= Html::a('Generar Ticket', ['ventas/agregar-ticket', 'id' => $model->id_venta], ['class' => 'btn btn-primary']) ?>
+    <?= Html::a('Aceptar', ['ventas/index', 'id' => $model->id_venta], ['class' => 'btn btn-success']) ?>
+
+    </div>
 </div>
+
+
+<?php
+$css = <<<CSS
+
+.button-group {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.button-group .btn {
+    margin: 5px;
+}
+
+
+CSS;
+$this->registerCss($css);
+?>
