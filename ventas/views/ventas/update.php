@@ -91,6 +91,23 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
 
 </div>
 
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    // Get the client's current date and time
+    var clientDate = new Date();
+
+    // Format the date to yyyy-mm-dd in the local time zone
+    var year = clientDate.getFullYear();
+    var month = (clientDate.getMonth() + 1).toString().padStart(2, '0');
+    var day = clientDate.getDate().toString().padStart(2, '0');
+    var formattedDate = year + '-' + month + '-' + day;
+
+    // Set the date in the form field
+    document.getElementById('fecha-input').value = formattedDate;
+    console.log(clientDate);
+});
+
 <script>
 const productosDropdown = <?= json_encode($productosDropdown) ?>;
 let productCount = 0;

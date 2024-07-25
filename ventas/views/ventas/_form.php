@@ -42,6 +42,7 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
         ]) ?>
     </div>
 
+
     <div id="Productosadicionales" class="mt-3 row"></div>
     <button type="button" class="btn btn-primary" onclick="addProductField()">Agregar Producto</button>
 
@@ -83,6 +84,17 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
 
 </div>
 
+
+     <script>
+        function validateProductCount() {       
+       const numProductos = parseInt(document.getElementById('num_productos').value) || 0;
+        if (numProductos < 0) {
+            document.getElementById('num_productos').value = 0;
+            alert('El número de productos no puede ser negativo');
+                    }
+                }
+        </script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
     // Get the client's current date and time
@@ -108,35 +120,49 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
     let selectedEventoId=null;
 
    
-       function generateProductFields() {
-        const numProductos = parseInt(document.getElementById('num_productos').value) || 0;
-        const ProductFieldsContainer = document.getElementById('Productosadicionales');
-        const currentProductFields = ProductFieldsContainer.childElementCount;
+      /**
+       * Generates product fields based on the value of the 'num_productos' input field.
+       * If the value is zero, clears all existing fields and resets the product count.
+       * If the value is greater than the current number of product fields, adds new fields.
+       * If the value is less than the current number of product fields, removes excess fields.
+       * Finally, updates the value of the 'num_productos' input field to match the current product count.
+       */
+      function generateProductFields() {
+          // Get the value of the 'num_productos' input field and convert it to an integer
+          const numProductos = parseInt(document.getElementById('num_productos').value) || 0;
+      
+          // Get the container element for the product fields
+          const ProductFieldsContainer = document.getElementById('Productosadicionales');
+      
+          // Get the current number of product fields
+          const currentProductFields = ProductFieldsContainer.childElementCount;
+      
+          // Clear existing fields if numProductos is zero
+          if (numProductos === 0) {
+              ProductFieldsContainer.innerHTML = ''; // Clear all fields
+              productCount = 0; // Reset product count
+              calcularTotalVenta(); // Recalculate total sale
+              return;
+          }
+      
+          // Add new product fields if numProductos is greater than currentProductFields
+          if (numProductos > currentProductFields) {
+              for (let i = currentProductFields; i < numProductos; i++) {
+                  addProductField();
+              }
+          } 
+          // Remove excess product fields if numProductos is less than currentProductFields
+          else if (numProductos < currentProductFields) {
+              for (let i = currentProductFields; i > numProductos; i--) {
+                  ProductFieldsContainer.removeChild(ProductFieldsContainer.lastChild);
+                  productCount--;
+              }
+              document.getElementById('num_productos').value = productCount;
+              calcularTotalVenta();
+          }
+      }
 
-        // Clear existing fields if numProductos is zero
-        if (numProductos === 0) {
-            ProductFieldsContainer.innerHTML = ''; // Clear all fields
-            productCount = 0; // Reset product count
-            calcularTotalVenta(); // Recalculate total sale
-            return;
-        }
-
-        if (numProductos > currentProductFields) {
-            for (let i = currentProductFields; i < numProductos; i++) {
-                addProductField();
-            }
-        } else if (numProductos < currentProductFields) {
-            for (let i = currentProductFields; i > numProductos; i--) {
-                ProductFieldsContainer.removeChild(ProductFieldsContainer.lastChild);
-                productCount--;
-            }
-            document.getElementById('num_productos').value = productCount;
-            calcularTotalVenta();
-        }
-    }
-
-
-
+//boton para añadir campos
     function addProductField() {
     const ProductFieldsContainer = document.getElementById('Productosadicionales');
     const productDiv = document.createElement('div');
@@ -180,6 +206,12 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
     cantidadVendidaField.className = 'form-control mb-2 cantidad-vendida-input';
     cantidadVendidaField.placeholder = 'Cantidad Vendida';
     cantidadVendidaField.oninput = function() {
+
+        //valida que el input no sea negativo
+        if(parseFloat(this.value) < 0){
+            this.value = 0;
+            alert('La cantidad vendida no puede ser negativa');
+        }
         calcularMontoProducto(this);
     };
 

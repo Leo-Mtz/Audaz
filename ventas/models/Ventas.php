@@ -7,18 +7,19 @@ use Yii;
 /**
  * This is the model class for table "ventas".
  *
- * @property int $id_venta
- * @property string $fecha
- * @property int|null $id_producto
- * @property float|null $cantidad_vendida
- * @property float|null $precio_total_venta
- * @property int|null $id_evento
- * @property int|null $id_vendedor
+ * @property int $id_venta The unique identifier for the sale.
+ * @property string $fecha The date of the sale.
+ * @property int|null $id_producto The ID of the product sold (if applicable).
+ * @property float|null $cantidad_vendida The quantity of product sold (if applicable).
+ * @property float|null $precio_total_venta The total price of the sale.
+ * @property int|null $id_evento The ID of the event associated with the sale (if applicable).
+ * @property int|null $id_vendedor The ID of the vendor making the sale (if applicable).
  */
 class Ventas extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
+     * Defines the name of the table associated with this ActiveRecord class.
      */
     public static function tableName()
     {
@@ -27,6 +28,7 @@ class Ventas extends \yii\db\ActiveRecord
 
     /**
      * {@inheritdoc}
+     * Defines the validation rules for the attributes.
      */
     public function rules()
     {
@@ -38,11 +40,12 @@ class Ventas extends \yii\db\ActiveRecord
             [['forma_de_pago', 'tipo_de_venta'], 'string', 'max' => 255],
         ];
     }
+
     /**
      * {@inheritdoc}
+     * Provides labels for the attributes.
      */
     public function attributeLabels()
-
     {
         return [
             'id_venta' => 'Id Venta',
@@ -54,44 +57,68 @@ class Ventas extends \yii\db\ActiveRecord
             'forma_de_pago'=> 'Forma de Pago',
             'tipo_de_venta'=> 'Tipo de Venta',
             'productos_totales' => 'Productos Totales',
-            
-           
         ];
-
     }
+
+    /**
+     * Gets the related ProductosPorVenta models.
+     * @return \yii\db\ActiveQuery
+     */
+
+
+     /* Establece una relacion one-to-many (uno a varios ) entre el modelo de ventas y el modelo de ProductosPorVenta.
+    significa que una venta puede tener diferentes productos, la relación se define por medio del 'id_venta' que ambas tablas comparten.*/
     public function getProductosPorVenta()
     {
         return $this->hasMany(ProductosPorVenta::className(), ['id_venta' => 'id_venta']);
     }
-        public function getNombreSabor()
-        {
-            return $this->productos ? $this->productos->sabor->nombre : null;
-        }
-    
-        public function getNombrePresentacion()
-        {
-            return $this->productos ? $this->productos->presentacion->nombre : null;
-        }
 
-        public function getEventos()
-        {
-            return $this->hasOne(CatEventos::className(), ['id_evento' => 'id_evento']);
-        }
-    
+    /**
+     * Gets the name of the flavor of the product.
+     * @return string|null
+     */
 
-public function beforeValidate()
-{
-    if ($this->isNewRecord) {
-        // Set id_vendedor only if it's a new record
-        $this->id_vendedor = Yii::$app->user->identity->id; // Assign the ID of the logged-in user
+     /*Obtiene el nombre del sabor del producto.*/
+    public function getNombreSabor()
+    {
+        return $this->productos ? $this->productos->sabor->nombre : null;
     }
-    
-    return parent::beforeValidate();
-}
 
-    
-   
+    /**
+     * Gets the name of the presentation of the product.
+     * @return string|null
+     */
+
+    /*Obtiene el nombre de la presentacion del producto.*/
+    public function getNombrePresentacion()
+    {
+        return $this->productos ? $this->productos->presentacion->nombre : null;
+    }
+
+    /**
+     * Gets the related CatEventos model.
+     * @return \yii\db\ActiveQuery
+     */
 
 
+     /*Establece una relación uno a uno con el modelo de CatEventos, el cual permite relacionar una venta con un evento.*/
 
+    public function getEventos()
+    {
+        return $this->hasOne(CatEventos::className(), ['id_evento' => 'id_evento']);
+    }
+
+    /**
+     * This method is invoked before validation starts.
+     * @return bool
+     */
+    public function beforeValidate()
+    {
+        if ($this->isNewRecord) {
+            // Set id_vendedor only if it's a new record
+            $this->id_vendedor = Yii::$app->user->identity->id; // Assign the ID of the logged-in user
+        }
+        
+        return parent::beforeValidate();
+    }
 }

@@ -37,6 +37,8 @@ class VentasController extends \yii\web\Controller
      * @return mixed
      */
  
+
+     //funcion para renderizar el index de ventas
     public function actionIndex()
     
     {
@@ -48,6 +50,8 @@ class VentasController extends \yii\web\Controller
             'dataProvider' => $dataProvider,
         ]);
     }
+
+    //funcion para agregar ticket
 
     public function actionAgregarTicket($id)
     {
@@ -82,10 +86,7 @@ class VentasController extends \yii\web\Controller
             if (isset(Yii::$app->request->post('Ventas')['productos'])) {
                 $productos = Yii::$app->request->post('Ventas')['productos'];
     
-                // Print the products array
-                echo '<pre>';
-                var_dump($productos);
-                echo '</pre>';
+              
     
                 foreach ($productos as $productoData) {
     

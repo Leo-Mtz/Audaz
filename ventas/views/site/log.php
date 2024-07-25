@@ -44,15 +44,7 @@ use yii\helpers\Url;
         <div class="row buttons pull-right">
             <?= Html::submitButton('Login', ['class' => 'btn btn-primary btn-block']) ?>
           
-            <?= Html::a(
-            '¿Olvidaste tu contraseña?',
-            ['site/requestpasswordreset'], // Adjust the route if needed
-            [
-                'class' => 'btn btn-link btn-block', // Changed class for better visibility
-                'title' => 'Solicitar restablecimiento de contraseña', // Tooltip for accessibility
-            ]
-        ) ?>
-
+            
         </div>
 
         <?php ActiveForm::end(); ?>
