@@ -4,6 +4,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
+use yii\jui\DatePicker;
 use yii\helpers\ArrayHelper;
 use app\models\CatProductos;
 
@@ -52,7 +53,21 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
     
             'id_venta',
-            'fecha',
+            [
+                'attribute' => 'fecha',
+                'format' => 'raw',
+                'value' => function($model) {
+                    return Yii::$app->formatter->asDate($model->fecha);
+                },
+                'filter' => DatePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'fecha',
+                    'dateFormat' => 'yyyy-MM-dd',
+                    'options' => [
+                        'class' => 'form-control',
+                    ],
+                ]),
+            ],
             
             
         [
