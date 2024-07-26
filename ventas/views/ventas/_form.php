@@ -13,7 +13,10 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
 
 ?>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <div class="ventas-form">
+
 
     <?php $form = ActiveForm::begin(); ?>
 
@@ -247,18 +250,26 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
     rowDiv.appendChild(divPrecioUnitario); // Add hidden field to the row
     rowDiv.appendChild(divPrecioTotalProducto);
 
-    productDiv.appendChild(rowDiv);
+    const deleteButtonDiv = document.createElement('div');
+    deleteButtonDiv.className = 'col-md-1 d-flex align-items-center justify-content-center';
 
     const deleteButton = document.createElement('button');
     deleteButton.type = 'button';
     deleteButton.className = 'btn btn-danger btn-sm';
-    deleteButton.textContent = 'Eliminar Campo';
+
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-times'; // Font Awesome 'X' icon class
+
+    deleteButton.appendChild(icon);
     deleteButton.addEventListener('click', function() {
         deleteProductField(productDiv);
     });
 
-    productDiv.appendChild(deleteButton);
 
+    deleteButtonDiv.appendChild(deleteButton);
+    rowDiv.appendChild(deleteButtonDiv);
+    productDiv.appendChild(rowDiv);
+  
     ProductFieldsContainer.appendChild(productDiv);
 
     productCount++;
