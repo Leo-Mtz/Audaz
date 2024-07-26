@@ -14,6 +14,8 @@ use Yii;
  * @property float|null $precio_total_venta The total price of the sale.
  * @property int|null $id_evento The ID of the event associated with the sale (if applicable).
  * @property int|null $id_vendedor The ID of the vendor making the sale (if applicable).
+ * @property string|null $forma_de_pago The payment method used for the sale (if applicable).
+ * @property string|null $tipo_de_venta The type of sale (if applicable).
  */
 class Ventas extends \yii\db\ActiveRecord
 {
@@ -65,6 +67,11 @@ class Ventas extends \yii\db\ActiveRecord
      * @return \yii\db\ActiveQuery
      */
 
+     public function init(){
+        parent::init();
+        $this->tipo_de_venta = 'venta'; // Set the default value for tipo_de_venta
+        $this->forma_de_pago = 'efectivo'; // Set the default value for forma_de_pago
+     }
 
      /* Establece una relacion one-to-many (uno a varios ) entre el modelo de ventas y el modelo de ProductosPorVenta.
     significa que una venta puede tener diferentes productos, la relación se define por medio del 'id_venta' que ambas tablas comparten.*/
