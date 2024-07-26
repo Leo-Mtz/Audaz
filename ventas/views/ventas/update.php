@@ -91,23 +91,6 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
 
 </div>
 
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-    // Get the client's current date and time
-    var clientDate = new Date();
-
-    // Format the date to yyyy-mm-dd in the local time zone
-    var year = clientDate.getFullYear();
-    var month = (clientDate.getMonth() + 1).toString().padStart(2, '0');
-    var day = clientDate.getDate().toString().padStart(2, '0');
-    var formattedDate = year + '-' + month + '-' + day;
-
-    // Set the date in the form field
-    document.getElementById('fecha-input').value = formattedDate;
-    console.log(clientDate);
-});
-
 <script>
 const productosDropdown = <?= json_encode($productosDropdown) ?>;
 let productCount = 0;
@@ -183,8 +166,14 @@ function addProductField(data = null) {
     cantidadVendidaField.className = 'form-control mb-2 cantidad-vendida-input';
     cantidadVendidaField.placeholder = 'Cantidad Vendida';
     cantidadVendidaField.oninput = function() {
+
+        //valida que el input no sea negativo
+        if(parseFloat(this.value) < 0){
+            this.value = 0;
+            alert('La cantidad vendida no puede ser negativa');
+        }
         calcularMontoProducto(this);
-    };
+        };
 
     divCantidadVendida.appendChild(cantidadVendidaField);
 
@@ -216,16 +205,29 @@ function addProductField(data = null) {
     rowDiv.appendChild(divPrecioUnitario);
     rowDiv.appendChild(divPrecioTotalProducto);
 
-    productDiv.appendChild(rowDiv);
+    
+    const deleteButtonDiv = document.createElement('div');
+    deleteButtonDiv.className = 'col-md-1 d-flex align-items-center justify-content-center';
 
     const deleteButton = document.createElement('button');
     deleteButton.type = 'button';
-    deleteButton.className = 'btn btn-danger';
-    deleteButton.innerHTML = 'Eliminar Producto';
-    deleteButton.onclick = function() {
+    deleteButton.className = 'btn btn-danger btn-sm';
+
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-times'; // Font Awesome 'X' icon class
+
+    deleteButton.appendChild(icon);
+    deleteButton.addEventListener('click', function() {
         deleteProductField(productDiv);
-    };
-    productDiv.appendChild(deleteButton);
+    });
+
+
+    deleteButtonDiv.appendChild(deleteButton);
+    rowDiv.appendChild(deleteButtonDiv);
+
+
+    productDiv.appendChild(rowDiv);
+
 
     ProductFieldsContainer.appendChild(productDiv);
     productCount++;
