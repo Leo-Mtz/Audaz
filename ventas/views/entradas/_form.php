@@ -13,7 +13,8 @@ use yii\jui\DatePicker;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <div class="col-md col-lg">
+
+    <div class="col-md-4 col-lg-4">
         <?= $form->field($model, 'fecha')->widget(DatePicker::className(), [
             'clientOptions' => [
                 'showAnim' => 'fold',
@@ -27,15 +28,17 @@ use yii\jui\DatePicker;
         ]) ?>
     </div>
 
-    <div class="col-md col-lg">
+    <div class ="row mt-3">
+    <div class="col-md-4 col-lg-4">
         <?= $form->field($model, 'id_empleado')->dropdownList($empleados, ['prompt' => 'Seleccionar empleado']) ?>
     </div>
 
-    <div class="col-md col-lg">
+    <div class="col-md-4 col-lg-4">
         <?= $form->field($model, 'id_evento')->dropdownList($eventos, ['prompt' => 'Seleccionar evento']) ?>
     </div>
+    </div>
 
-    <div class="col-md col-lg">
+    <div class="col-md-4 col-lg-4">
         <?= $form->field($model, 'id_sabor')->dropdownList($sabores, ['prompt' => 'Seleccionar sabor']) ?>
     </div>
 
@@ -72,7 +75,7 @@ use yii\jui\DatePicker;
         <?= $form->field($model, 'cantidad_2L')->textInput(['placeholder' => 'Cantidad 2L', 'class' => 'quantity-input']) ?>
     </div>
 
-    <div class="col-md col-lg">
+    <div class="col-md-4 col-lg-4">
         <?= $form->field($model, 'cantidad_entradas')->textInput(['placeholder' => 'Cantidad Total', 'readonly' => true]) ?>
     </div>
 
