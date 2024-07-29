@@ -67,12 +67,7 @@ class Ventas extends \yii\db\ActiveRecord
      * @return \yii\db\ActiveQuery
      */
 
-     public function init(){
-        parent::init();
-        $this->tipo_de_venta = 'venta'; // Set the default value for tipo_de_venta
-        $this->forma_de_pago = 'efectivo'; // Set the default value for forma_de_pago
-     }
-
+   
      /* Establece una relacion one-to-many (uno a varios ) entre el modelo de ventas y el modelo de ProductosPorVenta.
     significa que una venta puede tener diferentes productos, la relación se define por medio del 'id_venta' que ambas tablas comparten.*/
     public function getProductosPorVenta()

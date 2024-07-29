@@ -30,7 +30,8 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
 
 <?php $form = ActiveForm::begin(); ?>
 
-<div class="col-md col-lg">
+<div class="row mt-3">
+    <div class="col-md-4 col-lg-4">
     <?= $form->field($model, 'fecha')->widget(DatePicker::className(), [
         'clientOptions' => [
             'showAnim' => 'fold',
@@ -45,8 +46,27 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
         'dateFormat' => 'yyyy-MM-dd',
     ]) ?>
 </div>
+<div class="col-md-4 col-lg-4">
+        <?= $form->field($model, 'forma_de_pago')->dropDownList([
+                'efectivo' => 'Efectivo',
+                'tarjeta' => 'Tarjeta de Crédito/Débito',
+                'transferencia' => 'Transferencia Bancaria',
+            ], ['prompt' => 'Seleccione una forma de pago']) ?>
+    </div>
 
-<div class="col-md col-lg">
+
+
+<div class="col-md-4 col-lg-4">
+        <?= $form->field($model, 'tipo_de_venta')->dropDownList([
+                'venta' => 'Venta',
+                'degustacion' => 'Degustación',
+                'cortesia' => 'Cortesía',
+            ], ['prompt' => 'Seleccione tipo de venta']) ?>
+    </div>
+    </div>
+
+
+<div class="col-md-3 col-lg-2">
     <?= $form->field($model, 'productos_totales')->textInput([
         'placeholder' => 'Número de productos',
         'id' => 'num_productos',
@@ -57,31 +77,22 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
 <div id="Productosadicionales" class="mt-3 row"></div>
 <button type="button" class="btn btn-primary" onclick="addProductField()">Agregar Producto</button>
 
-<div class="col-md col-lg">
-    <?= $form->field($model, 'cantidad_total_vendida')->textInput(['placeholder' => 'Total Vendida', 'id' => 'total_vendida', 'readonly' => true]) ?>
-</div>
 
-<div class="col-md col-lg">
-    <?= $form->field($model, 'precio_total_venta')->textInput(['placeholder' => 'Monto Total', 'id' => 'total_venta', 'readonly' => true]) ?>
-</div>
+<div class="row mt-3">
+        <div class="col-md-6 col-lg-6">
+            <?= $form->field($model, 'cantidad_total_vendida')->textInput(['placeholder' => 'Total Vendida', 'id' => 'total_vendida', 'readonly' => true]) ?>
+        </div>
+        <div class="col-md-6 col-lg-6">
+            <?= $form->field($model, 'precio_total_venta')->textInput(['placeholder' => 'Monto Total', 'id' => 'total_venta', 'readonly' => true]) ?>
+        </div>
+    </div>
+
 
 <div class="col-md col-lg">
     <?= $form->field($model, 'id_evento')->hiddenInput(['id' => 'id_evento_input', 'value' => $id_evento])->label(false) ?>
 </div>
 
 <?= $form->field($model, 'id_vendedor')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false) ?>
-
-<?= $form->field($model, 'tipo_de_venta')->dropDownList([
-    'venta' => 'Venta',
-    'degustacion' => 'Degustación',
-    'cortesia' => 'Cortesía',
-], ['prompt' => 'Seleccione tipo de venta']) ?>
-
-<?= $form->field($model, 'forma_de_pago')->dropDownList([
-    'efectivo' => 'Efectivo',
-    'tarjeta' => 'Tarjeta de Crédito/Débito',
-    'transferencia' => 'Transferencia Bancaria',
-], ['prompt' => 'Seleccione una forma de pago']) ?>
 
 <div class="form-group">
     <?= Html::submitButton('Guardar', ['class' => 'btn btn-success']) ?>

@@ -42,7 +42,8 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
                 'venta' => 'Venta',
                 'degustacion' => 'Degustación',
                 'cortesia' => 'Cortesía',
-            ], ['prompt' => 'Seleccione tipo de venta']) ?>
+            ], ['prompt' => 'Seleccione tipo de venta', 
+                'value'=>$model->tipo_de_venta]) ?>
     </div>
 
     <div class="col-md-4 col-lg-4">
@@ -50,7 +51,8 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
                 'efectivo' => 'Efectivo',
                 'tarjeta' => 'Tarjeta de Crédito/Débito',
                 'transferencia' => 'Transferencia Bancaria',
-            ], ['prompt' => 'Seleccione una forma de pago']) ?>
+                'value'=>$model->forma_de_pago
+            ], ['prompt' => 'Seleccione una forma de pago', 'value'=>$model->forma_de_pago]) ?>
     </div>
 </div>
 

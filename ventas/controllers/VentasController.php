@@ -76,12 +76,15 @@ class VentasController extends \yii\web\Controller
     // Set the date in the model
     $model->fecha = $clientDate;
 
+    $model->tipo_de_venta = 'venta';
+    $model->forma_de_pago = 'efectivo';
     
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             // Print the entire POST request data
             echo '<pre>';
             var_dump(Yii::$app->request->post());
             echo '</pre>';
+
     
             if (isset(Yii::$app->request->post('Ventas')['productos'])) {
                 $productos = Yii::$app->request->post('Ventas')['productos'];

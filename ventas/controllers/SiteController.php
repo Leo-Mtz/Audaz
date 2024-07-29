@@ -52,9 +52,9 @@ class SiteController extends Controller
 
    public function actionIndex()
    {
-       // Ensure the layout is set for the index page
-       $this->layout = 'main-login';
-   
+            
+            $this->layout = 'main-login';
+            $model = new LoginForm();
        // Check if the user is authenticated
        if (Yii::$app->user->isGuest) {
            return $this->redirect(['site/login']);
@@ -73,8 +73,8 @@ class SiteController extends Controller
        $username = $user->username;
    
        // Debugging for privilege and user details
-       var_dump($privilegio);
-       var_dump($username);
+     //  var_dump($privilegio);
+      // var_dump($username);
    
        // Prepare data based on user's privilege level
        $data = [];
@@ -88,14 +88,15 @@ class SiteController extends Controller
            $data = []; // Replace with actual data retrieval logic
    
            // Debugging for privilege level 2 data retrieval
-           var_dump($data);
+         //  var_dump($data);
        } else {
            // Default or other privilege levels logic
            $data = []; // Replace with actual data retrieval logic
        }
    
        // Render the index view and pass the retrieved data
-       return $this->render('index', [
+       return $this->render('log', [
+            'model'=>$model,
            'username' => $username,
            'data' => $data,
        ]);
@@ -162,12 +163,12 @@ public function actionLogin()
             
                 case 1:
                     // Debugging for redirection
-                    var_dump('Redirecting to usuarios/index');
+               //     var_dump('Redirecting to usuarios/index');
 
                     return $this->redirect(['usuarios/index']);
                 default:
                     // Debugging for redirection
-                    var_dump('Redirecting to site/index');
+                //    var_dump('Redirecting to site/index');
 
                     return $this->redirect(['site/index']);
             }
