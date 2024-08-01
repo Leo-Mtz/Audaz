@@ -58,4 +58,24 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
+    <div id="button-group">
+        <?= Html::a('Aceptar', ['salidas/index', 'id' => $model->id_salidas], ['class' => 'btn btn-success']) ?>
+   
+    </div>
 </div>
+
+
+<?php
+// Custom CSS to style the button group
+$css = <<<CSS
+.button-group {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.button-group .btn {
+    margin: 5px;
+}
+CSS;
+$this->registerCss($css);
+?>

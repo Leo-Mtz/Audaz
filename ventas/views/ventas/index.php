@@ -46,6 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
    
 
     
+    <div class="container-fluid">
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -139,5 +140,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ],
-    ]); ?>
+    ]); 
+    ?>
+    
+    </div>
  

@@ -12,7 +12,6 @@ use Yii;
  * @property int $id_evento
  * @property int $id_sabor
  * @property int $id_presentacion
- * @property float|null $cantidad_entradas
  * @property int $id_prueba
  * @property int $id_375ml
  * @property int $id_750ml

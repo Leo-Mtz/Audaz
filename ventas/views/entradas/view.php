@@ -62,4 +62,9 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
+
+<div id="button-group">
+        <?= Html::a('Aceptar', ['entradas/index', 'id' => $model->id_entradas], ['class' => 'btn btn-success']) ?>
+   
+    </div>
 </div>
