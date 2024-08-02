@@ -121,12 +121,16 @@ class VentasController extends \yii\web\Controller
         foreach ($productos as $producto) {
             $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
         }
+
+        $eventos = CatEventos::find()->all();
+        $eventosDropdown = ArrayHelper::map($eventos, 'id_evento', 'evento');
     
      
         return $this->render('create', [
             'model' => $model,
             'productosDropdown' => $productosDropdown,
             'id_evento' => $id_evento,
+            'eventosDropdown' => $eventosDropdown,
         ]);
     }
     
@@ -199,6 +203,9 @@ class VentasController extends \yii\web\Controller
             $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
         }
     
+        $eventos = CatEventos::find()->all();
+        $eventosDropdown = ArrayHelper::map($eventos, 'id_evento', 'evento');
+    
         $id_evento = Yii::$app->session->get('id_evento');
     
         // Fetch existing product data
@@ -209,6 +216,7 @@ class VentasController extends \yii\web\Controller
             'id_evento' => $id_evento,
             'productosDropdown' => $productosDropdown,
             'existingProductData' => $existingProductData,
+            'eventosDropdown' => $eventosDropdown
         ]);
     }
     

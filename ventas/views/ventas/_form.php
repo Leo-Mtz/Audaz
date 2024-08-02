@@ -59,7 +59,7 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
 
 
 
-
+    <div class="row mt-3">
         <div class="col-md-3 col-lg-2">
         <?= $form->field($model, 'productos_totales')->textInput([
             'placeholder' => 'Número de productos',
@@ -67,6 +67,16 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
             'oninput' => 'generateProductFields()'
         ]) ?>
     </div>
+
+    
+    <div class="col-md-6 col-lg-6">
+      
+    <?= $form->field($model, 'id_evento')->dropDownList(
+            $eventosDropdown, 
+            [ 'value' => $id_evento]
+        ) ?>
+        </div>
+     </div>
 
 
     <div id="Productosadicionales" class="mt-3 row"></div>
@@ -80,10 +90,8 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
         <div class="col-md-6 col-lg-6">
             <?= $form->field($model, 'precio_total_venta')->textInput(['placeholder' => 'Monto Total', 'id' => 'total_venta', 'readonly' => true]) ?>
         </div>
-    </div>
+    
 
-    <div class="col-md col-lg">
-        <?= $form->field($model, 'id_evento')->hiddenInput(['id' => 'id_evento_input', 'value' => $id_evento])->label(false) ?>
     </div>
 
 

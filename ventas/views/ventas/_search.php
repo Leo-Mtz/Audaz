@@ -14,54 +14,43 @@ use yii\jui\DatePicker;
 <div class="ventas-search">
 
     <?php $form = ActiveForm::begin([
-        'action' => ['index'], // Defines the action where the form will be submitted
-        'method' => 'get', // Specifies that the form will use the GET method
+        'action' => ['index'],
+        'method' => 'get',
     ]); ?>
 
-    <!-- Field for searching by sale ID -->
-    <?= $form->field($model, 'id_venta') ?>
+    <?= $form->field($model, 'id_venta')->textInput(['class' => 'column-id-venta']) ?>
 
-    <!-- DatePicker widget for filtering by date -->
     <?= $form->field($model, 'fecha')->widget(DatePicker::className(), [
         'clientOptions' => [
-            'showAnim' => 'fold', // Animation for the date picker
-            'changeMonth' => true, // Allow changing the month
-            'changeYear' => true, // Allow changing the year
+            'showAnim' => 'fold',
+            'changeMonth' => true,
+            'changeYear' => true,
         ],
         'options' => [
-            'class' => 'form-control', // CSS class for styling
-            'id' => 'fecha-input', // ID for JavaScript or CSS targeting
+            'class' => 'form-control column-fecha',
+            'id' => 'fecha-input',
         ],
-        'language' => 'es-MX', // Language setting for the date picker
-        'dateFormat' => 'yyyy-MM-dd', // Date format used in the input
+        'language' => 'es-MX',
+        'dateFormat' => 'yyyy-MM-dd',
     ]) ?>
 
-    <!-- Field for searching by product ID -->
-    <?= $form->field($model, 'id_producto') ?>
+    <?= $form->field($model, 'id_producto')->textInput(['class' => 'column-id-producto']) ?>
 
-    <!-- Field for searching by quantity sold -->
-    <?= $form->field($model, 'cantidad_vendida') ?>
+    <?= $form->field($model, 'cantidad_vendida')->textInput(['class' => 'column-cantidad-vendida']) ?>
 
-    <!-- Field for searching by total sale price -->
-    <?= $form->field($model, 'precio_total_venta') ?>
+    <?= $form->field($model, 'precio_total_venta')->textInput(['class' => 'column-precio-total-venta']) ?>
 
-    <!-- Dropdown list for selecting an event, populated from CatEventos model -->
     <?= $form->field($model, 'id_evento')->dropDownList(
-        ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento'), 
-        ['prompt' => ''] // Prompt text to be displayed when no option is selected
+        ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento'),
+        ['prompt' => '', 'class' => 'column-id-evento']
     ) ?>
 
-    <!-- Dropdown list for selecting payment method, populated with predefined options -->
-    <?= $form->field($model, 'forma_de_pago' )->dropDownList($forma_de_pago, ['prompt'=>'']) ?>
+    <?= $form->field($model, 'forma_de_pago')->dropDownList($forma_de_pago, ['prompt' => '', 'class' => 'column-forma-de-pago']) ?>
 
-    <!-- Dropdown list for selecting sale type, populated with predefined options -->
-    <?= $form->field($model, 'tipo_de_venta')->dropDownList($tipo_de_venta, ['prompt'=>'']) ?>
+    <?= $form->field($model, 'tipo_de_venta')->dropDownList($tipo_de_venta, ['prompt' => '', 'class' => 'column-tipo-de-venta']) ?>
 
     <div class="form-group">
-        <!-- Submit button to perform the search -->
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
-        
-        <!-- Reset button to clear the form fields -->
         <?= Html::resetButton('Reset', ['class' => 'btn btn-outline-secondary']) ?>
     </div>
 

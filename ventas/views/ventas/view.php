@@ -5,6 +5,7 @@ use yii\widgets\DetailView;
 use yii\grid\GridView;
 use yii\data\ActiveDataProvider;
 use app\models\CatProductos;
+use app\models\CatEventos;
 use app\models\CatSabores;
 use app\models\CatPresentaciones;
 use app\models\ProductosPorVenta;
@@ -54,6 +55,14 @@ $dataProvider = new ActiveDataProvider([
             'fecha', // Sale date
             'productos_totales', // Total products in the sale
             'tipo_de_venta', // Type of sale
+            [
+                'attribute' => 'id_evento',
+                'label' => 'Evento', // Custom label for the event
+                'value' => function ($model) {
+                    $evento = CatEventos::findOne($model->id_evento);
+                    return $evento ? $evento->evento : 'N/A';
+                },
+            ],
         ],
     ]) ?>
 
