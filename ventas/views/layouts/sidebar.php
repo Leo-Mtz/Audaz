@@ -219,6 +219,14 @@
                                     'iconClass' => 'fa fa-fw fa-list',
                                     // 'visible' => \Yii::$app->user->can('verMenuListarUsuarios'),
                                 ],
+
+                                [
+                                    'label' => 'Reporte de Ventas',
+                                    'url' => ['reportes/index'],
+                                    'iconClass' => 'fa fa-fw fa-book-open',
+
+                                ],
+
                             ],
                             // 'visible' => \Yii::$app->user->can('verMenuUsuario'),
                         ],
