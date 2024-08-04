@@ -61,16 +61,16 @@ class ReportesController extends Controller
                 v.fecha AS fecha,
                 e.evento AS evento,
                 v.id_venta AS id_venta,
-                p.nombre AS producto_vendido,
-                pv.cantidad AS cantidad_vendida,
-                (pv.cantidad * pv.precio_unitario) AS precio_total_vendido,
-                SUM(pv.cantidad * pv.precio_unitario) OVER (PARTITION BY pv.id_producto) AS total_vendido_producto,
+                p.id_producto AS id_producto,
+                pv.cantidad_vendida AS cantidad_vendida,
+                (pv.cantidad_vendida * pv.precio_unitario) AS precio_total_vendido,
+                SUM(pv.cantidad_vendida * pv.precio_unitario) OVER (PARTITION BY pv.id_producto) AS total_vendido_producto,
                 v.tipo_de_venta AS tipo_de_venta,
                 v.forma_de_pago AS forma_de_pago
             FROM ventas v
             JOIN productos_por_venta pv ON v.id_venta = pv.id_venta
-            JOIN productos p ON pv.id_producto = p.id_producto
-            JOIN eventos e ON v.id_evento = e.id_evento
+            JOIN cat_productos p ON pv.id_producto = p.id_producto
+            JOIN cat_eventos e ON v.id_evento = e.id_evento
             WHERE DATE(v.fecha) = :fecha
         ")->bindValue(':fecha', $fecha)
           ->queryAll();
