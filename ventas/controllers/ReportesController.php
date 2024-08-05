@@ -48,149 +48,152 @@ class ReportesController extends Controller
     }
 
 
-        public function actionGenerarPdf($fecha)
-    {
-        // Fetch sale data from the ventas table
-        $venta = Yii::$app->db->createCommand("
-            SELECT 
-                v.id_venta,
-                v.fecha,
-                v.precio_total_venta,
-                v.id_evento,
-                v.id_vendedor,
-                v.cantidad_total_vendida,
-                v.forma_de_pago,
-                v.tipo_de_venta,
-                v.productos_totales,
-                e.evento
-            FROM ventas v
-            JOIN cat_eventos e ON v.id_evento = e.id_evento
-            WHERE DATE(v.fecha) = :fecha
-        ")->bindValue(':fecha', $fecha)
-        ->queryOne();
+    public function actionGenerarPdf($fecha)
+{
+    // Fetch sale data from the ventas table
+    $venta = Yii::$app->db->createCommand("
+        SELECT 
+            v.id_venta,
+            v.fecha,
+            v.precio_total_venta,
+            v.id_evento,
+            v.id_vendedor,
+            v.cantidad_total_vendida,
+            v.forma_de_pago,
+            v.tipo_de_venta,
+            v.productos_totales,
+            e.evento
+        FROM ventas v
+        JOIN cat_eventos e ON v.id_evento = e.id_evento
+        WHERE DATE(v.fecha) = :fecha
+    ")->bindValue(':fecha', $fecha)
+      ->queryOne();
 
-        // Fetch products data from the productos_por_venta table with product details
-        $productos = Yii::$app->db->createCommand("
-            SELECT 
-                p.id_producto AS producto_vendido,
-                p.presentacion,
-                p.sabor,
-                pv.cantidad_vendida,
-                pv.precio_unitario,
-                pv.subtotal_producto
-            FROM productos_por_venta pv
-            JOIN cat_productos p ON pv.id_producto = p.id_producto
-            WHERE pv.id_venta = :id_venta
-        ")->bindValue(':id_venta', $venta['id_venta'])
-        ->queryAll();
+    // Fetch products data from the productos_por_venta table with product details
+    $productos = Yii::$app->db->createCommand("
+        SELECT 
+            p.id_producto AS producto_vendido,
+            pr.presentacion,
+            s.sabor,
+            pv.cantidad_vendida,
+            pv.precio_unitario,
+            pv.subtotal_producto
+        FROM productos_por_venta pv
+        JOIN cat_productos p ON pv.id_producto = p.id_producto
+        JOIN cat_presentaciones pr ON p.id_presentacion = pr.id_presentacion
+        JOIN cat_sabores s ON p.id_sabor = s.id_sabor
+        WHERE pv.id_venta = :id_venta
+    ")->bindValue(':id_venta', $venta['id_venta'])
+      ->queryAll();
 
-        // Initialize PDF
-        $mpdf = new Mpdf();
+    // Initialize PDF
+    $mpdf = new Mpdf();
+    
+    // CSS styling
+    $css = '
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+            .header, .details, .summary {
+                margin-bottom: 20px;
+            }
+            .header h1, .details h2 {
+                margin: 0;
+                padding: 0;
+            }
+            .header p, .details p {
+                margin: 5px 0;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+            th, td {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            .summary p {
+                margin: 5px 0;
+                font-weight: bold;
+            }
+        </style>
+    ';
+    
+    $header = '
+        <div class="header">
+            <h1>Reporte de Ventas del ' . Html::encode($fecha) . '</h1>
+            <p>Evento: ' . Html::encode($venta['evento']) . '</p>
+        </div>
+    ';
+    
+    $details = '
+        <div class="details">
+            <h2>Detalles de la Venta</h2>
+            <p>Número de Venta: ' . Html::encode($venta['id_venta']) . '</p>
+            <p>Forma de Pago: ' . Html::encode($venta['forma_de_pago']) . '</p>
+            <p>Tipo de Venta: ' . Html::encode($venta['tipo_de_venta']) . '</p>
+        </div>
+    ';
+    
+    $table = '
+        <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Producto </th>
+                    <th>Cantidad Vendida</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>';
+    
+    $totalProductos = 0;
+    $totalCantidadVendida = 0;
+    $totalMontoVendido = 0;
+    
+    foreach ($productos as $row) {
+        $totalProductos++;
+        $totalCantidadVendida += $row['cantidad_vendida'];
+        $totalMontoVendido += $row['subtotal_producto'];
         
-        // CSS styling
-        $css = '
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                }
-                .header, .details, .summary {
-                    margin-bottom: 20px;
-                }
-                .header h1, .details h2 {
-                    margin: 0;
-                    padding: 0;
-                }
-                .header p, .details p {
-                    margin: 5px 0;
-                }
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-bottom: 20px;
-                }
-                th, td {
-                    border: 1px solid #dddddd;
-                    text-align: left;
-                    padding: 8px;
-                }
-                th {
-                    background-color: #f2f2f2;
-                }
-                .summary p {
-                    margin: 5px 0;
-                    font-weight: bold;
-                }
-            </style>
-        ';
+        $productoVendido = Html::encode($row['sabor']) .  ' ' . Html::encode($row['presentacion']) ;
         
-        $header = '
-            <div class="header">
-                <h1>Reporte de Ventas del ' . Html::encode($fecha) . '</h1>
-                <p>Evento: ' . Html::encode($venta['evento']) . '</p>
-            </div>
-        ';
-        
-        $details = '
-            <div class="details">
-                <h2>Detalles de la Venta</h2>
-                <p>Número de Venta: ' . Html::encode($venta['id_venta']) . '</p>
-                <p>Forma de Pago: ' . Html::encode($venta['forma_de_pago']) . '</p>
-                <p>Tipo de Venta: ' . Html::encode($venta['tipo_de_venta']) . '</p>
-            </div>
-        ';
-        
-        $table = '
-            <table border="1" cellpadding="10" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>Producto Vendido (Presentación y Sabor)</th>
-                        <th>Cantidad Vendida</th>
-                        <th>Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>';
-        
-        $totalProductos = 0;
-        $totalCantidadVendida = 0;
-        $totalMontoVendido = 0;
-        
-        foreach ($productos as $row) {
-            $totalProductos++;
-            $totalCantidadVendida += $row['cantidad_vendida'];
-            $totalMontoVendido += $row['subtotal_producto'];
-            
-            $productoVendido = Html::encode($row['nombre']) . ' (' . Html::encode($row['presentacion']) . ', ' . Html::encode($row['sabor']) . ')';
-            
-            $table .= '<tr>
-                <td>' . $productoVendido . '</td>
-                <td>' . Html::encode($row['cantidad_vendida']) . '</td>
-                <td>' . Html::encode(number_format($row['subtotal_producto'], 2)) . '</td>
-            </tr>';
-        }
-        
-        $table .= '</tbody></table>';
-        
-        $summary = '
-            <div class="summary">
-                <h2>Resumen</h2>
-                <p>Total de Productos Vendidos: ' . Html::encode($totalProductos) . '</p>
-                <p>Cantidad Total Vendida: ' . Html::encode($totalCantidadVendida) . '</p>
-                <p>Monto Total Vendido: $' . Html::encode(number_format($totalMontoVendido, 2)) . '</p>
-            </div>
-        ';
-        
-        // Combine all sections
-        $html = $css . $header . $details . $table . $summary;
-        
-        $mpdf->WriteHTML($html);
-
-        // Configure the response to show the PDF in the browser
-        Yii::$app->response->format = Response::FORMAT_RAW;
-        Yii::$app->response->headers->add('Content-Type', 'application/pdf');
-        Yii::$app->response->headers->add('Content-Disposition', 'inline; filename="reporte_' . $fecha . '.pdf"');
-
-        return $mpdf->Output('', 'S'); // S = Return as string
+        $table .= '<tr>
+            <td>' . $productoVendido . '</td>
+            <td>' . Html::encode($row['cantidad_vendida']) . '</td>
+            <td>' . Html::encode(number_format($row['subtotal_producto'], 2)) . '</td>
+        </tr>';
     }
+    
+    $table .= '</tbody></table>';
+    
+    $summary = '
+        <div class="summary">
+            <h2>Resumen</h2>
+            <p>Total de Productos Vendidos: ' . Html::encode($totalProductos) . '</p>
+            <p>Cantidad Total Vendida: ' . Html::encode($totalCantidadVendida) . '</p>
+            <p>Monto Total Vendido: $' . Html::encode(number_format($totalMontoVendido, 2)) . '</p>
+        </div>
+    ';
+    
+    // Combine all sections
+    $html = $css . $header . $details . $table . $summary;
+    
+    $mpdf->WriteHTML($html);
+
+    // Configure the response to show the PDF in the browser
+    Yii::$app->response->format = Response::FORMAT_RAW;
+    Yii::$app->response->headers->add('Content-Type', 'application/pdf');
+    Yii::$app->response->headers->add('Content-Disposition', 'inline; filename="reporte_' . $fecha . '.pdf"');
+
+    return $mpdf->Output('', 'S'); // S = Return as string
+}
+
 
 
 
