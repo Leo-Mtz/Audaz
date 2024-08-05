@@ -66,74 +66,69 @@ class VentasController extends \yii\web\Controller
     }
 
     
-    public function actionCreate()
-    {
-        $model = new Ventas();
     
-      // Assuming you get the client's date here (e.g., from a request or session)
-    $clientDate = Yii::$app->request->get('client_date', date('Y-m-d')); // Default to today's date
-
-    // Set the date in the model
+    public function actionCreate()
+{
+    $model = new Ventas();
+    
+    // Set the client's date or default to today's date
+    $clientDate = Yii::$app->request->get('client_date', date('Y-m-d'));
     $model->fecha = $clientDate;
-
     $model->tipo_de_venta = 'venta';
     $model->forma_de_pago = 'efectivo';
     
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            // Print the entire POST request data
-            echo '<pre>';
-            var_dump(Yii::$app->request->post());
-            echo '</pre>';
-
+    if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        // Handle the related ProductosPorVenta records
+        if (isset(Yii::$app->request->post('Ventas')['productos'])) {
+            $productos = Yii::$app->request->post('Ventas')['productos'];
     
-            if (isset(Yii::$app->request->post('Ventas')['productos'])) {
-                $productos = Yii::$app->request->post('Ventas')['productos'];
+            foreach ($productos as $productoData) {
+                $productoPorVenta = new ProductosPorVenta();
+                $productoPorVenta->id_venta = $model->id_venta;
+                $productoPorVenta->id_producto = $productoData['id_producto'];
+                $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
+                $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
+                $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
     
-              
-    
-                foreach ($productos as $productoData) {
-    
-                    $productoPorVenta = new ProductosPorVenta();
-                    $productoPorVenta->id_venta = $model->id_venta;
-                    $productoPorVenta->id_producto = $productoData['id_producto'];
-                    $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
-                    $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
-                    $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
-    
-                    if (!$productoPorVenta->save()) {
-                        Yii::debug($productoPorVenta->errors, 'productoPorVenta_errors');
-                    }
+                if (!$productoPorVenta->save()) {
+                    Yii::debug($productoPorVenta->errors, 'productoPorVenta_errors');
                 }
-            } else {
-                echo 'No productos data found in post request';
             }
-    
-            return $this->redirect(['view', 'id' => $model->id_venta]);
         } else {
-            Yii::debug($model->errors, 'ventas_errors');
+            echo 'No productos data found in post request';
+        }
+        
+        // Update stock after saving the sale
+        if ($model->updateStock()) {
+            Yii::$app->session->setFlash('success', 'Sale recorded and stock updated.');
+        } else {
+            Yii::$app->session->setFlash('error', 'Failed to update stock.');
         }
 
-        $id_evento= Yii::$app->session->get('id_evento');
-    
-        $productos = CatProductos::find()->all();
-        $productosDropdown = [];
-    
-        foreach ($productos as $producto) {
-            $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
-        }
-
-        $eventos = CatEventos::find()->all();
-        $eventosDropdown = ArrayHelper::map($eventos, 'id_evento', 'evento');
-    
-     
-        return $this->render('create', [
-            'model' => $model,
-            'productosDropdown' => $productosDropdown,
-            'id_evento' => $id_evento,
-            'eventosDropdown' => $eventosDropdown,
-        ]);
+        return $this->redirect(['view', 'id' => $model->id_venta]);
+    } else {
+        Yii::debug($model->errors, 'ventas_errors');
     }
-    
+
+    $id_evento = Yii::$app->session->get('id_evento');
+    $productos = CatProductos::find()->all();
+    $productosDropdown = [];
+
+    foreach ($productos as $producto) {
+        $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
+    }
+
+    $eventos = CatEventos::find()->all();
+    $eventosDropdown = ArrayHelper::map($eventos, 'id_evento', 'evento');
+
+    return $this->render('create', [
+        'model' => $model,
+        'productosDropdown' => $productosDropdown,
+        'id_evento' => $id_evento,
+        'eventosDropdown' => $eventosDropdown,
+    ]);
+}
+
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
@@ -152,7 +147,7 @@ class VentasController extends \yii\web\Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-    
+        
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $productosData = Yii::$app->request->post('ProductosPorVenta', []);
             
@@ -163,8 +158,6 @@ class VentasController extends \yii\web\Controller
     
             // Fetch existing product data
             $existingProductIds = array_column($model->getProductosPorVenta()->asArray()->all(), 'id');
-    
-            // Prepare new product IDs from the form data
             $newProductIds = array_column($productosData, 'id');
             
             // Delete products that are no longer in the form submission
@@ -193,6 +186,13 @@ class VentasController extends \yii\web\Controller
                 }
             }
     
+            // Update stock after saving changes
+            if ($model->updateStock()) {
+                Yii::$app->session->setFlash('success', 'Sale updated and stock adjusted.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Failed to update stock.');
+            }
+    
             return $this->redirect(['view', 'id' => $model->id_venta]);
         }
     
@@ -207,8 +207,6 @@ class VentasController extends \yii\web\Controller
         $eventosDropdown = ArrayHelper::map($eventos, 'id_evento', 'evento');
     
         $id_evento = Yii::$app->session->get('id_evento');
-    
-        // Fetch existing product data
         $existingProductData = $model->getProductosPorVenta()->asArray()->all();
     
         return $this->render('update', [
@@ -216,11 +214,10 @@ class VentasController extends \yii\web\Controller
             'id_evento' => $id_evento,
             'productosDropdown' => $productosDropdown,
             'existingProductData' => $existingProductData,
-            'eventosDropdown' => $eventosDropdown
+            'eventosDropdown' => $eventosDropdown,
         ]);
     }
     
-
         
     public function actionView($id)
     {

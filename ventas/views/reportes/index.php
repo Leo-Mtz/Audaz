@@ -2,6 +2,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 
+
 /* @var $this yii\web\View */
 /* @var $model app\models\ReporteVentas */
 /* @var $ventasDiarias array */
@@ -39,7 +40,7 @@ $this->title = 'Reportes Diarios de Ventas';
                 'template' => '{view} {download}',
                 'buttons' => [
                     'view' => function ($url, $model) {
-                        return Html::a('Ver Reporte', ['ver-reporte', 'fecha' => $model['fecha']], ['class' => 'btn btn-info']);
+                        return Html::a('Ver Reporte', ['generar-pdf', 'fecha' => $model['fecha']], ['class' => 'btn btn-info']);
                     },
                     'download' => function ($url, $model) {
                         return Html::a('Descargar', ['descargar-reporte', 'fecha' => $model['fecha']], ['class' => 'btn btn-success']);
