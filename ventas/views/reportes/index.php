@@ -29,24 +29,17 @@ $this->title = 'Reportes Diarios de Ventas';
                 },
             ],
             [
-                'attribute' => 'total_ventas',
-                'label' => 'Total Ventas',
-                'value' => function ($data) {
-                  //  return Html::encode($data['total_ventas']);
-                },
-            ],
-            [
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{view} {download} {download-pdf}',
                 'buttons' => [
                     'view' => function ($url, $model) {
-                        return Html::a('Ver Reporte', ['ver-reporte', 'fecha' => $model['fecha']], ['class' => 'btn btn-info']);
+                        return Html::a('Ver Reporte', ['generar-pdf', 'fecha' => $model['fecha']], ['class' => 'btn btn-info']);
                     },
                     'download' => function ($url, $model) {
                         return Html::a('Descargar Excel', ['descargar-reporte', 'fecha' => $model['fecha']], ['class' => 'btn btn-success']);
                     },
                     'download-pdf' => function ($url, $model) {
-                        return Html::a('Descargar PDF', ['generar-pdf', 'fecha' => $model['fecha']], ['class' => 'btn btn-success']);
+                        return Html::a('Descargar PDF', ['descargar-pdf', 'fecha' => $model['fecha']], ['class' => 'btn btn-success']);
                     },
                 ],
 

@@ -47,8 +47,56 @@ class ReportesController extends Controller
         Yii::$app->end();
     }
 
-    
     public function actionGenerarPdf($fecha)
+{
+    $reporte = $this->getReportePorFecha($fecha);
+
+    $mpdf = new Mpdf();
+    $mpdf->WriteHTML('<h1>Reporte de Ventas del ' . Html::encode($fecha) . '</h1>');
+    
+    $html = '<table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Evento</th>
+                <th>ID Venta</th>
+                <th>Producto Vendido</th>
+                <th>Cantidad Vendida</th>
+                <th>Precio Total Vendido</th>
+                <th>Total Vendido de ese Producto</th>
+                <th>Tipo de Venta</th>
+                <th>Forma de Pago</th>
+            </tr>
+        </thead>
+        <tbody>';
+        
+    foreach ($reporte as $row) {
+        $html .= '<tr>
+            <td>' . Html::encode($row['fecha']) . '</td>
+            <td>' . Html::encode($row['evento']) . '</td>
+            <td>' . Html::encode($row['id_venta']) . '</td>
+            <td>' . Html::encode($row['id_producto']) . '</td>
+            <td>' . Html::encode($row['cantidad_vendida']) . '</td>
+            <td>' . Html::encode($row['precio_total_vendido']) . '</td>
+            <td>' . Html::encode($row['total_vendido_producto']) . '</td>
+            <td>' . Html::encode($row['tipo_de_venta']) . '</td>
+            <td>' . Html::encode($row['forma_de_pago']) . '</td>
+        </tr>';
+    }
+    
+    $html .= '</tbody></table>';
+    
+    $mpdf->WriteHTML($html);
+
+    // Set headers to open PDF in browser
+    Yii::$app->response->format = Response::FORMAT_RAW;
+    Yii::$app->response->headers->add('Content-Type', 'application/pdf');
+    Yii::$app->response->headers->add('Content-Disposition', 'inline; filename="reporte_' . $fecha . '.pdf"');
+
+    return $mpdf->Output('', 'S'); // S = Return as string
+}
+
+    public function actionDescargarPdf($fecha)
     {
      
         $reporte = $this->getReportePorFecha($fecha);
