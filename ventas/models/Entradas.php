@@ -1,6 +1,8 @@
 <?php
 namespace app\models;
 
+
+use app\models\CatProductos;
 use Yii;
 
 /**
@@ -87,10 +89,7 @@ class Entradas extends \yii\db\ActiveRecord
         return $this->hasOne(CatEmpleados::className(), ['id_empleado' => 'id_empleado']);
     }
 
-    public function getSabores()
-    {
-        return $this->hasOne(CatSabores::className(), ['id_sabor' => 'id_sabor']);
-    }
+    
 
    
 
@@ -141,5 +140,21 @@ public function getId2L()
         ->andWhere(['presentacion' => '2L'])
         ->scalar();
 }
+
+
+public function afterSave($insert, $changedAttributes)
+{
+    parent::afterSave($insert, $changedAttributes);
+
+    if ($insert) {
+        // Update the stock after creating a new Entrada
+        $producto = CatProductos::findOne($this->id_producto);
+
+        if ($producto !== null) {
+            $producto->updateInventoryQuantity();
+        }
+    }
+}
+
 }
 

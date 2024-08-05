@@ -8,6 +8,7 @@ use app\models\EntradasSearch;
 use app\models\CatEventos;
 use app\models\CatSabores;
 use app\models\CatEmpleados;
+use app\models\CatProductos;
 use app\models\CatPresentaciones;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -101,8 +102,17 @@ class EntradasController extends Controller
     });
     $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
 
-    $sabores= ArrayHelper::map(CatSabores::find()->all(), 'id_sabor', 'sabor');
 
+    $saboresIds = CatProductos::find()
+    ->select('id_sabor')
+    ->distinct()
+    ->column();
+
+    $sabores1 = CatSabores::find()
+        ->where(['id_sabor' => $saboresIds])
+        ->all();
+
+    $sabores = ArrayHelper::map($sabores1, 'id_sabor', 'sabor');
    
 
     $presentaciones = ArrayHelper::map(CatPresentaciones::find()->all(), 'presentacion', 'presentacion');
@@ -260,5 +270,11 @@ public function actionUpdate($id)
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionGetSabores()
+    {
+        $sabores = CatSabores::getSaboresDisponibles();
+        return $this->asJson($sabores);
     }
 }

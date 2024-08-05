@@ -41,4 +41,14 @@ class CatSabores extends \yii\db\ActiveRecord
             'sabor' => 'Sabor',
         ];
     }
+
+    public static function getSaboresDisponibles()
+    {
+        return self::find()
+            ->select(['s.id_sabor', 's.sabor'])
+            ->joinWith('catProductos') // Suponiendo que tienes una relación en el modelo
+            ->where(['cat_productos.id_producto' => \yii\db\Query::find()->select('id_producto')])
+            ->indexBy('id_sabor')
+            ->column();
+    }
 }

@@ -41,4 +41,14 @@ class CatPresentaciones extends \yii\db\ActiveRecord
             'presentacion' => 'Presentacion',
         ];
     }
+
+    public static function getPresentacionesBySabor($idSabor)
+{
+    return self::find()
+        ->joinWith('CatProductos')
+        ->where(['cat_productos.id_sabor' => $idSabor])
+        ->select(['presentacion', 'id_presentacion'])
+        ->indexBy('id_presentacion')
+        ->column();
+}
 }
