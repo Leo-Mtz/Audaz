@@ -33,7 +33,7 @@ $this->title = 'Reportes Diarios de Ventas';
                 'template' => '{view} {download} {download-pdf}',
                 'buttons' => [
                     'view' => function ($url, $model) {
-                        return Html::a('Ver Reporte', ['generar-pdf', 'fecha' => $model['fecha']], ['class' => 'btn btn-info']);
+                        return Html::a('Ver Reporte', ['generar-pdf', 'fecha' => $model['fecha']], ['target'=>'blank','class' => 'btn btn-info']);
                     },
                     'download' => function ($url, $model) {
                         return Html::a('Descargar Excel', ['descargar-reporte', 'fecha' => $model['fecha']], ['class' => 'btn btn-success']);
