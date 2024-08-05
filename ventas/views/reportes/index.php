@@ -37,15 +37,19 @@ $this->title = 'Reportes Diarios de Ventas';
             ],
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {download}',
+                'template' => '{view} {download} {download-pdf}',
                 'buttons' => [
                     'view' => function ($url, $model) {
-                        return Html::a('Ver Reporte', ['generar-pdf', 'fecha' => $model['fecha']], ['class' => 'btn btn-info']);
+                        return Html::a('Ver Reporte', ['ver-reporte', 'fecha' => $model['fecha']], ['class' => 'btn btn-info']);
                     },
                     'download' => function ($url, $model) {
-                        return Html::a('Descargar', ['descargar-reporte', 'fecha' => $model['fecha']], ['class' => 'btn btn-success']);
+                        return Html::a('Descargar Excel', ['descargar-reporte', 'fecha' => $model['fecha']], ['class' => 'btn btn-success']);
+                    },
+                    'download-pdf' => function ($url, $model) {
+                        return Html::a('Descargar PDF', ['generar-pdf', 'fecha' => $model['fecha']], ['class' => 'btn btn-success']);
                     },
                 ],
+
             ],
         ],
     ]); ?>
