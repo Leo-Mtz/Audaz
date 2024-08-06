@@ -43,10 +43,10 @@ class Entradas extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fecha', 'id_empleado', 'id_evento', 'id_sabor', 'id_prueba', 'cantidad_pruebas', 'id_375ml', 'id_750ml', 'id_16onz', 'id_2L','cantidad_entradas', 'cantidad_375ml', 'cantidad_750ml', 'cantidad_16onz', 'cantidad_2L'], 'required'],
-            [['id_empleado', 'id_evento', 'id_sabor', 'id_prueba'], 'integer'],
+            [['fecha', 'id_empleado', 'id_evento', 'id_sabor','cantidad_entradas', 'entradas_totales'], 'required'],
+            [['id_empleado','id_presentacion', 'id_evento', 'id_sabor', 'entradas_totales'], 'integer'],
             [['fecha'], 'safe'],
-            [['cantidad_pruebas', 'cantidad_entradas', 'cantidad_375ml', 'cantidad_750ml', 'cantidad_16onz', 'cantidad_2L'], 'number'],
+            [[ 'cantidad_entradas'], 'number'],
         ];
     }
 
@@ -61,21 +61,9 @@ class Entradas extends \yii\db\ActiveRecord
             'id_empleado' => 'Id Empleado',
             'id_evento' => 'Evento',
             'id_sabor' => 'Sabor',
-            'id_prueba' => 'Prueba',
-            'cantidad_pruebas' => 'Cantidad Pruebas',
-
-            
-            'id_375ml' => '375ml',
-            'cantidad_375ml' => 'Cantidad 375ml',
-            
-            'id_750ml' => '750ml',
-            'cantidad_750ml' => 'Cantidad 750ml',
-            'id_16onz' => '16onz',
-            'cantidad_16onz' => 'Cantidad 16onz',
-            'id_2L' => '2L',
-            'cantidad_2L' => 'Cantidad 2L',
-
+            'id_presentacion'=> 'Presentacion',
             'cantidad_entradas' => 'Cantidad Entradas',
+            'entradas_totales' => 'Entradas Totales',
         ];
     }
 
@@ -92,55 +80,6 @@ class Entradas extends \yii\db\ActiveRecord
     
 
    
-
-    public function getIdPrueba()
-    {
-        return $this->hasOne(CatPresentaciones::find()->all(), 'presentacion', 'presentacion')
-        ->select('id_presentacion')
-        ->andWhere(['presentacion' => 'PRUEBA'])
-        ->scalar();
-    }
-
-
-    
-
-    public function getId375ml()
-{
-    
-    return $this->hasOne(CatPresentaciones::find()->all(), 'presentacion', 'presentacion')
-        ->select('id_presentacion')
-        ->andWhere(['presentacion' => '375 ml'])
-        ->scalar();
-}
-
-public function getId750ml()
-{
-    
-    return $this->hasOne(CatPresentaciones::find()->all(), 'presentacion', 'presentacion')
-    >select('id_presentacion')
-    ->andWhere(['presentacion' => '750 ml'])
-    ->scalar();
-}
-
-public function getId16onz()
-{
-    
-    return $this->hasOne(CatPresentaciones::find()->all(), 'presentacion', 'presentacion')
-    >select('id_presentacion')
-    ->andWhere(['presentacion' => '16 onz'])
-    ->scalar();
-}
-
-public function getId2L()
-{
-    
-    return $this->hasOne(CatPresentaciones::find()->all(), 'presentacion', 'presentacion')
-    
-         >select('id_presentacion')
-        ->andWhere(['presentacion' => '2L'])
-        ->scalar();
-}
-
 
 public function afterSave($insert, $changedAttributes)
 {

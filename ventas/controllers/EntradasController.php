@@ -115,48 +115,14 @@ class EntradasController extends Controller
     $sabores = ArrayHelper::map($sabores1, 'id_sabor', 'sabor');
    
 
-    $presentaciones = ArrayHelper::map(CatPresentaciones::find()->all(), 'presentacion', 'presentacion');
- 
-    $prueba = CatPresentaciones::find()
-    ->select('id_presentacion')  
-    ->where(['presentacion' => 'PRUEBA'])
-    ->scalar();
-
-
-    $ml375 = CatPresentaciones::find()
-    ->select('id_presentacion')  
-    ->where(['presentacion' => '375 ml'])
-    ->scalar();
-
-
-    $ml750 = CatPresentaciones::find()
-    ->select('id_presentacion')  
-    ->where(['presentacion' => '750 ml '])
-    ->scalar();
-
-
-    $onz16 = CatPresentaciones::find()
-    ->select('id_presentacion')  
-    ->where(['presentacion' => '16 onz'])
-    ->scalar();
-
-    $DosLitros = CatPresentaciones::find()
-    ->select('id_presentacion')  
-    ->where(['presentacion' => '2 ltrs'])
-    ->scalar();
-
+    $presentacionesList=[];
    
         return $this->render('create', [
             'model' => $model,
             'empleados' => $empleados,
              'eventos' => $eventos,
              'sabores'=> $sabores,
-             'presentaciones'=> $presentaciones,
-             'prueba' => $prueba,
-             'ml375'=> $ml375,
-             'ml750'=> $ml750,
-             'onz16'=> $onz16,
-             'DosLitros'=> $DosLitros,
+             'presentacionesList' => $presentacionesList
 
             
         ]);
@@ -277,4 +243,42 @@ public function actionUpdate($id)
         $sabores = CatSabores::getSaboresDisponibles();
         return $this->asJson($sabores);
     }
+
+
+    
+    public function actionGetPresentaciones($idSabor)
+{
+    
+
+    $idSabor = (int) $idSabor;
+
+    if ($idSabor <= 0) {
+        return json_encode(['error' => 'Invalid sabor ID']);
+    }
+
+    try {
+        // Fetch all presentaciones for the given sabor
+        $presentaciones = CatPresentaciones::find()
+            ->joinWith('catProductos') // Ensure this relation exists
+            ->where(['cat_productos.id_sabor' => $idSabor])
+            ->all();
+
+        if (empty($presentaciones)) {
+            return json_encode([]);
+        }
+
+        // Only include the 'presentacion' value in the response
+        $presentacionesList = [];
+        foreach ($presentaciones as $presentacion) {
+            $presentacionesList[] = $presentacion->presentacion;
+        }
+
+        return json_encode($presentacionesList);
+    } catch (\Exception $e) {
+        Yii::error($e->getMessage(), __METHOD__);
+        return json_encode(['error' => 'An error occurred while fetching presentaciones: ' . $e->getMessage()]);
+    }
+}
+
+
 }

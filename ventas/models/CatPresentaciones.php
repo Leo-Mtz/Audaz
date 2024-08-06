@@ -42,6 +42,11 @@ class CatPresentaciones extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getCatProductos()
+    {
+        return $this->hasMany(CatProductos::className(), ['id_presentacion' => 'id_presentacion']);
+    }
+
     public static function getPresentacionesBySabor($idSabor)
 {
     return self::find()

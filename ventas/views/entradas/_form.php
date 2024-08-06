@@ -69,105 +69,184 @@ use yii\helpers\Url;
 </div>
 
 <script>
-    let entradaCount = 0;
+        let entradaCount = 0;
+const sabores = <?= json_encode($sabores) ?>;
 
-    function generateEntradaFields() {
-        const numEntradas = parseInt(document.getElementById('num_entradas').value) || 0;
-        const entradasContainer = document.getElementById('Entradasadicionales');
-        const currentFields = entradasContainer.childElementCount;
+function generateEntradaFields() {
+    const numEntradas = parseInt(document.getElementById('num_entradas').value) || 0;
+    const entradasContainer = document.getElementById('Entradasadicionales');
+    const currentFields = entradasContainer.childElementCount;
 
-        if (numEntradas === 0) {
-            entradasContainer.innerHTML = '';
-            entradaCount = 0;
-            calcularTotal();
-            return;
-        }
-
-        if (numEntradas > currentFields) {
-            for (let i = currentFields; i < numEntradas; i++) {
-                addEntradaField();
-            }
-        } else if (numEntradas < currentFields) {
-            for (let i = currentFields; i > numEntradas; i--) {
-                entradasContainer.removeChild(entradasContainer.lastChild);
-                entradaCount--;
-            }
-            calcularTotal();
-        }
+    if (numEntradas === 0) {
+        entradasContainer.innerHTML = '';
+        entradaCount = 0;
+        calcularTotal();
+        return;
     }
 
-    function addEntradaField() {
-        const entradasContainer = document.getElementById('Entradasadicionales');
-        const fieldDiv = document.createElement('div');
-        fieldDiv.className = 'col-md-12 mb-2';
-
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'row';
-
-        const divCantidad = document.createElement('div');
-        divCantidad.className = 'col-md-3';
-
-        const cantidadField = document.createElement('input');
-        cantidadField.type = 'number';
-        cantidadField.name = 'Entradas[entradas][' + entradaCount + '][cantidad]';
-        cantidadField.className = 'form-control mb-2 quantity-input';
-        cantidadField.placeholder = 'Cantidad';
-        cantidadField.oninput = function() {
-            calcularTotal();
-        };
-
-        divCantidad.appendChild(cantidadField);
-
-        const divDescripcion = document.createElement('div');
-        divDescripcion.className = 'col-md-6';
-
-        const descripcionField = document.createElement('input');
-        descripcionField.type = 'text';
-        descripcionField.name = 'Entradas[entradas][' + entradaCount + '][descripcion]';
-        descripcionField.className = 'form-control mb-2';
-        descripcionField.placeholder = 'Descripción';
-
-        divDescripcion.appendChild(descripcionField);
-
-        const divRemove = document.createElement('div');
-        divRemove.className = 'col-md-3';
-
-        const removeButton = document.createElement('button');
-        removeButton.type = 'button';
-        removeButton.className = 'btn btn-danger btn-sm';
-        removeButton.innerHTML = '<i class="fas fa-trash"></i>';
-        removeButton.onclick = function() {
-            entradasContainer.removeChild(fieldDiv);
+    if (numEntradas > currentFields) {
+        for (let i = currentFields; i < numEntradas; i++) {
+            addEntradaField();
+        }
+    } else if (numEntradas < currentFields) {
+        for (let i = currentFields; i > numEntradas; i--) {
+            entradasContainer.removeChild(entradasContainer.lastChild);
             entradaCount--;
-            document.getElementById('num_entradas').value = entradaCount;
-  
-        };
+        }
+        calcularTotal();
+    }
+}
 
-        divRemove.appendChild(removeButton);
+function addEntradaField() {
+    const entradasContainer = document.getElementById('Entradasadicionales');
+    const fieldDiv = document.createElement('div');
+    fieldDiv.className = 'col-md-12 mb-2';
 
-        rowDiv.appendChild(divCantidad);
-        rowDiv.appendChild(divDescripcion);
-        rowDiv.appendChild(divRemove);
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'row';
 
-        fieldDiv.appendChild(rowDiv);
-        entradasContainer.appendChild(fieldDiv);
-        entradaCount++;
+    const divCantidad = document.createElement('div');
+    divCantidad.className = 'col-md-3';
+
+    const cantidadField = document.createElement('input');
+    cantidadField.type = 'number';
+    cantidadField.name = 'Entradas[entradas][' + entradaCount + '][cantidad]';
+    cantidadField.className = 'form-control mb-2 quantity-input';
+    cantidadField.placeholder = 'Cantidad';
+    cantidadField.oninput = function() {
+        calcularTotal();
+    };
+
+    divCantidad.appendChild(cantidadField);
+
+    const divSabor = document.createElement('div');
+    divSabor.className = 'col-md-3';
+
+    const saborField = document.createElement('select');
+    saborField.name = 'Entradas[entradas][' + entradaCount + '][id_sabor]';
+    saborField.className = 'form-control mb-2';
+    saborField.onchange = function() {
+        fetchPresentaciones(this, entradaCount);
+    };
+
+    // Create default option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.text = 'Seleccionar sabor';
+    saborField.appendChild(defaultOption);
+
+    for(const key in sabores){
+        if(sabores.hasOwnProperty(key)){
+            const option = document.createElement('option');
+            option.value = key;
+            option.text = sabores[key];
+            saborField.appendChild(option);
+        }
+    }
+
+    divSabor.appendChild(saborField);
+
+    const divPresentacion = document.createElement('div');
+    divPresentacion.className = 'col-md-3';
+
+    const presentacionField = document.createElement('select');
+    presentacionField.name = 'Entradas[entradas][' + entradaCount + '][id_presentacion]';
+    presentacionField.className = 'form-control mb-2';
+
+    // Add default option
+    const defaultPresentacionOption = document.createElement('option');
+    defaultPresentacionOption.value = '';
+    defaultPresentacionOption.text = 'Seleccionar presentación';
+    presentacionField.appendChild(defaultPresentacionOption);
+
+    divPresentacion.appendChild(presentacionField);
+
+    const divRemove = document.createElement('div');
+    divRemove.className = 'col-md-3';
+
+    const removeButton = document.createElement('button');
+    removeButton.type = 'button';
+    removeButton.className = 'btn btn-danger btn-sm';
+    removeButton.innerHTML = '<i class="fas fa-trash"></i>';
+    removeButton.onclick = function() {
+        entradasContainer.removeChild(fieldDiv);
+        entradaCount--;
         document.getElementById('num_entradas').value = entradaCount;
+        calcularTotal();
+    };
+
+    divRemove.appendChild(removeButton);
+
+    rowDiv.appendChild(divSabor);
+    rowDiv.appendChild(divPresentacion);
+    rowDiv.appendChild(divCantidad);
+    rowDiv.appendChild(divRemove);
+
+    fieldDiv.appendChild(rowDiv);
+    entradasContainer.appendChild(fieldDiv);
+    entradaCount++;
+    document.getElementById('num_entradas').value = entradaCount;
+}
+
+function fetchPresentaciones(selectElement, entryIndex) {
+    const saborId = selectElement.value;
+    console.log(`Selected sabor ID: ${saborId}`);
+
+    if (!saborId) {
+        // If no sabor is selected, clear the presentacion dropdown
+        const presentacionField = selectElement.closest('.row').querySelector('select[name*="id_presentacion"]');
+        presentacionField.innerHTML = '<option value="">Seleccionar presentación</option>';
+        return;
     }
 
-    function calcularTotal() {
-        let total = 0;
-        document.querySelectorAll('.quantity-input').forEach(function(input) {
-            const value = parseFloat(input.value) || 0;
-            total += value;
-        });
-        document.getElementById('cantidad_entradas').value = total;
+    console.log('Fetching presentaciones for sabor ID:', saborId);
 
-        // Actualizar el campo entradas_totales con el total calculado
-        document.getElementById('entradas_totales').value = total;
-    }
+    // Fetch presentaciones based on saborId
+    $.ajax({
+        url: '<?= Url::to(['entradas/get-presentaciones']) ?>',
+        type: 'GET',
+        data: { idSabor: saborId },
+        dataType: 'json', // Ensure the response is parsed as JSON
+        success: function(data) {
+            console.log('Received presentaciones:', data);
 
-    // Inicializar la función calcularTotal en caso de que ya haya campos al cargar la página
-    calcularTotal();
+            const presentacionField = selectElement.closest('.row').querySelector('select[name*="id_presentacion"]');
+            presentacionField.innerHTML = '<option value="">Seleccionar presentación</option>'; // Clear previous options
+
+            // Check if data contains an error
+            if (data.error) {
+                console.error('Error from server:', data.error);
+                return;
+            }
+
+            // Populate the dropdown with options
+            for (const [id, presentacion] of Object.entries(data)) {
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = presentacion; // Use textContent to avoid unwanted HTML rendering
+                presentacionField.appendChild(option);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching presentaciones:', error);
+        }
+    });
+}
+
+
+function calcularTotal() {
+    let total = 0;
+    document.querySelectorAll('.quantity-input').forEach(function(input) {
+        const value = parseFloat(input.value) || 0;
+        total += value;
+    });
+    document.getElementById('cantidad_entradas').value = total;
+
+    // Actualizar el campo entradas_totales con el total calculado
+    document.getElementById('entradas_totales').value = total;
+}
+
+// Inicializar la función calcularTotal en caso de que ya haya campos al cargar la página
+calcularTotal();
 
 </script>
