@@ -3,80 +3,61 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\jui\DatePicker;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Entradas */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $empleados array */
+/* @var $eventos array */
+
 ?>
 
 <div class="entradas-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
+    <div class="row mt-3">
+        <div class="col-md-4 col-lg-4">
+            <?= $form->field($model, 'fecha')->widget(DatePicker::className(), [
+                'clientOptions' => [
+                    'showAnim' => 'fold',
+                    'changeMonth' => true,
+                    'changeYear' => true,
+                ],
+                'options' => ['class' => 'form-control'],
+                'language' => 'es-MX',
+                'dateFormat' => 'yy-mm-dd',
+                'value' => date('Y-m-d'), // Set the default value to the current date
+            ]) ?>
+        </div>
 
-    <div class="col-md-4 col-lg-4">
-        <?= $form->field($model, 'fecha')->widget(DatePicker::className(), [
-            'clientOptions' => [
-                'showAnim' => 'fold',
-                'changeMonth' => true,
-                'changeYear' => true
-            ],
-            'options' => ['class' => 'form-control'],
-            'language' => 'es-MX',
-            'dateFormat' => 'yyyy-MM-dd',
-            'value' => date('yyyy-MM-dd'), // Set the default value to the current date
-        ]) ?>
+        <div class="col-md-4 col-lg-4">
+            <?= $form->field($model, 'id_empleado')->dropDownList($empleados, ['prompt' => 'Seleccionar empleado']) ?>
+        </div>
+
+        <div class="col-md-4 col-lg-4">
+            <?= $form->field($model, 'id_evento')->dropDownList($eventos, ['prompt' => 'Seleccionar evento']) ?>
+        </div>
     </div>
 
-    <div class ="row mt-3">
-    <div class="col-md-4 col-lg-4">
-        <?= $form->field($model, 'id_empleado')->dropdownList($empleados, ['prompt' => 'Seleccionar empleado']) ?>
+    <div class="row mt-3">
+        <div class="col-md-3 col-lg-2">
+            <?= $form->field($model, 'entradas_totales')->textInput([
+                'placeholder' => 'Número de entradas',
+                'id' => 'num_entradas',
+                'oninput' => 'generateEntradaFields()'
+            ]) ?>
+        </div>
     </div>
 
-    <div class="col-md-4 col-lg-4">
-        <?= $form->field($model, 'id_evento')->dropdownList($eventos, ['prompt' => 'Seleccionar evento']) ?>
-    </div>
-    </div>
+    <div id="Entradasadicionales" class="mt-3 row"></div>
+    <button type="button" class="btn btn-primary" onclick="addEntradaField()">Agregar Entrada</button>
 
-    <div class="col-md-4 col-lg-4">
-        <?= $form->field($model, 'id_sabor')->dropdownList($sabores, ['prompt' => 'Seleccionar sabor']) ?>
-    </div>
-
-    <div class="col-md col-lg">
-        <?= Html::label('Presentaciones', 'presentaciones', ['class' => 'label-class']) ?>
-    </div>
-
-    <?= $form->field($model, 'id_prueba')->hiddenInput(['value' => $prueba])->label(false) ?>
-    <?= $form->field($model, 'id_375ml')->hiddenInput(['value' => $ml375])->label(false) ?>
-    <?= $form->field($model, 'id_750ml')->hiddenInput(['value' => $ml750])->label(false) ?>
-    <?= $form->field($model, 'id_16onz')->hiddenInput(['value' => $onz16])->label(false) ?>
-    <?= $form->field($model, 'id_2L')-> hiddenInput(['value'=>$DosLitros])->label(false)?>
-
-    <div class="col-md col-lg">
-        <?= $form->field($model, 'cantidad_pruebas')->textInput(['placeholder' => 'Cantidad Pruebas', 'class' => 'quantity-input']) ?>
-    </div>
-
-
-    <div class="col-md col-lg">
-        <?= $form->field($model, 'cantidad_375ml')->textInput(['placeholder' => 'Cantidad 375ml', 'class' => 'quantity-input']) ?>
-    </div>
-
-    <div class="col-md col-lg">
-        <?= $form->field($model, 'cantidad_750ml')->textInput(['placeholder' => 'Cantidad 750ml', 'class' => 'quantity-input']) ?>
-    </div>
-
-    
-
-    <div class="col-md col-lg">
-        <?= $form->field($model, 'cantidad_16onz')->textInput(['placeholder' => 'Cantidad 16onz', 'class' => 'quantity-input']) ?>
-    </div>
-
-    <div class="col-md col-lg">
-        <?= $form->field($model, 'cantidad_2L')->textInput(['placeholder' => 'Cantidad 2L', 'class' => 'quantity-input']) ?>
-    </div>
-
-    <div class="col-md-4 col-lg-4">
-        <?= $form->field($model, 'cantidad_entradas')->textInput(['placeholder' => 'Cantidad Total', 'readonly' => true]) ?>
+    <div class="row mt-3">
+        <div class="col-md-4 col-lg-4">
+            <?= $form->field($model, 'cantidad_entradas')->textInput(['placeholder' => 'Cantidad Total', 'readonly' => true, 'id' => 'cantidad_entradas']) ?>
+        </div>
     </div>
 
     <div class="form-group">
@@ -87,23 +68,106 @@ use yii\jui\DatePicker;
 
 </div>
 
-<?php
-$this->registerJs("
-    function calcularTotal() {
-        var total = 0;
-        $('.quantity-input').each(function() {
-            var value = parseFloat($(this).val());
-            if (!isNaN(value)) {
-                total += value;
+<script>
+    let entradaCount = 0;
+
+    function generateEntradaFields() {
+        const numEntradas = parseInt(document.getElementById('num_entradas').value) || 0;
+        const entradasContainer = document.getElementById('Entradasadicionales');
+        const currentFields = entradasContainer.childElementCount;
+
+        if (numEntradas === 0) {
+            entradasContainer.innerHTML = '';
+            entradaCount = 0;
+            calcularTotal();
+            return;
+        }
+
+        if (numEntradas > currentFields) {
+            for (let i = currentFields; i < numEntradas; i++) {
+                addEntradaField();
             }
-        });
-        $('#entradas-cantidad_entradas').val(total);
+        } else if (numEntradas < currentFields) {
+            for (let i = currentFields; i > numEntradas; i--) {
+                entradasContainer.removeChild(entradasContainer.lastChild);
+                entradaCount--;
+            }
+            calcularTotal();
+        }
     }
 
-    $('.quantity-input').on('input', function() {
-        calcularTotal();
-    });
+    function addEntradaField() {
+        const entradasContainer = document.getElementById('Entradasadicionales');
+        const fieldDiv = document.createElement('div');
+        fieldDiv.className = 'col-md-12 mb-2';
 
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'row';
+
+        const divCantidad = document.createElement('div');
+        divCantidad.className = 'col-md-3';
+
+        const cantidadField = document.createElement('input');
+        cantidadField.type = 'number';
+        cantidadField.name = 'Entradas[entradas][' + entradaCount + '][cantidad]';
+        cantidadField.className = 'form-control mb-2 quantity-input';
+        cantidadField.placeholder = 'Cantidad';
+        cantidadField.oninput = function() {
+            calcularTotal();
+        };
+
+        divCantidad.appendChild(cantidadField);
+
+        const divDescripcion = document.createElement('div');
+        divDescripcion.className = 'col-md-6';
+
+        const descripcionField = document.createElement('input');
+        descripcionField.type = 'text';
+        descripcionField.name = 'Entradas[entradas][' + entradaCount + '][descripcion]';
+        descripcionField.className = 'form-control mb-2';
+        descripcionField.placeholder = 'Descripción';
+
+        divDescripcion.appendChild(descripcionField);
+
+        const divRemove = document.createElement('div');
+        divRemove.className = 'col-md-3';
+
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'btn btn-danger btn-sm';
+        removeButton.innerHTML = '<i class="fas fa-trash"></i>';
+        removeButton.onclick = function() {
+            entradasContainer.removeChild(fieldDiv);
+            entradaCount--;
+            document.getElementById('num_entradas').value = entradaCount;
+  
+        };
+
+        divRemove.appendChild(removeButton);
+
+        rowDiv.appendChild(divCantidad);
+        rowDiv.appendChild(divDescripcion);
+        rowDiv.appendChild(divRemove);
+
+        fieldDiv.appendChild(rowDiv);
+        entradasContainer.appendChild(fieldDiv);
+        entradaCount++;
+        document.getElementById('num_entradas').value = entradaCount;
+    }
+
+    function calcularTotal() {
+        let total = 0;
+        document.querySelectorAll('.quantity-input').forEach(function(input) {
+            const value = parseFloat(input.value) || 0;
+            total += value;
+        });
+        document.getElementById('cantidad_entradas').value = total;
+
+        // Actualizar el campo entradas_totales con el total calculado
+        document.getElementById('entradas_totales').value = total;
+    }
+
+    // Inicializar la función calcularTotal en caso de que ya haya campos al cargar la página
     calcularTotal();
-");
-?>
+
+</script>
