@@ -20,6 +20,8 @@ class ReportesController extends Controller
         ]);
     }
 
+   
+
     public function actionVerReporte($fecha)
     {
         $reporte = $this->getReportePorFecha($fecha);
@@ -386,10 +388,12 @@ private function generateEventoHtml($ventasGrouped)
     {
         return Yii::$app->db->createCommand("
             SELECT DATE(v.fecha) AS fecha
-            FROM ventas v
+            FROM ventas 
             GROUP BY DATE(v.fecha)
         ")->queryAll();
     }
+
+  
 
     private function getReportePorFecha($fecha)
     {
@@ -412,4 +416,8 @@ private function generateEventoHtml($ventasGrouped)
         ")->bindValue(':fecha', $fecha)
           ->queryAll();
     }
+
+
+    
+   
 }

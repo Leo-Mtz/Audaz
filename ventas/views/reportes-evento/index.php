@@ -35,7 +35,7 @@ $this->title = 'Reportes por Evento';
                         return Html::a('Ver Reporte', ['ver-pdf', 'id_evento' => $model['id_evento']], ['target' => '_blank', 'class' => 'btn btn-info']);
                     },
                     'download' => function ($url, $model) {
-                        return Html::a('Descargar Excel', ['descargar-excel', 'id_evento' => $model['id_evento']], ['class' => 'btn btn-success']);
+                        return Html::a('Descargar Excel', ['descargar-reporte', 'id_evento' => $model['id_evento']], ['class' => 'btn btn-success']);
                     },
                     'download-pdf' => function ($url, $model) {
                         return Html::a('Descargar PDF', ['descargar-pdf', 'id_evento' => $model['id_evento']], ['class' => 'btn btn-success']);
