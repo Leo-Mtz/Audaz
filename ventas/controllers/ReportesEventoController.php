@@ -36,6 +36,71 @@ class ReportesEventoController extends Controller
         ")->queryAll();
     }
 
+    public function actionDescargarReporte($id_evento)
+    {
+        // Fetch the report data for the specified event
+        $reporte_evento = $this->getReportePorEvento($id_evento);
+        $eventoNombre = $this->getEventoNombre($id_evento);
+        $fileName = "reporte_evento_$id_evento.csv";
+    
+        Yii::$app->response->format = \yii\web\Response::FORMAT_RAW;
+        Yii::$app->response->headers->add('Content-Type', 'text/csv');
+        Yii::$app->response->headers->add('Content-Disposition', "attachment; filename=\"$fileName\"");
+    
+        // Open output stream
+        $output = fopen('php://output', 'w');
+    
+        // Add event name header
+        fputcsv($output, ["Reporte del Evento: " . htmlspecialchars($eventoNombre)]);
+        fputcsv($output, []); // Add an empty row for spacing
+    
+        // Add CSV headers
+        fputcsv($output, [
+            'ID Venta', 
+            'Producto', 
+            'Cantidad Vendida', 
+            'Monto Total', 
+            'Forma de Pago', 
+            'Tipo de Venta'
+        ]);
+    
+        // Initialize totals
+        $totalCantidadVendida = 0;
+        $totalMontoTotal = 0;
+    
+        // Add data rows and calculate totals
+        foreach ($reporte_evento as $row) {
+            fputcsv($output, [
+                $row['id_venta'],
+                $row['producto'],
+                $row['cantidad_vendida'],
+                $row['monto_total'],
+                $row['forma_de_pago'],
+                $row['tipo_de_venta']
+            ]);
+    
+            // Sum up totals
+            $totalCantidadVendida += $row['cantidad_vendida'];
+            $totalMontoTotal += $row['monto_total'];
+        }
+    
+        // Add totals row
+        fputcsv($output, []); // Add an empty row for spacing
+        fputcsv($output, [
+            '', '', '', '', // Empty cells for alignment
+            'Total Cantidad Vendida:', $totalCantidadVendida
+        ]);
+        fputcsv($output, [
+            '', '', '', '', // Empty cells for alignment
+            'Total Monto Total:', $totalMontoTotal
+        ]);
+    
+        // Close output stream
+        fclose($output);
+        Yii::$app->end();
+    }
+       
+
     private function getReportePorEvento($id_evento)
     {
         return Yii::$app->db->createCommand("
