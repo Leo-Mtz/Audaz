@@ -224,6 +224,19 @@
                                     'label' => 'Reporte de Ventas',
                                     'url' => ['reportes/index'],
                                     'iconClass' => 'fa fa-fw fa-book-open',
+                                     'items' => [
+                                        [
+                                            'label' => 'Reportes Diarios',
+                                            'iconClass' => 'fa fa-fw fa-plus',
+                                            'url' => ['reportes/index'],
+                                            // 'visible' => \Yii::$app->user->can('verMenuCrearCorreo'),
+                                        ],
+                                        [
+                                            'label' => 'Reportes de  Eventos',
+                                            'iconClass' => 'fa fa-fw fa-list',
+                                            'url' => ['reportes-evento/index'],
+                                            // 'visible' => \Yii::$app->user->can('verMenuListarCorreos'),
+                                        ],
 
                                 ],
 
@@ -232,6 +245,7 @@
                         ],
 
                     ],
+                ],
                 ]);
             }
             ?>
