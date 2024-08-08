@@ -1,8 +1,7 @@
 <?php
+
 namespace app\models;
 
-
-use app\models\CatProductos;
 use Yii;
 
 /**
@@ -12,60 +11,40 @@ use Yii;
  * @property string $fecha
  * @property int $id_empleado
  * @property int $id_evento
- * @property int $id_sabor
- * @property int $id_presentacion
- * @property int $id_prueba
- * @property int $id_375ml
- * @property int $id_750ml
- * @property int $id_16onz
- * @property int $id_2L
- *  @property int $id_prueba
- * @property float|null $cantidad_375ml
- * @property float|null $cantidad_750ml
- * @property float|null $cantidad_16onz
- * @property float|null $cantidad_2L    
- * @property float|null $cantidad_pruebas
- *  @property float|null $cantidad_entradas
+ * @property double|null $cantidad_entradas
+ * @property double $entradas_totales
+ * @property double $entradas_producto
  */
 class Entradas extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'entradas';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
-            [['fecha', 'id_empleado', 'id_evento', 'id_sabor','cantidad_entradas', 'entradas_totales'], 'required'],
-            [['id_empleado','id_presentacion', 'id_evento', 'id_sabor', 'entradas_totales'], 'integer'],
+            [['fecha', 'id_empleado', 'id_evento', 'entradas_totales'], 'required'],
             [['fecha'], 'safe'],
-            [[ 'cantidad_entradas'], 'number'],
+            [['id_empleado', 'id_evento'], 'integer'],
+            [['cantidad_entradas', 'entradas_totales'], 'number'],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
-            'id_entradas' => 'Entrada',
+            'id_entradas' => 'ID',
             'fecha' => 'Fecha',
-            'id_empleado' => 'Id Empleado',
+            'id_empleado' => 'Empleado',
             'id_evento' => 'Evento',
-            'id_sabor' => 'Sabor',
-            'id_presentacion'=> 'Presentacion',
             'cantidad_entradas' => 'Cantidad Entradas',
             'entradas_totales' => 'Entradas Totales',
         ];
     }
+
+
 
     public function getEventos()
     {
@@ -78,22 +57,13 @@ class Entradas extends \yii\db\ActiveRecord
     }
 
     
+    public function getProductosPorEntradas()
+    {
+        return $this->hasMany(ProductosPorEntradas::className(), ['id_entradas' => 'id_entradas']);
+    }
+
 
    
-
-public function afterSave($insert, $changedAttributes)
-{
-    parent::afterSave($insert, $changedAttributes);
-
-    if ($insert) {
-        // Update the stock after creating a new Entrada
-        $producto = CatProductos::findOne($this->id_producto);
-
-        if ($producto !== null) {
-            $producto->updateInventoryQuantity();
-        }
-    }
-}
 
 }
 

@@ -124,48 +124,4 @@ class Ventas extends \yii\db\ActiveRecord
         return parent::beforeValidate();
     }
 
-    public function updateStock()
-    {
-        // Begin a transaction to ensure all-or-nothing updates
-        $transaction = Yii::$app->db->beginTransaction();
-
-        try {
-            // Get all products associated with this sale
-            $productosPorVenta = ProductosPorVenta::findAll(['id_venta' => $this->id_venta]);
-
-            foreach ($productosPorVenta as $productoPorVenta) {
-                // Find the corresponding product in the inventory
-                $producto = CatProductos::findOne($productoPorVenta->id_producto);
-
-                if ($producto === null) {
-                    throw new \Exception('Product not found: ' . $productoPorVenta->id_producto);
-                }
-
-                // Update the stock quantity
-                $nuevoStock = $producto->stock - $productoPorVenta->cantidad_vendida;
-
-                // Ensure that stock does not go below zero
-                if ($nuevoStock < 0) {
-                    throw new \Exception('Insufficient stock for product: ' . $productoPorVenta->id_producto);
-                }
-
-                // Update the stock in the database
-                $producto->stock = $nuevoStock;
-
-                if (!$producto->save()) {
-                    throw new \Exception('Failed to update stock for product: ' . $productoPorVenta->id_producto);
-                }
-            }
-
-            // Commit the transaction if all updates are successful
-            $transaction->commit();
-            return true;
-
-        } catch (\Exception $e) {
-            // Roll back the transaction if any update fails
-            $transaction->rollBack();
-            Yii::error('Stock update failed: ' . $e->getMessage(), 'stock_update');
-            return false;
-        }
-    }
 }

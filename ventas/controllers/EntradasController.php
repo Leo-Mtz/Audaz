@@ -8,9 +8,10 @@ use app\models\EntradasSearch;
 use app\models\CatEventos;
 use app\models\CatSabores;
 use app\models\CatEmpleados;
+use yii\web\Controller;
+use app\models\ProductosPorEntradas;
 use app\models\CatProductos;
 use app\models\CatPresentaciones;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -68,66 +69,78 @@ class EntradasController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-{
-    $model = new Entradas();
   
-    // Set the fecha attribute to the current date
-    $model->fecha = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
-    date_default_timezone_set('America/Mexico_City'); // Set the timezone to Mexico City
+     public function actionCreate()
+     {
+         $model = new Entradas();
+         
+         // Set the current date
+         $clientDate = Yii::$app->request->post('client_date', date('Y-m-d'));
+         $model->fecha = $clientDate;
+     
+         var_dump(Yii::$app->request->post());
+         
+ 
+         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
-    
-
-    if ($model->load(Yii::$app->request->post())) { // Load POST data
-        if ($model->save()) { // Save model
-            return $this->redirect(['view', 'id' => $model->id_entradas]); // Redirect to view if saved successfully
-        } else {
-            var_dump($model->errors); // Debug errors if save fails
-        }
-
-        
-        // Procesar los campos de presentaciones
-        $presentaciones = Yii::$app->request->post('Presentaciones', []);
-        foreach ($presentaciones as $id_presentacion => $value) {
-            // Aquí puedes guardar o procesar los valores como necesites
-            // Ejemplo: guardar en una tabla relacionada
-        }
-
-
-   
-    }
-
-    $empleados = ArrayHelper::map(CatEmpleados::find()->all(), 'id_empleado', function($model, $defaultValue) {
-        return $model['nombre'].' '.$model['paterno'].' '.$model['materno'];
-    });
-    $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
-
-
-    $saboresIds = CatProductos::find()
-    ->select('id_sabor')
-    ->distinct()
-    ->column();
-
-    $sabores1 = CatSabores::find()
-        ->where(['id_sabor' => $saboresIds])
-        ->all();
-
-    $sabores = ArrayHelper::map($sabores1, 'id_sabor', 'sabor');
-   
-
-    $presentacionesList=[];
-   
-        return $this->render('create', [
-            'model' => $model,
-            'empleados' => $empleados,
-             'eventos' => $eventos,
-             'sabores'=> $sabores,
-             'presentacionesList' => $presentacionesList
-
+            var_dump("Hola mundo");
             
-        ]);
-}
+             if (isset(Yii::$app->request->post('Entradas')['entradas'])) {
+                 // Debug output to see the raw data
 
+                 var_dump("Hola mundo 2");
+            
+                 $entradas = Yii::$app->request->post('Entradas')['entradas'];
+                 
+                 var_dump($entradas);
+
+                 
+                 foreach ($entradas as $entradaData) {
+
+                     $idProducto = $this->getIdProducto($entradaData['id_sabor'], $entradaData['id_presentacion']);
+                     
+                     $entradas = new ProductosPorEntradas();
+                     $entradas->id_entradas = $model->id_entradas;
+                     $entradas->id_sabor = $entradaData['id_sabor'];
+                     $entradas->id_presentacion = $entradaData['id_presentacion'];
+                     $entradas->id_producto = $idProducto; // Set id_producto
+                     $entradas->cantidad_entradas_producto = $entradaData['cantidad_entradas_producto'];
+                     
+
+                     var_dump($entradas->attributes);
+                     if (!$entradas->save()) {
+                         Yii::debug($entradas->errors, 'productoPorEntradas_errors');
+                         var_dump($entradas->errors);
+                         exit; // Stop execution for debugging
+                     }
+                 }
+                 
+                 return $this->redirect(['view', 'id' => $model->id_entradas]);
+             }
+         } else {
+             Yii::debug($model->errors, 'entradas_save_errors');
+             var_dump($model->errors);
+         }
+     
+         // Prepare data for dropdowns
+         $empleados = ArrayHelper::map(CatEmpleados::find()->all(), 'id_empleado', function($model) {
+             return $model['nombre'].' '.$model['paterno'].' '.$model['materno'];
+         });
+         $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
+         $saboresIds = CatProductos::find()->select('id_sabor')->distinct()->column();
+         $sabores1 = CatSabores::find()->where(['id_sabor' => $saboresIds])->all();
+         $sabores = ArrayHelper::map($sabores1, 'id_sabor', 'sabor');
+         $presentacionesList = [];
+         
+         return $this->render('create', [
+             'model' => $model,
+             'empleados' => $empleados,
+             'eventos' => $eventos,
+             'sabores' => $sabores,
+             'presentacionesList' => $presentacionesList
+         ]);
+     }
+     
 /**
      * Updates an existing CatProductos model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -208,6 +221,7 @@ public function actionUpdate($id)
 }
 
 
+
     /**
      * Deletes an existing Entradas model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -270,8 +284,7 @@ public function actionUpdate($id)
         // Only include the 'presentacion' value in the response
         $presentacionesList = [];
         foreach ($presentaciones as $presentacion) {
-            $presentacionesList[] = $presentacion->presentacion;
-        }
+            $presentacionesList[$presentacion->id_presentacion] = $presentacion->presentacion; }
 
         return json_encode($presentacionesList);
     } catch (\Exception $e) {
@@ -280,5 +293,20 @@ public function actionUpdate($id)
     }
 }
 
+public function getIdProducto($idSabor, $idPresentacion)
+{
+    $producto = CatProductos::find()
+        ->where(['id_sabor' => $idSabor, 'id_presentacion' => $idPresentacion])
+        ->one();
+
+    if ($producto) {
+        return $producto->id_producto;
+    }
+
+    return null; // or handle the case where no matching product is found
+}
+
+
 
 }
+

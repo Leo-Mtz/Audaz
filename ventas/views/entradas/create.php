@@ -18,12 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
        'empleados' => $empleados,
         'eventos' => $eventos,
         'sabores'=> $sabores,
-        'presentaciones'=> $presentaciones,
-        'prueba' => $prueba,
-        'ml375'=> $ml375,
-        'ml750'=> $ml750,
-        'onz16'=> $onz16,
-        'DosLitros'=> $DosLitros,
+        'presentacionesList'=> $presentacionesList,
         
     ]) ?>
 

@@ -77,6 +77,7 @@ class VentasController extends \yii\web\Controller
     $model->tipo_de_venta = 'venta';
     $model->forma_de_pago = 'efectivo';
     
+    
     if ($model->load(Yii::$app->request->post()) && $model->save()) {
         // Handle the related ProductosPorVenta records
         if (isset(Yii::$app->request->post('Ventas')['productos'])) {
@@ -98,12 +99,6 @@ class VentasController extends \yii\web\Controller
             echo 'No productos data found in post request';
         }
         
-        // Update stock after saving the sale
-        if ($model->updateStock()) {
-            Yii::$app->session->setFlash('success', 'Sale recorded and stock updated.');
-        } else {
-            Yii::$app->session->setFlash('error', 'Failed to update stock.');
-        }
 
         return $this->redirect(['view', 'id' => $model->id_venta]);
     } else {

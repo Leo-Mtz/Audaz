@@ -292,6 +292,7 @@ $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from se
 
     productCount++;
 
+
     document.getElementById('num_productos').value = productCount;
 
     calcularTotalVenta();
