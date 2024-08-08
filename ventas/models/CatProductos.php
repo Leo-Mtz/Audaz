@@ -11,6 +11,7 @@ use Yii;
  * @property int $id_sabor
  * @property int $id_presentacion
  * @property float $precio
+ * @property int $cantidad_inventario
  */
 class CatProductos extends \yii\db\ActiveRecord
 {
@@ -29,7 +30,7 @@ class CatProductos extends \yii\db\ActiveRecord
     {
         return [
             [['id_sabor', 'id_presentacion', 'precio'], 'required'],
-            [['id_sabor', 'id_presentacion'], 'integer'],
+            [['id_sabor', 'id_presentacion','cantidad_inventario'], 'integer'],
             [['precio'], 'number'],
         ];
     }

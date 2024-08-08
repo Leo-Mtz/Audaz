@@ -71,69 +71,79 @@ class EntradasController extends Controller
      */
   
      public function actionCreate()
-     {
-         $model = new Entradas();
-         
-         // Set the current date
-         $clientDate = Yii::$app->request->post('client_date', date('Y-m-d'));
-         $model->fecha = $clientDate;
-         
- 
-         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+{
+    $model = new Entradas();
 
-            
-             if (isset(Yii::$app->request->post('Entradas')['entradas'])) {
-                 // Debug output to see the raw data
+    // Set the current date
+    $clientDate = Yii::$app->request->post('client_date', date('Y-m-d'));
+    $model->fecha = $clientDate;
 
-                
-                 $entradas = Yii::$app->request->post('Entradas')['entradas'];
-                 
-                 
-                 foreach ($entradas as $entradaData) {
+    if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        // Save productos_por_entradas and update inventory
+        if (isset(Yii::$app->request->post('Entradas')['entradas'])) {
+            $entradas = Yii::$app->request->post('Entradas')['entradas'];
 
-                     $idProducto = $this->getIdProducto($entradaData['id_sabor'], $entradaData['id_presentacion']);
-                     
-                     $entradas = new ProductosPorEntradas();
-                     $entradas->id_entradas = $model->id_entradas;
-                     $entradas->id_sabor = $entradaData['id_sabor'];
-                     $entradas->id_presentacion = $entradaData['id_presentacion'];
-                     $entradas->id_producto = $idProducto; // Set id_producto
-                     $entradas->cantidad_entradas_producto = $entradaData['cantidad_entradas_producto'];
-                     
+            // Start a database transaction
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                foreach ($entradas as $entradaData) {
+                    $idProducto = $this->getIdProducto($entradaData['id_sabor'], $entradaData['id_presentacion']);
 
-                     if (!$entradas->save()) {
-                         Yii::debug($entradas->errors, 'productoPorEntradas_errors');
-                     
-                         exit; // Stop execution for debugging
-                     }
-                 }
-                 
-                 return $this->redirect(['view', 'id' => $model->id_entradas]);
-             }
-         } else {
-             Yii::debug($model->errors, 'entradas_save_errors');
-           
-         }
-     
-         // Prepare data for dropdowns
-         $empleados = ArrayHelper::map(CatEmpleados::find()->all(), 'id_empleado', function($model) {
-             return $model['nombre'].' '.$model['paterno'].' '.$model['materno'];
-         });
-         $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
-         $saboresIds = CatProductos::find()->select('id_sabor')->distinct()->column();
-         $sabores1 = CatSabores::find()->where(['id_sabor' => $saboresIds])->all();
-         $sabores = ArrayHelper::map($sabores1, 'id_sabor', 'sabor');
-         $presentacionesList = [];
-         
-         return $this->render('create', [
-             'model' => $model,
-             'empleados' => $empleados,
-             'eventos' => $eventos,
-             'sabores' => $sabores,
-             'presentacionesList' => $presentacionesList
-         ]);
-     }
-     
+                    $productoEntrada = new ProductosPorEntradas();
+                    $productoEntrada->id_entradas = $model->id_entradas;
+                    $productoEntrada->id_sabor = $entradaData['id_sabor'];
+                    $productoEntrada->id_presentacion = $entradaData['id_presentacion'];
+                    $productoEntrada->id_producto = $idProducto;
+                    $productoEntrada->cantidad_entradas_producto = $entradaData['cantidad_entradas_producto'];
+
+                    if (!$productoEntrada->save()) {
+                        Yii::debug($productoEntrada->errors, 'productoPorEntradas_errors');
+                        throw new \Exception('Failed to save ProductosPorEntradas');
+                    }
+
+                    // Update cantidad_inventario in catproductos
+                    $producto = CatProductos::findOne($idProducto);
+                    if ($producto) {
+                        $producto->cantidad_inventario += $entradaData['cantidad_entradas_producto'];
+                        if (!$producto->save()) {
+                            Yii::debug($producto->errors, 'catproductos_errors');
+                            throw new \Exception('Failed to update CatProductos inventory');
+                        }
+                    } else {
+                        throw new \Exception('Producto not found');
+                    }
+                }
+
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id_entradas]);
+            } catch (\Exception $e) {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+    } else {
+        Yii::debug($model->errors, 'entradas_save_errors');
+    }
+
+    // Prepare data for dropdowns
+    $empleados = ArrayHelper::map(CatEmpleados::find()->all(), 'id_empleado', function($model) {
+        return $model['nombre'].' '.$model['paterno'].' '.$model['materno'];
+    });
+    $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
+    $saboresIds = CatProductos::find()->select('id_sabor')->distinct()->column();
+    $sabores1 = CatSabores::find()->where(['id_sabor' => $saboresIds])->all();
+    $sabores = ArrayHelper::map($sabores1, 'id_sabor', 'sabor');
+    $presentacionesList = [];
+
+    return $this->render('create', [
+        'model' => $model,
+        'empleados' => $empleados,
+        'eventos' => $eventos,
+        'sabores' => $sabores,
+        'presentacionesList' => $presentacionesList
+    ]);
+}
+
 /**
      * Updates an existing CatProductos model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -297,23 +307,6 @@ public function getIdProducto($idSabor, $idPresentacion)
     }
 
     return null; // or handle the case where no matching product is found
-}
-
-
-
-private function updateInventory($entradaId)
-{
-    // Fetch the entradas details
-    $entradas = ProductosPorEntradas::find()->where(['id_entrada' => $entradaId])->all();
-
-    // Update inventory for each product
-    foreach ($entradas as $entrada) {
-        $producto = CatProductos::findOne($entrada->id_producto);
-        if ($producto) {
-            $producto->cantidad_inventario += $entrada->cantidad_entradas_producto; // Adjust this if needed
-            $producto->save();
-        }
-    }
 }
 
 

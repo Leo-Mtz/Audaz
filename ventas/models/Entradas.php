@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 
+
 /**
  * This is the model class for table "entradas".
  *
@@ -63,7 +64,24 @@ class Entradas extends \yii\db\ActiveRecord
     }
 
 
-   
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        if (!$insert) {
+            // Handle case when updating
+            $this->updateInventory();
+        }
+    }
+
+    public function updateInventory()
+    {
+        $producto = CatProductos::findOne($this->id_producto);
+        if ($producto) {
+            $producto->cantidad_inventarios += $this->cantidad_entradas_producto;
+            $producto->save(false); // Use `false` to skip validation if necessary
+        }
+    }
 
 }
 
