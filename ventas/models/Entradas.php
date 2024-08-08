@@ -78,7 +78,7 @@ class Entradas extends \yii\db\ActiveRecord
     {
         $producto = CatProductos::findOne($this->id_producto);
         if ($producto) {
-            $producto->cantidad_inventarios += $this->cantidad_entradas_producto;
+            $producto->cantidad_inventario += $this->cantidad_entradas_producto;
             $producto->save(false); // Use `false` to skip validation if necessary
         }
     }

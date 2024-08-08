@@ -234,9 +234,15 @@ public function actionUpdate($id)
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model= $this->findModel($id);
+        $productosPorEntrada = ProductosPorEntradas::findAll(['id_entradas' => $id]);
+        foreach ($productosPorEntrada as $productoPorEntrada) {
+            $productoPorEntrada->delete();
+        
+        }
 
-        return $this->redirect(['index']);
+        $model->delete();
+        return  $this->redirect(['index']);
     }
 
     /**

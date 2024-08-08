@@ -22,12 +22,13 @@ use yii\widgets\ActiveForm;
 		<div class="col-md col-lg">
 			<?= $form->field($model, 'precio')->textInput() ?>
 		</div>
-	</div>
+
+
+</div>
+
 
     <div class="form-group">
         <?= Html::submitButton('Guardar', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
-
-</div>

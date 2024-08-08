@@ -65,8 +65,7 @@ class VentasController extends \yii\web\Controller
         ]);
     }
 
-    
-    
+   
     public function actionCreate()
 {
     $model = new Ventas();
@@ -77,12 +76,22 @@ class VentasController extends \yii\web\Controller
     $model->tipo_de_venta = 'venta';
     $model->forma_de_pago = 'efectivo';
     
-    
-    if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        // Handle the related ProductosPorVenta records
-        if (isset(Yii::$app->request->post('Ventas')['productos'])) {
-            $productos = Yii::$app->request->post('Ventas')['productos'];
-    
+    if ($model->load(Yii::$app->request->post())) {
+        // First, validate inventory for the sale
+        $productos = Yii::$app->request->post('Ventas')['productos'] ?? [];
+
+        $inventoryValid = true;
+        foreach ($productos as $productoData) {
+            $producto = CatProductos::findOne($productoData['id_producto']);
+            if ($producto && $productoData['cantidad_vendida'] > $producto->cantidad_inventario) {
+                $model->addError('productos', 'No hay suficiente inventario para el producto ID ' . $productoData['id_producto']);
+                $inventoryValid = false;
+                break;
+            }
+        }
+
+        if ($inventoryValid && $model->save()) {
+            // Handle the related ProductosPorVenta records
             foreach ($productos as $productoData) {
                 $productoPorVenta = new ProductosPorVenta();
                 $productoPorVenta->id_venta = $model->id_venta;
@@ -90,21 +99,29 @@ class VentasController extends \yii\web\Controller
                 $productoPorVenta->cantidad_vendida = $productoData['cantidad_vendida'];
                 $productoPorVenta->precio_unitario = $productoData['precio_unitario'];
                 $productoPorVenta->subtotal_producto = $productoData['subtotal_producto'];
-    
+
                 if (!$productoPorVenta->save()) {
                     Yii::debug($productoPorVenta->errors, 'productoPorVenta_errors');
                 }
+                
+                // Update inventory
+                $producto = CatProductos::findOne($productoData['id_producto']);
+                
+                if ($producto) {
+                    $producto->cantidad_inventario -= $productoData['cantidad_vendida'];
+                    
+                    if (!$producto->save()) {
+                        Yii::debug($producto->errors, 'producto_inventory_errors');
+                    }
+                }
             }
+            
+            return $this->redirect(['view', 'id' => $model->id_venta]);
         } else {
-            echo 'No productos data found in post request';
+            Yii::debug($model->errors, 'ventas_errors');
         }
-        
-
-        return $this->redirect(['view', 'id' => $model->id_venta]);
-    } else {
-        Yii::debug($model->errors, 'ventas_errors');
     }
-
+    
     $id_evento = Yii::$app->session->get('id_evento');
     $productos = CatProductos::find()->all();
     $productosDropdown = [];

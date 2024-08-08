@@ -45,6 +45,7 @@ class CatProductos extends \yii\db\ActiveRecord
             'id_sabor' => 'Sabor',
             'id_presentacion' => 'Presentación',
             'precio' => 'Precio',
+            'cantidad_inventario' => 'Inventario',
         ];
     }
 	

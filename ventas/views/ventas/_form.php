@@ -12,6 +12,11 @@ use yii\helpers\Url;
 $id_evento = Yii::$app->session->get('id_evento'); // Retrieve id_evento from session
 
 ?>
+<?php if (Yii::$app->session->hasFlash('error')): ?>
+    <div class="alert alert-danger">
+        <?= Yii::$app->session->getFlash('error') ?>
+    </div>
+<?php endif; ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
