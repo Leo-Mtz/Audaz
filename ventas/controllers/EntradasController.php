@@ -77,23 +77,17 @@ class EntradasController extends Controller
          // Set the current date
          $clientDate = Yii::$app->request->post('client_date', date('Y-m-d'));
          $model->fecha = $clientDate;
-     
-         var_dump(Yii::$app->request->post());
          
  
          if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
-            var_dump("Hola mundo");
             
              if (isset(Yii::$app->request->post('Entradas')['entradas'])) {
                  // Debug output to see the raw data
 
-                 var_dump("Hola mundo 2");
-            
+                
                  $entradas = Yii::$app->request->post('Entradas')['entradas'];
                  
-                 var_dump($entradas);
-
                  
                  foreach ($entradas as $entradaData) {
 
@@ -107,10 +101,9 @@ class EntradasController extends Controller
                      $entradas->cantidad_entradas_producto = $entradaData['cantidad_entradas_producto'];
                      
 
-                     var_dump($entradas->attributes);
                      if (!$entradas->save()) {
                          Yii::debug($entradas->errors, 'productoPorEntradas_errors');
-                         var_dump($entradas->errors);
+                     
                          exit; // Stop execution for debugging
                      }
                  }
@@ -119,7 +112,7 @@ class EntradasController extends Controller
              }
          } else {
              Yii::debug($model->errors, 'entradas_save_errors');
-             var_dump($model->errors);
+           
          }
      
          // Prepare data for dropdowns
@@ -306,6 +299,22 @@ public function getIdProducto($idSabor, $idPresentacion)
     return null; // or handle the case where no matching product is found
 }
 
+
+
+private function updateInventory($entradaId)
+{
+    // Fetch the entradas details
+    $entradas = ProductosPorEntradas::find()->where(['id_entrada' => $entradaId])->all();
+
+    // Update inventory for each product
+    foreach ($entradas as $entrada) {
+        $producto = CatProductos::findOne($entrada->id_producto);
+        if ($producto) {
+            $producto->cantidad_inventario += $entrada->cantidad_entradas_producto; // Adjust this if needed
+            $producto->save();
+        }
+    }
+}
 
 
 }

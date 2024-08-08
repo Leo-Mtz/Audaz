@@ -18,9 +18,9 @@ class EntradasSearch extends Entradas
     {
         return [
             
-            [['id_entradas', 'id_empleado', 'id_evento', 'id_sabor'], 'integer'],
+            [['id_entradas', 'id_empleado', 'id_evento'], 'integer'],
             [['fecha'], 'safe'],
-            [['cantidad_pruebas', 'cantidad_375ml','cantidad_750ml', 'cantidad_2L', 'cantidad_entradas'], 'number'],
+            [['entradas_totales', 'cantidad_entradas'], 'number'],
         ];
     }
 
@@ -63,12 +63,7 @@ class EntradasSearch extends Entradas
             'fecha' => $this->fecha,
             'id_empleado' => $this->id_empleado,
             'id_evento' => $this->id_evento,
-            'id_sabor' => $this->id_sabor,
-            'cantidad_pruebas'=>$this->cantidad_pruebas,
-            'cantidad_375ml'=>$this->cantidad_375ml,
-            'cantidad_16onz'=>$this->cantidad_16onz,
-            'cantidad_750ml'=>$this->cantidad_750ml,
-            'cantidad_2L'=>$this->cantidad_2L,
+            'entradas_totales' => $this->entradas_totales,
             'cantidad_entradas' => $this->cantidad_entradas,
         ]);
 

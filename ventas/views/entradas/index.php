@@ -23,12 +23,11 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Crear Entrada', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-    
-    <?php $sabores = ArrayHelper::map(CatSabores::find()->all(), 'id_sabor', 'sabor'); ?>
-    <?php $eventos = ArrayHelper::map(app\models\CatEventos::find()->all(), 'id_evento', 'evento'); ?>
+ <?php
+$eventos = ArrayHelper::map(app\models\CatEventos::find()->all(), 'id_evento', 'evento'); 
 
 
+?>
     
     <?= GridView::widget([
     'dataProvider' => $dataProvider,
@@ -48,27 +47,15 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'attribute' => 'id_evento',
             'value' => function($model) {
-                return $model->sabores ? $model->eventos->evento : null;
+                return $model->eventos ? $model->eventos->evento : null;
             },
             'filter' => Html::activeDropDownList($searchModel, 'id_evento', $eventos, ['class' => 'form-control', 'prompt' => '']),
         ],
 
-        [
-            'attribute' => 'id_sabor',
-            'value' => function($model) {
-                return $model->sabores ? $model->sabores->sabor : null;
-            },
-            'filter' => Html::activeDropDownList($searchModel, 'id_sabor', $sabores, ['class' => 'form-control', 'prompt' => '']),
-        ],
-
-        
-
-        'cantidad_pruebas',
-        'cantidad_375ml',
-        'cantidad_16onz',
-        'cantidad_750ml',
-        'cantidad_2L',
         'cantidad_entradas',
+        'entradas_totales',
+
+
 
         [
             'class' => 'yii\grid\ActionColumn',
