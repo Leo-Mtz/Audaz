@@ -199,14 +199,16 @@ class VentasController extends \yii\web\Controller
             }
     
             // Update stock after saving changes
-            if ($model->updateStock()) {
+            if ($model->updateInventory()) {
                 Yii::$app->session->setFlash('success', 'Sale updated and stock adjusted.');
+       
             } else {
                 Yii::$app->session->setFlash('error', 'Failed to update stock.');
             }
-    
             return $this->redirect(['view', 'id' => $model->id_venta]);
-        }
+       
+    
+            }
     
         $productos = CatProductos::find()->all();
         $productosDropdown = [];

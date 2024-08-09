@@ -23,6 +23,8 @@ use yii\widgets\ActiveForm;
 			<?= $form->field($model, 'precio')->textInput() ?>
 		</div>
 
+		
+
 
 </div>
 

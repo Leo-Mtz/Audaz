@@ -152,75 +152,138 @@ class EntradasController extends Controller
      * @throws NotFoundHttpException if the model cannot be found
      */
 
-public function actionUpdate($id)
+     public function actionUpdate($id)
 {
     $model = $this->findModel($id);
 
- 
+    if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        $entradasData = Yii::$app->request->post('Entradas')['entradas'] ?? [];
 
-    if ($model->load(Yii::$app->request->post())) { // Load POST data
+        // Start a database transaction
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            // Remove entries that are no longer present
+            $existingEntradaIds = array_column($model->getProductosPorEntradas()->asArray()->all(), 'id');
+            $newEntradaIds = array_column($entradasData, 'id');
+            foreach ($existingEntradaIds as $existingEntradaId) {
+                if (!in_array($existingEntradaId, $newEntradaIds)) {
+                    $existingEntrada = ProductosPorEntradas::findOne($existingEntradaId);
+                    if ($existingEntrada) {
+                        $existingEntrada->delete();
+                    }
+                }
+            }
 
-   
+            // Update or create new entries
+            foreach ($entradasData as $entradaData) {
+                if (isset($entradaData['id']) && $entradaData['id']) {
+                    $entrada = ProductosPorEntradas::findOne($entradaData['id']);
+                    if ($entrada) {
+                        $entrada->attributes = $entradaData;
+                        $entrada->id_producto = $this->getIdProducto($entradaData['id_sabor'], $entradaData['id_presentacion']); // Calculate id_producto
+                        if (!$entrada->save()) {
+                            Yii::debug($entrada->errors, 'productoPorEntradas_update_errors');
+                            throw new \Exception('Failed to update ProductosPorEntradas');
+                        }
 
-        if ($model->save()) { // Save model
-            return $this->redirect(['view', 'id' => $model->id_entradas]); // Redirect to view if saved successfully
-        } else {
-            var_dump($model->errors); // Debug errors if save fails
+                        // Update inventory
+                        $producto = CatProductos::findOne($entrada->id_producto);
+                        if ($producto) {
+                            $producto->cantidad_inventario += $entradaData['cantidad_entradas_producto'];
+                            if (!$producto->save()) {
+                                Yii::debug($producto->errors, 'catproductos_update_errors');
+                                throw new \Exception('Failed to update CatProductos inventory');
+                            }
+                        } else {
+                            throw new \Exception('Producto not found');
+                        }
+                    }
+                } else {
+                    $newEntrada = new ProductosPorEntradas();
+                    $newEntrada->attributes = $entradaData;
+                    $newEntrada->id_entradas = $model->id_entradas;
+                    $newEntrada->id_producto = $this->getIdProducto($entradaData['id_sabor'], $entradaData['id_presentacion']); // Calculate id_producto
+
+                    if (!$newEntrada->save()) {
+                        Yii::debug($newEntrada->errors, 'productoPorEntradas_create_errors');
+                        throw new \Exception('Failed to create ProductosPorEntradas');
+                    }
+
+                    // Update inventory
+                    $producto = CatProductos::findOne($newEntrada->id_producto);
+                    if ($producto) {
+                        $producto->cantidad_inventario += $entradaData['cantidad_entradas_producto'];
+                        if (!$producto->save()) {
+                            Yii::debug($producto->errors, 'catproductos_create_errors');
+                            throw new \Exception('Failed to update CatProductos inventory');
+                        }
+                    } else {
+                        throw new \Exception('Producto not found');
+                    }
+                }
+            }
+
+            $transaction->commit();
+            Yii::$app->session->setFlash('success', 'Entrada actualizada exitosamente');
+            return $this->redirect(['view', 'id' => $model->id_entradas]);
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            Yii::$app->session->setFlash('error', $e->getMessage());
         }
     }
 
-    $empleados = ArrayHelper::map(CatEmpleados::find()->all(), 'id_empleado', function($model, $defaultValue) {
+    // Prepare data for dropdowns
+    $empleados = ArrayHelper::map(CatEmpleados::find()->all(), 'id_empleado', function($model) {
         return $model['nombre'].' '.$model['paterno'].' '.$model['materno'];
     });
     $eventos = ArrayHelper::map(CatEventos::find()->all(), 'id_evento', 'evento');
-    
-    $sabores= ArrayHelper::map(CatSabores::find()->all(), 'id_sabor', 'sabor');
-    
-    $presentaciones = ArrayHelper::map(CatPresentaciones::find()->all(), 'presentacion', 'presentacion');
-    $prueba = CatPresentaciones::find()
-    ->select('id_presentacion')  
-    ->where(['presentacion' => 'PRUEBA'])
-    ->scalar();
-
-    
-
-   
-    $ml375 = CatPresentaciones::find()
-    ->select('id_presentacion')  
-    ->where(['presentacion' => '375 ml'])
-    ->scalar();
-
-
-    $ml750 = CatPresentaciones::find()
-    ->select('id_presentacion')  
-    ->where(['presentacion' => '750 ml '])
-    ->scalar();
-
-
-    $onz16 = CatPresentaciones::find()
-    ->select('id_presentacion')  
-    ->where(['presentacion' => '16 onz'])
-    ->scalar();
-
-    $DosLitros = CatPresentaciones::find()
-    ->select('id_presentacion')  
-    ->where(['presentacion' => '2 ltrs'])
-    ->scalar();
+    $saboresIds = CatProductos::find()->select('id_sabor')->distinct()->column();
+    $sabores1 = CatSabores::find()->where(['id_sabor' => $saboresIds])->all();
+    $sabores = ArrayHelper::map($sabores1, 'id_sabor', 'sabor');
+    $presentacionesList = [];
+    $existingEntrada = $model->getProductosPorEntradas()->asArray()->all();
 
     return $this->render('update', [
-        
         'model' => $model,
-       'empleados' => $empleados,
+        'empleados' => $empleados,
         'eventos' => $eventos,
-        'sabores'=> $sabores,
-        'presentaciones'=> $presentaciones,
-        'prueba' => $prueba,
-        'ml375'=> $ml375,
-        'ml750'=> $ml750,
-        'onz16'=> $onz16,
-        'DosLitros'=> $DosLitros,
-      
+        'sabores' => $sabores,
+        'presentacionesList' => $presentacionesList,
+        'existingEntrada' => $existingEntrada
     ]);
+}
+
+public function actionGetPresentaciones($idSabor)
+{
+    
+
+    $idSabor = (int) $idSabor;
+
+    if ($idSabor <= 0) {
+        return json_encode(['error' => 'Invalid sabor ID']);
+    }
+
+    try {
+        // Fetch all presentaciones for the given sabor
+        $presentaciones = CatPresentaciones::find()
+            ->joinWith('catProductos') // Ensure this relation exists
+            ->where(['cat_productos.id_sabor' => $idSabor])
+            ->all();
+
+        if (empty($presentaciones)) {
+            return json_encode([]);
+        }
+
+        // Only include the 'presentacion' value in the response
+        $presentacionesList = [];
+        foreach ($presentaciones as $presentacion) {
+            $presentacionesList[$presentacion->id_presentacion] = $presentacion->presentacion; }
+
+        return json_encode($presentacionesList);
+    } catch (\Exception $e) {
+        Yii::error($e->getMessage(), __METHOD__);
+        return json_encode(['error' => 'An error occurred while fetching presentaciones: ' . $e->getMessage()]);
+    }
 }
 
 
@@ -232,6 +295,7 @@ public function actionUpdate($id)
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
+
     public function actionDelete($id)
     {
         $model= $this->findModel($id);
@@ -268,52 +332,7 @@ public function actionUpdate($id)
     }
 
 
-    
-    public function actionGetPresentaciones($idSabor)
-{
-    
-
-    $idSabor = (int) $idSabor;
-
-    if ($idSabor <= 0) {
-        return json_encode(['error' => 'Invalid sabor ID']);
-    }
-
-    try {
-        // Fetch all presentaciones for the given sabor
-        $presentaciones = CatPresentaciones::find()
-            ->joinWith('catProductos') // Ensure this relation exists
-            ->where(['cat_productos.id_sabor' => $idSabor])
-            ->all();
-
-        if (empty($presentaciones)) {
-            return json_encode([]);
-        }
-
-        // Only include the 'presentacion' value in the response
-        $presentacionesList = [];
-        foreach ($presentaciones as $presentacion) {
-            $presentacionesList[$presentacion->id_presentacion] = $presentacion->presentacion; }
-
-        return json_encode($presentacionesList);
-    } catch (\Exception $e) {
-        Yii::error($e->getMessage(), __METHOD__);
-        return json_encode(['error' => 'An error occurred while fetching presentaciones: ' . $e->getMessage()]);
-    }
-}
-
-public function getIdProducto($idSabor, $idPresentacion)
-{
-    $producto = CatProductos::find()
-        ->where(['id_sabor' => $idSabor, 'id_presentacion' => $idPresentacion])
-        ->one();
-
-    if ($producto) {
-        return $producto->id_producto;
-    }
-
-    return null; // or handle the case where no matching product is found
-}
+ 
 
 
 }
