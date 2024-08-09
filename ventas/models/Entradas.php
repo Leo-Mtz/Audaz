@@ -13,6 +13,8 @@ use Yii;
  * @property string $fecha
  * @property int $id_empleado
  * @property int $id_evento
+ * @property double $entradas_totales
+ * 
  * @property double|null $cantidad_entradas
  * @property double $entradas_totales
  * @property double $entradas_producto
@@ -53,6 +55,8 @@ class Entradas extends \yii\db\ActiveRecord
         return $this->hasOne(CatEventos::className(), ['id_evento' => 'id_evento']);
     }
 
+    
+
     public function getEmpleados()
     {
         return $this->hasOne(CatEmpleados::className(), ['id_empleado' => 'id_empleado']);
@@ -64,41 +68,47 @@ class Entradas extends \yii\db\ActiveRecord
         return $this->hasMany(ProductosPorEntradas::className(), ['id_entradas' => 'id_entradas']);
     }
 
-
-    public function afterSave($insert, $changedAttributes)
-    {
-        parent::afterSave($insert, $changedAttributes);
-
-        if (!$insert) {
-            // Handle case when updating
-            $this->updateInventory();
-        }
-    }
-    
-
-    public function updateInventory()
+    // En Entradas.php
+public function getIdProducto()
 {
-    $idProducto = $this->getIdProducto(); // Use the method to get id_producto
-    $producto = CatProductos::findOne($idProducto);
-    if ($producto) {
-        $producto->cantidad_inventario += $this->cantidad_entradas_producto;
-        $producto->save(false); // Use `false` to skip validation if necessary
-    }
-}
-
-
-public function getIdProducto($idSabor, $idPresentacion)
-{
+    // Lógica para obtener el ID del producto basado en otros atributos del modelo
     $producto = CatProductos::find()
-        ->where(['id_sabor' => $idSabor, 'id_presentacion' => $idPresentacion])
+        ->where(['id_sabor' => $this->id_sabor, 'id_presentacion' => $this->id_presentacion])
         ->one();
 
     if ($producto) {
         return $producto->id_producto;
     }
 
-    return null; // or handle the case where no matching product is found
+    return null;
 }
+
+public function updateInventory()
+{
+    $idProducto = $this->getIdProducto();
+    if ($idProducto !== null) {
+        $producto = CatProductos::findOne($idProducto);
+        if ($producto) {
+            $producto->cantidad_inventario += $this->cantidad_entradas_producto;
+            if (!$producto->save(false)) {
+                // Manejar el error si el guardado falla
+                throw new \Exception('Error al actualizar el inventario del producto.');
+            }
+        }
+    }
+}
+
+public function afterSave($insert, $changedAttributes)
+{
+    parent::afterSave($insert, $changedAttributes);
+
+    if (!$insert) {
+        // Solo actualiza el inventario si es una actualización
+        $this->updateInventory();
+    }
+}
+
+
 
 
 

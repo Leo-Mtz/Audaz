@@ -334,6 +334,19 @@ public function actionGetPresentaciones($idSabor)
 
  
 
+public function getIdProducto($idSabor, $idPresentacion)
+{
+    $producto = CatProductos::find()
+        ->where(['id_sabor' => $idSabor, 'id_presentacion' => $idPresentacion])
+        ->one();
+
+    if ($producto) {
+        return $producto->id_producto;
+    }
+
+    return null; // or handle the case where no matching product is found
+}
+
 
 }
 

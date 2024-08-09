@@ -1,21 +1,42 @@
 <?php
 
 use yii\helpers\Html;
+use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\CatProductos */
-
-$this->title = 'Actualizar Producto: ' . $model->id_producto;
-$this->params['breadcrumbs'][] = ['label' => 'Productos', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id_producto, 'url' => ['view', 'id' => $model->id_producto]];
-$this->params['breadcrumbs'][] = 'Actualizar';
+/* @var $form yii\widgets\ActiveForm */
 ?>
-<div class="cat-productos-update">
 
-    <?= $this->render('_form', [
-        'model' => $model,
-		'sabores' => $sabores,
-        'presentaciones' => $presentaciones,
-    ]) ?>
+<div class="cat-productos-form">
+
+    <?php $form = ActiveForm::begin(); ?>
+
+    <div class="row">
+    <div class="col-md col-lg">		
+			<?= $form->field($model, 'id_sabor')->dropdownList($sabores,['prompt' => 'Seleccionar sabor...']) ?>	
+		</div>
+		<div class="col-md col-lg">
+			<?= $form->field($model, 'id_presentacion')->dropdownList($presentaciones,['prompt' => 'Seleccionar presentación...']) ?>	
+		</div>
+		<div class="col-md col-lg">
+			<?= $form->field($model, 'precio')->textInput() ?>
+		</div>
+        
+        <div class="col-md col-lg">
+        <?= $form->field($model, 'cantidad_inventario')->textInput() ?>
+
+        </div>
+
+        </div>
+		
+   
+    <!-- Add this line for capacidad_inventario -->
+    
+    <div class="form-group">
+        <?= Html::submitButton('Guardar', ['class' => 'btn btn-success']) ?>
+    </div>
+
+    <?php ActiveForm::end(); ?>
 
 </div>

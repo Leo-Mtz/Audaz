@@ -107,7 +107,7 @@ class ProductosController extends Controller
         $presentaciones = ArrayHelper::map(CatPresentaciones::find()->all(),'id_presentacion','presentacion');
 
 
-        return $this->render('create', [
+        return $this->render('update', [
             'model' => $model,
             'sabores' => $sabores,
             'presentaciones' => $presentaciones,

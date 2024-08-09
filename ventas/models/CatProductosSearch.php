@@ -18,7 +18,7 @@ class CatProductosSearch extends CatProductos
     {
         return [
             [['id_producto', 'id_sabor', 'id_presentacion'], 'integer'],
-            [['precio'], 'number'],
+            [['precio', 'cantidad_inventario'], 'number'],
         ];
     }
 
@@ -62,6 +62,7 @@ class CatProductosSearch extends CatProductos
             'id_sabor' => $this->id_sabor,
             'id_presentacion' => $this->id_presentacion,
             'precio' => $this->precio,
+            'cantidad_inventario' => $this->cantidad_inventario,
         ]);
 
         return $dataProvider;

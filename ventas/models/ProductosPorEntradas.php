@@ -95,4 +95,6 @@ class ProductosPorEntradas extends \yii\db\ActiveRecord
     {
         return $this->hasOne(CatPresentaciones::className(), ['id_presentacion' => 'id_presentacion']);
     }
+
+    
 }

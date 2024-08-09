@@ -58,7 +58,7 @@ $config = [
 		],
         'db' => $db,
         'urlManager' => [
-            'enablePrettyUrl' => true,
+            'enablePrettyUrl' => false,
             'showScriptName' => false,
             'rules' => [
             ],
@@ -82,14 +82,14 @@ if (YII_ENV_DEV) {
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        'allowedIPs' => ['127.0.0.1', '::1','200.57.102.110','187.189.160.146','5.5.29.92','192.168.100.7'],
+        'allowedIPs' => ['127.0.0.1', '::1','200.57.102.110'],
     ];
 
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        'allowedIPs' => ['127.0.0.1', '::1','200.57.102.110','187.189.160.146','*','5.5.29.92','192.168.100.7'],
+        'allowedIPs' => ['127.0.0.1', '::1','200.57.102.110','*'],
     ];
 }
 
