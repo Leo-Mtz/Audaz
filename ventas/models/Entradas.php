@@ -32,7 +32,7 @@ class Entradas extends \yii\db\ActiveRecord
             [['fecha', 'id_empleado', 'id_evento', 'entradas_totales'], 'required'],
             [['fecha'], 'safe'],
             [['id_empleado', 'id_evento'], 'integer'],
-            [['cantidad_entradas', 'entradas_totales'], 'number'],
+            [['cantidad_entradas', 'entradas_totales'], 'number','min'=>0],
         ];
     }
 

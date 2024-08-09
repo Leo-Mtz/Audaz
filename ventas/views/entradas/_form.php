@@ -247,4 +247,33 @@ function removeEntradaField(button) {
     document.getElementById('cantidad_entradas').value = total; 
     
     }
+
+    
+function validateNonNegativeValues() {
+    const entradasTotalesInput = document.getElementById('num_entradas');
+    const cantidadEntradasInput = document.getElementById('cantidad_entradas');
+    
+    // Validate entradas_totales
+    if (parseFloat(entradasTotalesInput.value) < 0) {
+        entradasTotalesInput.value = 0;
+    }
+
+    // Validate cantidad_entradas_producto in each input field
+    document.querySelectorAll('.quantity-input').forEach(function(input) {
+        if (parseFloat(input.value) < 0) {
+            input.value = 0;
+        }
+    });
+
+    // Recalculate total after validation
+    calcularTotal();
+}
+
+// Call validation on input changes and form submission
+document.addEventListener('input', function(event) {
+    if (event.target.matches('#num_entradas') || event.target.matches('.quantity-input')) {
+        validateNonNegativeValues();
+    }
+});
 </script>
+
