@@ -150,86 +150,57 @@ class EntradasController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
-     */
-
-     public function actionUpdate($id)
+     */public function actionUpdate($id)
 {
+    // Find the model
     $model = $this->findModel($id);
 
+    // Load posted data into the model
     if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        // Retrieve entradas data from the post request
         $entradasData = Yii::$app->request->post('Entradas')['entradas'] ?? [];
+        $existingEntradaIds = array_column($model->getProductosPorEntradas()->asArray()->all(), 'id');
+        $newEntradaIds = array_column($entradasData, 'id');
 
-        // Start a database transaction
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-            // Remove entries that are no longer present
-            $existingEntradaIds = array_column($model->getProductosPorEntradas()->asArray()->all(), 'id');
-            $newEntradaIds = array_column($entradasData, 'id');
-            foreach ($existingEntradaIds as $existingEntradaId) {
-                if (!in_array($existingEntradaId, $newEntradaIds)) {
-                    $existingEntrada = ProductosPorEntradas::findOne($existingEntradaId);
-                    if ($existingEntrada) {
-                        $existingEntrada->delete();
-                    }
+        // Handle deletions
+        foreach ($existingEntradaIds as $existingEntradaId) {
+            if (!in_array($existingEntradaId, $newEntradaIds)) {
+                $entradaToDelete = ProductosPorEntradas::findOne($existingEntradaId);
+                if ($entradaToDelete) {
+                    $entradaToDelete->delete();
                 }
             }
-
-            // Update or create new entries
-            foreach ($entradasData as $entradaData) {
-                if (isset($entradaData['id']) && $entradaData['id']) {
-                    $entrada = ProductosPorEntradas::findOne($entradaData['id']);
-                    if ($entrada) {
-                        $entrada->attributes = $entradaData;
-                        $entrada->id_producto = $this->getIdProducto($entradaData['id_sabor'], $entradaData['id_presentacion']); // Calculate id_producto
-                        if (!$entrada->save()) {
-                            Yii::debug($entrada->errors, 'productoPorEntradas_update_errors');
-                            throw new \Exception('Failed to update ProductosPorEntradas');
-                        }
-
-                        // Update inventory
-                        $producto = CatProductos::findOne($entrada->id_producto);
-                        if ($producto) {
-                            $producto->cantidad_inventario += $entradaData['cantidad_entradas_producto'];
-                            if (!$producto->save()) {
-                                Yii::debug($producto->errors, 'catproductos_update_errors');
-                                throw new \Exception('Failed to update CatProductos inventory');
-                            }
-                        } else {
-                            throw new \Exception('Producto not found');
-                        }
-                    }
-                } else {
-                    $newEntrada = new ProductosPorEntradas();
-                    $newEntrada->attributes = $entradaData;
-                    $newEntrada->id_entradas = $model->id_entradas;
-                    $newEntrada->id_producto = $this->getIdProducto($entradaData['id_sabor'], $entradaData['id_presentacion']); // Calculate id_producto
-
-                    if (!$newEntrada->save()) {
-                        Yii::debug($newEntrada->errors, 'productoPorEntradas_create_errors');
-                        throw new \Exception('Failed to create ProductosPorEntradas');
-                    }
-
-                    // Update inventory
-                    $producto = CatProductos::findOne($newEntrada->id_producto);
-                    if ($producto) {
-                        $producto->cantidad_inventario += $entradaData['cantidad_entradas_producto'];
-                        if (!$producto->save()) {
-                            Yii::debug($producto->errors, 'catproductos_create_errors');
-                            throw new \Exception('Failed to update CatProductos inventory');
-                        }
-                    } else {
-                        throw new \Exception('Producto not found');
-                    }
-                }
-            }
-
-            $transaction->commit();
-            Yii::$app->session->setFlash('success', 'Entrada actualizada exitosamente');
-            return $this->redirect(['view', 'id' => $model->id_entradas]);
-        } catch (\Exception $e) {
-            $transaction->rollBack();
-            Yii::$app->session->setFlash('error', $e->getMessage());
         }
+
+        // Handle updates and creations
+        foreach ($entradasData as $entradaData) {
+            if (isset($entradaData['id']) && $entradaData['id']) {
+                $entrada = ProductosPorEntrendas::findOne($entradaData['id']);
+                if ($entrada) {
+                    $entrada->attributes = $entradaData;
+                    $entrada->id_producto = $this->getIdProducto($entradaData['id_sabor'], $entradaData['id_presentacion']);
+                    if (!$entrada->save()) {
+                        Yii::debug($entrada->errors, 'productos_por_entradas_update_errors');
+                        throw new \Exception('Failed to save ProductosPorEntradas');
+                    }
+                }
+            } else {
+                $newEntrada = new ProductosPorEntradas();
+                $newEntrada->attributes = $entradaData;
+                $newEntrada->id_producto = $this->getIdProducto($entradaData['id_sabor'], $entradaData['id_presentacion']);
+                $newEntrada->id_entradas = $model->id_entradas;
+                if (!$newEntrada->save()) {
+                    Yii::debug($newEntrada->errors, 'productos_por_entradas_create_errors');
+                    throw new \Exception('Failed to save ProductosPorEntradas');
+                }
+            }
+
+            // Update inventory
+            $newEntrada->updateInventory(); // Call updateInventory() after saving
+        }
+
+        Yii::$app->session->setFlash('success', 'Sale updated and stock adjusted.');
+        return $this->redirect(['view', 'id' => $model->id_entradas]);
     }
 
     // Prepare data for dropdowns
@@ -252,6 +223,7 @@ class EntradasController extends Controller
         'existingEntrada' => $existingEntrada
     ]);
 }
+
 
 public function actionGetPresentaciones($idSabor)
 {

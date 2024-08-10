@@ -96,5 +96,37 @@ class ProductosPorEntradas extends \yii\db\ActiveRecord
         return $this->hasOne(CatPresentaciones::className(), ['id_presentacion' => 'id_presentacion']);
     }
 
+
+    public function updateInventory()
+{
+    $idProducto = $this->id_producto; // Access the attribute directly
+    if ($idProducto !== null) {
+        $producto = CatProductos::findOne($idProducto);
+        if ($producto) {
+            $producto->cantidad_inventario += $this->cantidad_entradas_producto;
+            if (!$producto->save(false)) {
+                // Handle the error if saving fails
+                Yii::error('Failed to update inventory for product ID ' . $idProducto, __METHOD__);
+            }
+        } else {
+            Yii::error('Product not found for ID ' . $idProducto, __METHOD__);
+        }
+    } else {
+        Yii::error('Product ID is null', __METHOD__);
+    }
+}
+
+
+public function afterSave($insert, $changedAttributes)
+{
+    parent::afterSave($insert, $changedAttributes);
+
+    if (!$insert) {
+        // Only update inventory if it is an update
+        $this->updateInventory();
+    }
+}
+
+    
     
 }
