@@ -150,40 +150,70 @@ class EntradasController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
-     */public function actionUpdate($id)
+      */
+
+      public function actionUpdate($id)
 {
-    // Find the model
+    // Encuentra el modelo de entrada
     $model = $this->findModel($id);
 
-    // Load posted data into the model
+    // Cargar los datos del formulario en el modelo
     if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        // Retrieve entradas data from the post request
+        // Obtener los datos de entradas del formulario
         $entradasData = Yii::$app->request->post('Entradas')['entradas'] ?? [];
         $existingEntradaIds = array_column($model->getProductosPorEntradas()->asArray()->all(), 'id');
         $newEntradaIds = array_column($entradasData, 'id');
 
-        // Handle deletions
+        // Manejar eliminaciones
         foreach ($existingEntradaIds as $existingEntradaId) {
             if (!in_array($existingEntradaId, $newEntradaIds)) {
                 $entradaToDelete = ProductosPorEntradas::findOne($existingEntradaId);
                 if ($entradaToDelete) {
+                    // Actualizar inventario antes de eliminar
+                    $producto = CatProductos::findOne($entradaToDelete->id_producto);
+                    if ($producto) {
+                        $producto->cantidad_inventario -= $entradaToDelete->cantidad_entradas_producto;
+                        if ($producto->cantidad_inventario < 0) {
+                            $producto->cantidad_inventario = 0; // O maneja el caso según tus necesidades
+                        }
+                        if (!$producto->save()) {
+                            Yii::debug($producto->errors, 'catproductos_errors');
+                            throw new \Exception('Failed to update CatProductos inventory');
+                        }
+                    } else {
+                        throw new \Exception('Producto not found');
+                    }
+
+                    // Eliminar la entrada
                     $entradaToDelete->delete();
                 }
             }
         }
 
-        // Handle updates and creations
+        // Manejar actualizaciones y creaciones
         foreach ($entradasData as $entradaData) {
             if (isset($entradaData['id']) && $entradaData['id']) {
-                $entrada = ProductosPorEntrendas::findOne($entradaData['id']);
+                $entrada = ProductosPorEntradas::findOne($entradaData['id']);
                 if ($entrada) {
+                    // Obtener cantidad antigua
+                    $cantidadAntigua = $entrada->cantidad_entradas_producto;
+
+                    // Actualizar datos de la entrada
                     $entrada->attributes = $entradaData;
                     $entrada->id_producto = $this->getIdProducto($entradaData['id_sabor'], $entradaData['id_presentacion']);
-                    if (!$entrada->save()) {
+                    $entrada->id_entradas = $model->id_entradas;
+                    if ($entrada->save()) {
+                       
+                        $entrada->updateInventory($cantidadAntigua); // Pasar la cantidad antigua
+
+                    } else {
                         Yii::debug($entrada->errors, 'productos_por_entradas_update_errors');
                         throw new \Exception('Failed to save ProductosPorEntradas');
+
                     }
-                }
+
+                    // Actualizar inventario
+                 }
             } else {
                 $newEntrada = new ProductosPorEntradas();
                 $newEntrada->attributes = $entradaData;
@@ -193,17 +223,17 @@ class EntradasController extends Controller
                     Yii::debug($newEntrada->errors, 'productos_por_entradas_create_errors');
                     throw new \Exception('Failed to save ProductosPorEntradas');
                 }
-            }
 
-            // Update inventory
-            $newEntrada->updateInventory(); // Call updateInventory() after saving
+                // Actualizar inventario para la nueva entrada
+                $newEntrada->updateInventory(); // Llamar a updateInventory() después de guardar
+            }
         }
 
-        Yii::$app->session->setFlash('success', 'Sale updated and stock adjusted.');
+        Yii::$app->session->setFlash('success', 'Entrada updated and stock adjusted.');
         return $this->redirect(['view', 'id' => $model->id_entradas]);
     }
 
-    // Prepare data for dropdowns
+    // Preparar datos para dropdowns
     $empleados = ArrayHelper::map(CatEmpleados::find()->all(), 'id_empleado', function($model) {
         return $model['nombre'].' '.$model['paterno'].' '.$model['materno'];
     });
@@ -223,7 +253,6 @@ class EntradasController extends Controller
         'existingEntrada' => $existingEntrada
     ]);
 }
-
 
 public function actionGetPresentaciones($idSabor)
 {
@@ -268,20 +297,58 @@ public function actionGetPresentaciones($idSabor)
      * @throws NotFoundHttpException if the model cannot be found
      */
 
-    public function actionDelete($id)
-    {
-        $model= $this->findModel($id);
-        $productosPorEntrada = ProductosPorEntradas::findAll(['id_entradas' => $id]);
-        foreach ($productosPorEntrada as $productoPorEntrada) {
-            $productoPorEntrada->delete();
-        
-        }
-
-        $model->delete();
-        return  $this->redirect(['index']);
-    }
-
-    /**
+     public function actionDelete($id)
+     {
+         $model = $this->findModel($id);
+     
+         // Encuentra todos los registros de ProductosPorEntradas asociados
+         $productosPorEntrada = ProductosPorEntradas::findAll(['id_entradas' => $id]);
+     
+         // Comienza una transacción para asegurar la integridad de los datos
+         $transaction = Yii::$app->db->beginTransaction();
+         
+         try {
+             foreach ($productosPorEntrada as $productoPorEntrada) {
+                 // Encuentra el producto asociado
+                 $producto = CatProductos::findOne($productoPorEntrada->id_producto);
+     
+                 if ($producto) {
+                     // Resta la cantidad de entrada al inventario
+                     $producto->cantidad_inventario -= $productoPorEntrada->cantidad_entradas_producto;
+     
+                     // Asegúrate de que el inventario no sea negativo
+                     if ($producto->cantidad_inventario < 0) {
+                         $producto->cantidad_inventario = 0; // O maneja el caso según tus necesidades
+                     }
+     
+                     if (!$producto->save()) {
+                         Yii::debug($producto->errors, 'catproductos_errors');
+                         throw new \Exception('Failed to update CatProductos inventory');
+                     }
+                 } else {
+                     throw new \Exception('Producto not found');
+                 }
+     
+                 // Elimina el registro de ProductosPorEntradas
+                 $productoPorEntrada->delete();
+             }
+     
+             // Elimina la entrada principal
+             $model->delete();
+     
+             // Confirma la transacción
+             $transaction->commit();
+     
+             return $this->redirect(['index']);
+         } catch (\Exception $e) {
+             // Revierte la transacción en caso de error
+             $transaction->rollBack();
+             Yii::$app->session->setFlash('error', $e->getMessage());
+             return $this->redirect(['index']);
+         }
+     }
+     
+     /**
      * Finds the Entradas model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id

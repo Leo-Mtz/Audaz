@@ -124,51 +124,5 @@ class Ventas extends \yii\db\ActiveRecord
         return parent::beforeValidate();
     }
 
-    public function afterSave($insert, $changedAttributes)
-{
-    parent::afterSave($insert, $changedAttributes);
-
-    if (!$insert) {
-        // Handle case when updating
-        $this->updateInventory();
-    }
-}
-
-public function updateInventory()
-{
-    // Find all related ProductosPorVenta records
-    $productosPorVenta = ProductosPorVenta::findAll(['id_venta' => $this->id_venta]);
-
-    foreach ($productosPorVenta as $productoPorVenta) {
-        $producto = CatProductos::findOne($productoPorVenta->id_producto);
-
-        if ($producto) {
-            // Subtract the cantidad_vendida from cantidad_inventario
-            $producto->cantidad_inventario -= $productoPorVenta->cantidad_vendida;
-            
-            // Save the updated product inventory
-            if (!$producto->save(false)) {
-                Yii::debug($producto->errors, 'producto_inventory_errors');
-            }
-        }
-    }
-}
-public function validateInventory()
-{
-    $productosPorVenta = ProductosPorVenta::findAll(['id_venta' => $this->id_venta]);
-
-    foreach ($productosPorVenta as $productoPorVenta) {
-        $producto = CatProductos::findOne($productoPorVenta->id_producto);
-
-        if ($producto && $productoPorVenta->cantidad_vendida > $producto->cantidad_inventario) {
-            $this->addError('productos', 'No hay suficiente inventario  ' . $productoPorVenta->id_producto);
-            return false;
-        }
-    }
-
-    return true;
-}
-
-
 
 }

@@ -18,7 +18,8 @@ class CatProductosSearch extends CatProductos
     {
         return [
             [['id_producto', 'id_sabor', 'id_presentacion'], 'integer'],
-            [['precio', 'cantidad_inventario'], 'number'],
+            [['precio'], 'number'],
+            [['cantidad_inventario'], 'integer'],
         ];
     }
 
@@ -40,12 +41,30 @@ class CatProductosSearch extends CatProductos
      */
     public function search($params)
     {
-        $query = CatProductos::find();
-
-        // add conditions that should always apply here
+        $query = CatProductos::find()
+            ->joinWith(['sabores', 'presentaciones'])
+            ->select(['cat_productos.*', 'cat_sabores.sabor AS sabor_nombre', 'cat_presentaciones.presentacion AS presentacion_nombre']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'attributes' => [
+                    'sabor_nombre' => [
+                        'asc' => ['cat_sabores.sabor' => SORT_ASC],
+                        'desc' => ['cat_sabores.sabor' => SORT_DESC],
+                    ],
+                    'presentacion_nombre' => [
+                        'asc' => ['cat_presentaciones.presentacion' => SORT_ASC],
+                        'desc' => ['cat_presentaciones.presentacion' => SORT_DESC],
+                    ],
+                    'precio',
+                    'cantidad_inventario',
+                ],
+                'defaultOrder' => [
+                    'sabor_nombre' => SORT_ASC,
+                    'presentacion_nombre' => SORT_ASC,
+                ],
+            ],
         ]);
 
         $this->load($params);
