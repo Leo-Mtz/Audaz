@@ -198,29 +198,53 @@ public function actionUpdate($id)
 {
     $model = $this->findModel($id);
 
-    // Obtener datos de productos existentes antes de la actualización
-    $productosAntesDeActualizar = $model->getProductosPorVenta()->asArray()->all();
-    $productosAntesDeActualizar = array_column($productosAntesDeActualizar, null, 'id');
-
     if ($model->load(Yii::$app->request->post()) && $model->save()) {
         $productosData = Yii::$app->request->post('ProductosPorVenta', []);
-        $productosNuevos = array_column($productosData, null, 'id');
+
+        // Validate inventory using ProductosPorVenta model
+        $productosPorVentaModel = new ProductosPorVenta();
+        if (!$productosPorVentaModel->validateInventory($productosData)) {
+            Yii::$app->session->setFlash('error', 'No hay suficiente inventario para algunos productos.');
+            return $this->render('update', [
+                'model' => $model,
+                'id_evento' => Yii::$app->session->get('id_evento'),
+                'productosDropdown' => $this->getProductosDropdown(),
+                'existingProductData' => $model->getProductosPorVenta()->asArray()->all(),
+                'eventosDropdown' => $this->getEventosDropdown(),
+            ]);
+        }
+
+        // Obtener datos de productos existentes
+        $existingProductData = $model->getProductosPorVenta()->asArray()->all();
+        $existingProductIds = array_column($existingProductData, 'id');
+        $newProductIds = array_column($productosData, 'id');
 
         // Manejar eliminaciones de productos
-        foreach ($productosAntesDeActualizar as $idProducto => $productoAntes) {
-            if (!isset($productosNuevos[$idProducto])) {
-                // Producto eliminado
-                $productoEliminado = ProductosPorVenta::findOne($idProducto);
-                if ($productoEliminado) {
-                    // Ajustar inventario para productos eliminados
-                    $productoEliminado->updateInventory(-$productoEliminado->cantidad_vendida); // Revertir cantidad vendida
-                    $productoEliminado->delete();
+        foreach ($existingProductIds as $existingProductId) {
+            if (!in_array($existingProductId, $newProductIds)) {
+                $productoToDelete = ProductosPorVenta::findOne($existingProductId);
+                if ($productoToDelete) {
+                    $producto = CatProductos::findOne($productoToDelete->id_producto);
+                    if ($producto) {
+                        $producto->cantidad_inventario += $productoToDelete->cantidad_vendida;
+                        if ($producto->cantidad_inventario < 0) {
+                            $producto->cantidad_inventario = 0; // O maneja el caso según tus necesidades
+                        }
+                        if (!$producto->save()) {
+                            Yii::debug($producto->errors, 'catproductos_errors');
+                            throw new \Exception('Failed to update CatProductos inventory');
+                        }
+                    } else {
+                        throw new \Exception('Producto not found');
+                    }
+
+                    $productoToDelete->delete();
                 }
             }
         }
 
         // Manejar actualizaciones y creaciones de productos
-        foreach ($productosNuevos as $productoData) {
+        foreach ($productosData as $productoData) {
             if (isset($productoData['id']) && $productoData['id']) {
                 $producto = ProductosPorVenta::findOne($productoData['id']);
                 if ($producto) {
@@ -229,6 +253,7 @@ public function actionUpdate($id)
 
                     // Actualizar datos del producto
                     $producto->attributes = $productoData;
+                    $producto->id_producto = $productoData['id_producto'];
                     $producto->id_venta = $model->id_venta; // Asegurarse de que esté vinculado a la venta actual
                     if ($producto->save()) {
                         // Actualizar inventario basado en la diferencia
@@ -239,16 +264,17 @@ public function actionUpdate($id)
                     }
                 }
             } else {
-                $nuevoProducto = new ProductosPorVenta();
-                $nuevoProducto->attributes = $productoData;
-                $nuevoProducto->id_venta = $model->id_venta; // Asegurarse de que esté vinculado a la venta actual
-                if ($nuevoProducto->save()) {
-                    // Actualizar inventario para el nuevo producto
-                    $nuevoProducto->updateInventory(); // Llamar a updateInventory() después de guardar
-                } else {
-                    Yii::debug($nuevoProducto->errors, 'productos_por_venta_create_errors');
+                $newProducto = new ProductosPorVenta();
+                $newProducto->attributes = $productoData;
+                $newProducto->id_producto = $productoData['id_producto'];
+                $newProducto->id_venta = $model->id_venta; // Asegurarse de que esté vinculado a la venta actual
+                if (!$newProducto->save()) {
+                    Yii::debug($newProducto->errors, 'productos_por_venta_create_errors');
                     throw new \Exception('Failed to save ProductosPorVenta');
                 }
+
+                // Actualizar inventario para el nuevo producto
+                $newProducto->updateInventory();
             }
         }
 
@@ -277,14 +303,30 @@ public function actionUpdate($id)
         'eventosDropdown' => $eventosDropdown,
     ]);
 }
-
-        
+       
     public function actionView($id)
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
     }
+
+    protected function getEventosDropdown()
+{
+    $eventos = CatEventos::find()->all();
+    return ArrayHelper::map($eventos, 'id_evento', 'evento');
+}
+
+
+    protected function getProductosDropdown()
+{
+    $productos = CatProductos::find()->all();
+    $productosDropdown = [];
+    foreach ($productos as $producto) {
+        $productosDropdown[$producto->id_producto] = $producto->sabores->sabor . ' - ' . $producto->presentaciones->presentacion;
+    }
+    return $productosDropdown;
+}
 
     public function actionTicket($id)
     {

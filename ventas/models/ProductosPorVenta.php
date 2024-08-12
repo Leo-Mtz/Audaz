@@ -97,7 +97,7 @@ public function updateInventory()
 
         if ($producto) {
             // Subtract the cantidad_vendida from cantidad_inventario
-            $producto->cantidad_inventario -= $productoPorVenta->cantidad_vendida;
+            $producto->cantidad_inventario -= $this->cantidad_vendida;
             
             // Save the updated product inventory
             if (!$producto->save(false)) {
@@ -106,21 +106,46 @@ public function updateInventory()
         }
     }
 }
-public function validateInventory()
+
+
+public function validateInventory($productosData)
 {
+    // Get all current ProductosPorVenta records for the sale
     $productosPorVenta = ProductosPorVenta::findAll(['id_venta' => $this->id_venta]);
 
-    foreach ($productosPorVenta as $productoPorVenta) {
-        $producto = CatProductos::findOne($productoPorVenta->id_producto);
+    // Combine existing and new product data
+    foreach ($productosData as $productoData) {
+        $producto = CatProductos::findOne($productoData['id_producto']);
+        if ($producto) {
+            // Find the corresponding record or use 0 if it does not exist
+            $cantidadActual = 0;
+            foreach ($productosPorVenta as $p) {
+                if ($p->id_producto == $productoData['id_producto']) {
+                    $cantidadActual = $p->cantidad_vendida;
+                    break;
+                }
+            }
 
-        if ($producto && $productoPorVenta->cantidad_vendida > $producto->cantidad_inventario) {
-            $this->addError('productos', 'No hay suficiente inventario  ' . $productoPorVenta->id_producto);
+            // Calculate total quantity after update
+            $nuevaCantidad = $productoData['cantidad_vendida'];
+            $diferencia = $nuevaCantidad - $cantidadActual;
+
+            // Check if there is enough inventory
+            if ($producto->cantidad_inventario < $diferencia) {
+                $this->addError('productos', 'No hay suficiente inventario para el producto ' . $productoData['id_producto']);
+                return false;
+            }
+        } else {
+            $this->addError('productos', 'Producto no encontrado: ' . $productoData['id_producto']);
             return false;
         }
     }
 
     return true;
 }
+
+
+
 
 
 }
